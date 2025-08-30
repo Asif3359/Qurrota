@@ -1,4 +1,4 @@
-import { Box, Breadcrumbs, Link, Chip, Container, Typography, Card, CardContent, Alert, TextField, Button } from '@mui/material'
+import { Box, Container, Typography, Card, CardContent, Alert, TextField, Button } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { useMediaQuery } from '@mui/material'
 import { motion } from 'framer-motion'
@@ -95,7 +95,7 @@ const GetInTouch = () => {
                   fontWeight: 400
                 }}
               >
-                Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+                Have questions? We&apos;d love to hear from you. Send us a message and we&apos;ll respond as soon as possible.
               </Typography>
             </Box>
           </motion.div>
@@ -169,7 +169,7 @@ const GetInTouch = () => {
                   <CardContent sx={{ p: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>                    
                     {submitted && (
                       <Alert severity="success" sx={{ mb: 3 }}>
-                        Thank you for your message! We'll get back to you soon.
+                        Thank you for your message! We&apos;ll get back to you soon.
                       </Alert>
                     )}
                     

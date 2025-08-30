@@ -54,6 +54,7 @@ const SignupPage: React.FC = () => {
         setError('Registration failed. Please try again.');
       }
     } catch (err) {
+      console.log(err);
       setError('An error occurred. Please try again.');
     } finally {
       setLoading(false);

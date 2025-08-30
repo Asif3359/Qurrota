@@ -4,7 +4,6 @@ import React from 'react';
 import {
   Box,
   Container,
-  Grid,
   Typography,
   Link,
   IconButton,
@@ -70,9 +69,9 @@ const Footer: React.FC = () => {
       }}
     >
       <Container maxWidth="lg">
-        <Grid container spacing={4}>
+        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
           {/* Brand Section */}
-          <Grid item xs={12} md={4}>
+          <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -152,11 +151,11 @@ const Footer: React.FC = () => {
                 ))}
               </Box>
             </motion.div>
-          </Grid>
+          </Box>
 
           {/* Links Sections */}
           {footerSections.map((section, sectionIndex) => (
-            <Grid item xs={12} sm={6} md={2} key={section.title}>
+            <Box key={section.title} sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -201,9 +200,9 @@ const Footer: React.FC = () => {
                   ))}
                 </Box>
               </motion.div>
-            </Grid>
+            </Box>
           ))}
-        </Grid>
+        </Box>
 
         <Divider sx={{ my: 4, borderColor: 'rgba(255, 215, 0, 0.2)' }} />
 

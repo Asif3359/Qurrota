@@ -119,7 +119,7 @@ const StorySection = () => {
                                     fontWeight: 400
                                 }}
                             >
-                                Today, we're proud to serve <strong>thousands of families</strong> across the country,
+                                Today, we&apos;re proud to serve <strong>thousands of families</strong> across the country,
                                 offering a carefully curated selection of premium products that combine
                                 safety, quality, and style. Our mission is to make parenting a little
                                 easier and a lot more joyful.
@@ -195,7 +195,7 @@ const StorySection = () => {
                                         fontStyle: 'italic',
                                     }}
                                 >
-                                    "Every child deserves the best start in life"
+                                    &quot;Every child deserves the best start in life&quot;
                                 </Typography>
                                 <Typography
                                     variant="body1"
@@ -205,7 +205,7 @@ const StorySection = () => {
                                         fontSize: '1.1rem'
                                     }}
                                 >
-                                    - Our Promise to Every Family
+                                    &quot;- Our Promise to Every Family&quot;
                                 </Typography>
                             </Box>
                         </Box>

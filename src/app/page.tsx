@@ -8,7 +8,6 @@ import ProductsSection from '@/components/sections/ProductsSection';
 import Footer from '@/components/layout/Footer';
 import AnimatedBackground from '@/components/ui/AnimatedBackground';
 import StorySection from '@/components/sections/StorySection';
-import AboutPage from './about/page';
 import GetInTouch from '@/components/sections/GetInTouch';
 import JoinUsSection from '@/components/sections/JoinUsSection';
 

@@ -15,7 +15,6 @@ import {
   useTheme,
   useMediaQuery,
   Chip,
-  Avatar,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { 
@@ -23,13 +22,9 @@ import {
   Phone, 
   LocationOn, 
   Send, 
-  AccessTime,
   Support,
   VerifiedUser,
-  Star,
-  ChildCare,
   LocalShipping,
-  Security
 } from '@mui/icons-material';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -188,7 +183,7 @@ export default function ContactPage() {
                   fontWeight: 400
                 }}
               >
-                Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+                Have questions? We&apos;d love to hear from you. Send us a message and we&apos;ll respond as soon as possible.
               </Typography>
             </Box>
           </motion.div>
@@ -263,7 +258,7 @@ export default function ContactPage() {
                   <CardContent sx={{ p: { xs: 3, md: 4 }, position: 'relative', zIndex: 1 }}>                    
                     {submitted && (
                       <Alert severity="success" sx={{ mb: 3 }}>
-                        Thank you for your message! We'll get back to you soon.
+                        Thank you for your message! We&apos;ll get back to you soon.
                       </Alert>
                     )}
                     
@@ -547,7 +542,7 @@ export default function ContactPage() {
                   lineHeight: 1.6
                 }}
               >
-                We're committed to providing the best experience for your family
+                We&apos;re committed to providing the best experience for your family
               </Typography>
             </Box>
             

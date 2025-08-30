@@ -17,10 +17,7 @@ import {
 import { motion } from 'framer-motion';
 import { 
   Star, 
-  Favorite, 
-  Security, 
   LocalShipping, 
-  TrendingUp, 
   People, 
   LocationOn, 
   VerifiedUser,
@@ -228,7 +225,7 @@ export default function AboutPage() {
                       fontWeight: 400
                     }}
                   >
-                    Today, we're proud to serve <strong>thousands of families</strong> across the country, 
+                    Today, we are proud to serve <strong>thousands of families</strong> across the country, 
                     offering a carefully curated selection of premium products that combine 
                     safety, quality, and style. Our mission is to make parenting a little 
                     easier and a lot more joyful.
@@ -304,7 +301,7 @@ export default function AboutPage() {
                         fontStyle: 'italic',
                       }}
                     >
-                      "Every child deserves the best start in life"
+                      &quot;Every child deserves the best start in life&quot;
                     </Typography>
                     <Typography
                       variant="body1"
@@ -314,7 +311,7 @@ export default function AboutPage() {
                         fontSize: '1.1rem'
                       }}
                     >
-                      - Our Promise to Every Family
+                      &quot;- Our Promise to Every Family&quot;
                     </Typography>
                   </Box>
                 </Box>
@@ -726,7 +723,7 @@ export default function AboutPage() {
                     mb: 4
                   }}
                 >
-                  Join thousands of families who trust Qurrota Kids for their children's needs. 
+                  Join thousands of families who trust Qurrota Kids for their children`&apos;s needs. 
                   Discover our premium collection today.
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>

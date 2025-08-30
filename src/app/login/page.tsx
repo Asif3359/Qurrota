@@ -40,6 +40,7 @@ const LoginPage: React.FC = () => {
         setError('Invalid email or password. Try: user@qurrota.com / 123456');
       }
     } catch (err) {
+      console.log(err);
       setError('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -244,7 +245,7 @@ const LoginPage: React.FC = () => {
               >
                 <Box sx={{ textAlign: 'center' }}>
                   <Typography variant="body2" color="text.secondary">
-                    Don't have an account?{' '}
+                    Don&apos;t have an account?{' '}
                     <Link
                       href="/signup"
                       sx={{
