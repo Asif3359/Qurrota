@@ -8,6 +8,7 @@ interface User {
   email: string;
   role: 'parent' | 'admin';
   avatar?: string;
+  password?: string;
 }
 
 interface AuthContextType {
@@ -43,12 +44,12 @@ const staticUsers = [
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, _password: string): Promise<boolean> => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     const foundUser = staticUsers.find(u => u.email === email);
-    if (foundUser && password === foundUser.password) {
+    if (foundUser && _password === foundUser.password) {
       setUser(foundUser);
       return true;
     }
@@ -67,6 +68,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       id: Date.now().toString(),
       name,
       email,
+      password,
       role: 'parent'
     };
     

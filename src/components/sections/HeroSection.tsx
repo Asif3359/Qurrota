@@ -3,14 +3,7 @@
 import React, { Suspense } from 'react';
 import {
   Box,
-  Container,
   Typography,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-  useTheme,
-  useMediaQuery,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
@@ -37,10 +30,6 @@ const VideoSlider = dynamic(() => import('@/components/ui/VideoSlider'), {
 });
 
 const HeroSection: React.FC = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
 
   // Sample advertisement videos - replace with your actual video URLs
   const advertisementVideos = [

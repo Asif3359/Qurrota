@@ -1,65 +1,13 @@
-import { Box, Breadcrumbs, Link, Chip, Container, Typography, Card, CardContent, Alert, TextField, Button } from '@mui/material'
+import { Box, Link, Container, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { useMediaQuery } from '@mui/material'
 import { motion } from 'framer-motion'
-import React, { useState } from 'react'
-import { Email, LocationOn, Phone, Send } from '@mui/icons-material'
-
-const contactInfo: { title: string; info: string; description: string; icon: React.ReactNode; color: string }[] = [
-
-    {
-        title: 'Email',
-        info: 'info@qurrota.com',
-        description: 'Send us an email for any questions or inquiries',
-        icon: <Email />,
-        color: '#FFD700'
-    },
-    {
-        title: 'Phone',
-        info: '+1 (555) 123-4567',
-        description: 'Call us for any questions or inquiries',
-        icon: <Phone />,
-        color: '#9C27B0'
-    },
-    {
-        title: 'Address',
-        info: '123 Main St, Anytown, USA',
-        description: 'Visit us for any questions or inquiries',
-        icon: <LocationOn />,
-        color: '#FFD700'
-    }
-] as const
+import React from 'react'
 
 const JoinUsSection = () => {
 
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
-  const isSmallMobile = useMediaQuery(theme.breakpoints.down('xs'))
-  const [submitted, setSubmitted] = useState(false)
-  const [formData, setFormData] = useState({
-      name: '',
-      email: '',
-      subject: '',
-      message: ''
-  })
-
-  const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault()
-      setSubmitted(true)
-      setFormData({
-          name: '',
-          email: '',
-          subject: '',
-          message: ''
-      })
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setFormData({
-          ...formData,
-          [e.target.name]: e.target.value
-      })
-  } 
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm')) 
 
   return (
     <Box sx={{ py: { xs: 3, md: 6 }, display: 'flex', flexDirection: 'column', gap: 2, background: 'rgba(255, 255, 255, 0.32)', backdropFilter: 'blur(10px)', borderRadius: 2 }}>

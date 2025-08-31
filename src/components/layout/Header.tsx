@@ -20,7 +20,6 @@ import {
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import MenuIcon from '@mui/icons-material/Menu';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Header: React.FC = () => {

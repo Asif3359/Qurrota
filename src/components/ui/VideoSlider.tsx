@@ -10,7 +10,7 @@ import {
   Button,
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PlayArrow, Pause, NavigateBefore, NavigateNext } from '@mui/icons-material';
+import { PlayArrow, Pause, NavigateNext } from '@mui/icons-material';
 
 interface VideoItem {
   id: number;
@@ -48,7 +48,7 @@ const VideoSlider: React.FC<VideoSliderProps> = ({
   
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoPlay);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+
   const [isClient, setIsClient] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -72,41 +72,29 @@ const VideoSlider: React.FC<VideoSliderProps> = ({
     }
   }, [isClient, autoPlay]);
 
-  const nextSlide = () => {
+  const nextSlide = React.useCallback(() => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % videos.length);
-  };
+  }, [videos.length]);
 
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + videos.length) % videos.length);
-  };
+
 
   const goToSlide = (index: number) => {
     setCurrentIndex(index);
   };
 
-  const togglePlayPause = () => {
-    if (videoRef.current) {
-      if (isVideoPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsVideoPlaying(!isVideoPlaying);
-    }
-  };
+
 
   const handleVideoEnded = () => {
     // Don't change slide when video ends, let it loop
     // The interval will handle slide changes
-    setIsVideoPlaying(false);
   };
 
   const handleVideoPlay = () => {
-    setIsVideoPlaying(true);
+    // Video started playing
   };
 
   const handleVideoPause = () => {
-    setIsVideoPlaying(false);
+    // Video paused
   };
 
   useEffect(() => {
@@ -121,11 +109,10 @@ const VideoSlider: React.FC<VideoSliderProps> = ({
         clearInterval(intervalRef.current);
       }
     };
-  }, [autoPlay, isPlaying, interval]);
+  }, [autoPlay, isPlaying, interval, nextSlide]);
 
   useEffect(() => {
     // Reset video state when slide changes and start playing
-    setIsVideoPlaying(false);
     if (videoRef.current) {
       videoRef.current.currentTime = 0;
       // Start playing the video after a short delay to ensure it loads
