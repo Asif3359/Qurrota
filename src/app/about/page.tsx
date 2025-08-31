@@ -225,7 +225,7 @@ export default function AboutPage() {
                       fontWeight: 400
                     }}
                   >
-                    Today, we are proud to serve <strong>thousands of families</strong> across the country, 
+                    Today, we&apos;re proud to serve <strong>thousands of families</strong> across the country, 
                     offering a carefully curated selection of premium products that combine 
                     safety, quality, and style. Our mission is to make parenting a little 
                     easier and a lot more joyful.
