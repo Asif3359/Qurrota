@@ -1,25 +1,24 @@
-'use client';
+"use client";
 
-import React, { Suspense } from 'react';
-import {
-  Box,
-  Typography,
-} from '@mui/material';
-import { motion } from 'framer-motion';
-import dynamic from 'next/dynamic';
+import React, { Suspense } from "react";
+import { Box, Typography } from "@mui/material";
+import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
+import theme from "@/theme";
+import { getRgbaColor } from "../../theme/colors";
 
 // Dynamically import VideoSlider to prevent SSR issues
-const VideoSlider = dynamic(() => import('@/components/ui/VideoSlider'), {
+const VideoSlider = dynamic(() => import("@/components/ui/VideoSlider"), {
   ssr: false,
   loading: () => (
     <Box
       sx={{
-        width: '100%',
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'rgba(255, 255, 255, 0.1)',
+        width: "100%",
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: getRgbaColor(theme.palette.primary.main, 0.76),
       }}
     >
       <Typography variant="h6" color="text.secondary">
@@ -30,58 +29,60 @@ const VideoSlider = dynamic(() => import('@/components/ui/VideoSlider'), {
 });
 
 const HeroSection: React.FC = () => {
-
   // Sample advertisement videos - replace with your actual video URLs
   const advertisementVideos = [
     {
       id: 1,
-      src: '/videos/ad1.mp4', // Use relative path for production
-      title: 'Welcome to Qurrota Kids',
-      description: 'Discover premium products for kids and new mothers. Quality, safety, and joy in every item we offer.',
-      poster: '/images/ad1-poster.jpg', // Optional poster image
+      src: "/videos/ad1.mp4", // Use relative path for production
+      title: "Welcome to Qurrota Kids",
+      description:
+        "Discover premium products for kids and new mothers. Quality, safety, and joy in every item we offer.",
+      poster: "/images/ad1-poster.jpg", // Optional poster image
       actions: [
         {
-          text: 'Shop Now',
-          href: '/products',
-          variant: 'contained' as const,
+          text: "Shop Now",
+          href: "/products",
+          variant: "contained" as const,
         },
         {
-          text: 'Learn More',
-          href: '/about',
-          variant: 'outlined' as const,
+          text: "Learn More",
+          href: "/about",
+          variant: "outlined" as const,
         },
       ],
     },
     {
       id: 2,
-      src: '/videos/ad2.mp4', // Use relative path for production
-      title: 'Safe & Healthy Products',
-      description: '100% safe materials for your little ones and new mothers with the best quality products for your baby and new mother',
-      poster: '/images/ad2-poster.jpg', // Optional poster image
+      src: "/videos/ad2.mp4", // Use relative path for production
+      title: "Safe & Healthy Products",
+      description:
+        "100% safe materials for your little ones and new mothers with the best quality products for your baby and new mother",
+      poster: "/images/ad2-poster.jpg", // Optional poster image
       actions: [
         {
-          text: 'Shop Now',
-          href: '/products',
-          variant: 'contained' as const,
+          text: "Shop Now",
+          href: "/products",
+          variant: "contained" as const,
         },
         {
-          text: 'Learn More',
-          href: '/about',
-          variant: 'outlined' as const,
+          text: "Learn More",
+          href: "/about",
+          variant: "outlined" as const,
         },
       ],
     },
     {
       id: 3,
-      src: '/videos/ad3.mp4', // Use relative path for production
-      title: 'Fast Delivery Service',
-      description: 'Quick and reliable shipping nationwide with the best quality products for your baby and new mother with the best quality products for your baby and new mother',
-      poster: '/images/ad3-poster.jpg', // Optional poster image
+      src: "/videos/ad3.mp4", // Use relative path for production
+      title: "Fast Delivery Service",
+      description:
+        "Quick and reliable shipping nationwide with the best quality products for your baby and new mother with the best quality products for your baby and new mother",
+      poster: "/images/ad3-poster.jpg", // Optional poster image
       actions: [
         {
-          text: 'Shop Now',
-          href: '/products',
-          variant: 'contained' as const,
+          text: "Shop Now",
+          href: "/products",
+          variant: "contained" as const,
         },
       ],
     },
@@ -90,23 +91,24 @@ const HeroSection: React.FC = () => {
   return (
     <Box
       sx={{
-        minHeight: '100vh',
-        position: 'relative',
-        overflow: 'hidden',
+        minHeight: "100vh",
+        position: "relative",
+        overflow: "hidden",
+        background: getRgbaColor(theme.palette.primary.main, 0.76),
       }}
     >
       {/* Full Screen Video Slider */}
-      <Box sx={{ width: '100%', height: '100vh' }}>
+      <Box sx={{ width: "100%", height: "100vh" }}>
         <Suspense
           fallback={
             <Box
-                sx={{
-                width: '100%',
-                height: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'rgba(255, 255, 255, 0.1)',
+              sx={{
+                width: "100%",
+                height: "100vh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "rgba(255, 255, 255, 0.52)",
               }}
             >
               <Typography variant="h6" color="text.secondary">
@@ -115,7 +117,7 @@ const HeroSection: React.FC = () => {
             </Box>
           }
         >
-              <motion.div
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
@@ -125,61 +127,59 @@ const HeroSection: React.FC = () => {
               autoPlay={true}
               interval={12000} // Increased from 6000ms to 12000ms (12 seconds)
               showControls={true}
-              showIndicators={true}
-              fullScreen={true}
             />
-              </motion.div>
+          </motion.div>
         </Suspense>
-          </Box>
+      </Box>
 
       {/* Floating decorative elements */}
-      <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-      <motion.div
-        style={{
-          position: 'absolute',
-          top: '20%',
-          right: '10%',
+      <Box sx={{ display: { xs: "none", sm: "block" } }}>
+        <motion.div
+          style={{
+            position: "absolute",
+            top: "20%",
+            right: "10%",
             width: 100,
             height: 100,
-          borderRadius: '50%',
-          background: 'rgba(255, 215, 0, 0.1)',
-          border: '2px solid rgba(255, 215, 0, 0.3)',
-        }}
-        animate={{
-          y: [0, -20, 0],
-          scale: [1, 1.1, 1],
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-      />
+            borderRadius: "50%",
+            background: "rgba(255, 217, 0, 0.1)",
+            border: "2px solid rgba(255, 215, 0, 0.3)",
+          }}
+          animate={{
+            y: [0, -20, 0],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
       </Box>
-      
-      <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-      <motion.div
-        style={{
-          position: 'absolute',
-          bottom: '30%',
-          left: '5%',
+
+      <Box sx={{ display: { xs: "none", sm: "block" } }}>
+        <motion.div
+          style={{
+            position: "absolute",
+            bottom: "30%",
+            left: "5%",
             width: 60,
             height: 60,
-          borderRadius: '50%',
-          background: 'rgba(156, 39, 176, 0.1)',
-          border: '2px solid rgba(156, 39, 176, 0.3)',
-        }}
-        animate={{
-          y: [0, 15, 0],
-          scale: [1, 0.9, 1],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: 1,
-        }}
-      />
+            borderRadius: "50%",
+            background: "rgba(255, 217, 0, 0.1)",
+            border: "2px solid rgba(156, 39, 176, 0.3)",
+          }}
+          animate={{
+            y: [0, 15, 0],
+            scale: [1, 0.9, 1],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1,
+          }}
+        />
       </Box>
     </Box>
   );

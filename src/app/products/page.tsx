@@ -7,6 +7,8 @@ import Header from '@/components/layout/Header';
 import ProductsSection from '@/components/sections/ProductsSection';
 import Footer from '@/components/layout/Footer';
 import AnimatedBackground from '@/components/ui/AnimatedBackground';
+import theme from '@/theme';
+import { getRgbaColor } from '@/theme/colors';
 
 export default function ProductsPage() {
   return (
@@ -38,10 +40,7 @@ export default function ProductsPage() {
               gutterBottom
               sx={{
                 fontWeight: 700,
-                background: 'linear-gradient(45deg, #FFD700, #9C27B0)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+                color: '#FFD700',
                 mb: 2,
               }}
             >
@@ -58,7 +57,9 @@ export default function ProductsPage() {
           </motion.div>
         </Container>
         
-        <ProductsSection />
+        {/* <Box sx={{  background: getRgbaColor(theme.palette.primary.main, 0.76), backdropFilter: 'blur(10px)' }}> */}
+            <ProductsSection />
+        {/* </Box> */}
       </Box>
       
       {/* Footer */}

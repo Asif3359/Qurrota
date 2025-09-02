@@ -26,7 +26,7 @@ export default function HomePage() {
         <ProductsSection />
         <StorySection />
         <GetInTouch />
-        <JoinUsSection></JoinUsSection>
+        <JoinUsSection/>
       </Box>
       
       {/* Footer */}

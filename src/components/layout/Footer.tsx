@@ -27,6 +27,7 @@ import {
   Support,
   Verified
 } from '@mui/icons-material';
+import { getRgbaColor } from '../../theme/colors';
 
 const Footer: React.FC = () => {
   const theme = useTheme();
@@ -92,8 +93,7 @@ const Footer: React.FC = () => {
   return (
     <Box
       sx={{
-        background: 'linear-gradient(135deg, #f8f9ff 0%, #fff5f5 100%)',
-        borderTop: '3px solid #FFD700',
+        background: theme.palette.background.default,
         pt: 6,
         pb: 3,
         position: 'relative',
@@ -103,8 +103,7 @@ const Footer: React.FC = () => {
           top: 0,
           left: 0,
           right: 0,
-          height: '3px',
-          background: 'linear-gradient(90deg, #FFD700, #FFA500, #FFD700)',
+          background: theme.palette.primary.dark,
         }
       }}
     >
@@ -150,22 +149,22 @@ const Footer: React.FC = () => {
                         borderRadius: 2,
                         background: 'rgba(255, 255, 255, 0.7)',
                         backdropFilter: 'blur(10px)',
-                        border: '1px solid rgba(255, 215, 0, 0.2)',
+                        border: `1px solid ${getRgbaColor(theme.palette.primary.dark, 0.2)}`,
                         transition: 'all 0.3s ease',
                         height: '100%',
                         '&:hover': {
                           transform: 'translateY(-5px)',
-                          boxShadow: '0 8px 25px rgba(255, 215, 0, 0.15)',
+                          boxShadow: `0 8px 25px ${getRgbaColor(theme.palette.primary.dark, 0.15)}`,
                         }
                       }}
                     >
                       <Box
                         sx={{
-                          color: '#FFD700',
+                          color: theme.palette.primary.dark,
                           mb: 1,
                           p: 1,
                           borderRadius: '50%',
-                          background: 'rgba(255, 215, 0, 0.1)',
+                          background: getRgbaColor(theme.palette.primary.dark, 0.1),
                         }}
                       >
                         {feature.icon}
@@ -174,7 +173,7 @@ const Footer: React.FC = () => {
                         variant="caption"
                         sx={{
                           fontWeight: 600,
-                          color: '#333',
+                          color: theme.palette.text.secondary,
                           fontSize: '0.75rem',
                           lineHeight: 1.2,
                         }}
@@ -206,96 +205,107 @@ const Footer: React.FC = () => {
             }}
           >
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <Box sx={{ mb: 3 }}>
-                <Typography
-                  variant="h4"
-                  component="h2"
-                  gutterBottom
-                  sx={{
-                    fontWeight: 800,
-                    background: 'linear-gradient(45deg, #FFD700, #FF6B6B)',
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    fontSize: { xs: '1.8rem', md: '2.2rem' },
-                  }}
-                >
-                  Qurrota Kids
-                </Typography>
-                
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  sx={{ 
-                    mb: 3, 
-                    lineHeight: 1.7,
-                    fontSize: '0.95rem',
-                  }}
-                >
-                  Making childhood magical with premium, safe, and sustainable products for your little ones. 
-                  Every item is carefully selected for quality and joy.
-                </Typography>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 700,
+                  color: theme.palette.primary.dark,
+                  mb: 2,
+                }}
+              >
+                Qurrota Kids
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: theme.palette.text.secondary,
+                  mb: 3,
+                  lineHeight: 1.6,
+                }}
+              >
+                Making childhood magical with safe, sustainable, and stylish products that parents trust and kids love.
+              </Typography>
 
-                {/* Contact Info */}
-                <Box sx={{ mb: 3 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                    <Email sx={{ color: '#FFD700', mr: 1.5, fontSize: 20 }} />
-                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                      hello@qurrota.com
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                    <Phone sx={{ color: '#FFD700', mr: 1.5, fontSize: 20 }} />
-                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                      +1 (555) 123-4567
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-                    <LocationOn sx={{ color: '#FFD700', mr: 1.5, fontSize: 20, mt: 0.2 }} />
-                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, lineHeight: 1.4 }}>
-                      123 Kids Street, Family City, FC 12345
-                    </Typography>
-                  </Box>
-                </Box>
-
-                {/* Social Links */}
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  {socialLinks.map((social, index) => (
-                    <motion.div
-                      key={social.label}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                      viewport={{ once: true }}
-                      whileHover={{ scale: 1.1 }}
+              {/* Social Links */}
+              <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
+                {socialLinks.map((social, index) => (
+                  <motion.div
+                    key={social.label}
+                    initial={{ opacity: 0, scale: 0 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                  >
+                    <IconButton
+                      component="a"
+                      href={social.href}
+                      aria-label={social.label}
+                      sx={{
+                        color: theme.palette.primary.dark,
+                        background: getRgbaColor(theme.palette.primary.dark, 0.1),
+                        '&:hover': {
+                          background: getRgbaColor(theme.palette.primary.dark, 0.2),
+                          transform: 'translateY(-2px)',
+                        },
+                      }}
                     >
-                      <IconButton
-                        href={social.href}
-                        sx={{
-                          background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-                          color: 'white',
-                          '&:hover': {
-                            background: 'linear-gradient(135deg, #FFA500, #FFD700)',
-                            transform: 'translateY(-3px)',
-                            boxShadow: '0 5px 15px rgba(255, 215, 0, 0.3)',
-                          },
-                        }}
-                      >
-                        {social.icon}
-                      </IconButton>
-                    </motion.div>
-                  ))}
-                </Box>
+                      {social.icon}
+                    </IconButton>
+                  </motion.div>
+                ))}
+              </Box>
+
+              {/* Newsletter Signup */}
+              <Box
+                sx={{
+                  background: theme.palette.primary.main,
+                  p: 3,
+                  borderRadius: 2,
+                  textAlign: 'center',
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: theme.palette.primary.contrastText,
+                    mb: 2,
+                    fontWeight: 600,
+                  }}
+                >
+                  Stay Updated
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: theme.palette.primary.contrastText,
+                    mb: 2,
+                    opacity: 0.9,
+                  }}
+                >
+                  Get the latest updates on new products and exclusive offers!
+                </Typography>
+                <Chip
+                  label="Subscribe Now"
+                  sx={{
+                    background: theme.palette.primary.contrastText,
+                    color: theme.palette.primary.main,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    '&:hover': {
+                      transform: 'translateY(-2px)',
+                    },
+                  }}
+                />
               </Box>
             </motion.div>
           </Box>
 
-          {/* Links Sections */}
+          {/* Footer Links */}
           {footerSections.map((section, sectionIndex) => (
             <Box
               key={section.title}
@@ -312,51 +322,39 @@ const Footer: React.FC = () => {
               >
                 <Typography
                   variant="h6"
-                  component="h3"
-                  gutterBottom
-                  sx={{ 
-                    fontWeight: 700, 
-                    color: '#333', 
+                  sx={{
+                    fontWeight: 600,
+                    color: theme.palette.text.primary,
                     mb: 2,
-                    fontSize: '1.1rem',
-                    borderBottom: '2px solid #FFD700',
-                    pb: 1,
-                    display: 'inline-block',
                   }}
                 >
                   {section.title}
                 </Typography>
-                
-                <Box component="ul" sx={{ listStyle: 'none', p: 0, m: 0 }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                   {section.links.map((link, linkIndex) => (
-                    <motion.li
+                    <motion.div
                       key={link.name}
                       initial={{ opacity: 0, x: -10 }}
                       whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: (sectionIndex * 0.1) + (linkIndex * 0.05) }}
+                      transition={{ duration: 0.3, delay: linkIndex * 0.05 }}
                       viewport={{ once: true }}
                     >
                       <Link
                         href={link.href}
                         sx={{
-                          display: 'block',
-                          color: 'text.secondary',
+                          color: theme.palette.text.secondary,
                           textDecoration: 'none',
-                          py: 0.8,
-                          px: 0,
-                          transition: 'all 0.3s ease',
-                          fontWeight: 500,
                           fontSize: '0.9rem',
+                          transition: 'all 0.3s ease',
                           '&:hover': {
-                            color: '#FFD700',
-                            transform: 'translateX(8px)',
-                            fontWeight: 600,
+                            color: theme.palette.primary.dark,
+                            transform: 'translateX(5px)',
                           },
                         }}
                       >
                         {link.name}
                       </Link>
-                    </motion.li>
+                    </motion.div>
                   ))}
                 </Box>
               </motion.div>
@@ -364,68 +362,92 @@ const Footer: React.FC = () => {
           ))}
         </Box>
 
-        <Divider sx={{ my: 4, borderColor: 'rgba(255, 215, 0, 0.3)', borderWidth: 2 }} />
-
-        {/* Bottom Section */}
+        {/* Contact Info */}
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
           <Box
             sx={{
               display: 'flex',
-              flexDirection: isMobile ? 'column' : 'row',
-              justifyContent: 'space-between',
-              alignItems: isMobile ? 'flex-start' : 'center',
+              flexWrap: 'wrap',
               gap: 3,
+              mb: 4,
+              p: 3,
+              background: 'rgba(255, 255, 255, 0.5)',
+              borderRadius: 2,
+              border: `1px solid ${getRgbaColor(theme.palette.primary.dark, 0.1)}`,
             }}
           >
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ fontWeight: 500 }}
-              >
-                © 2024 Qurrota Kids. All rights reserved.
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Email sx={{ color: theme.palette.primary.dark, mr: 1.5, fontSize: 20 }} />
+              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                hello@qurrota.com
               </Typography>
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                <Chip 
-                  label="Made with ❤️ for kids" 
-                  size="small" 
-                  sx={{ 
-                    background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-                    color: 'white',
-                    fontWeight: 600,
-                    fontSize: '0.7rem',
-                  }} 
-                />
-                <Chip 
-                  label="Eco-Friendly" 
-                  size="small" 
-                  sx={{ 
-                    background: 'rgba(76, 175, 80, 0.1)',
-                    color: '#4CAF50',
-                    fontWeight: 600,
-                    fontSize: '0.7rem',
-                  }} 
-                />
-              </Box>
             </Box>
-            
-            <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Phone sx={{ color: theme.palette.primary.dark, mr: 1.5, fontSize: 20 }} />
+              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                +1 (555) 123-4567
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <LocationOn sx={{ color: theme.palette.primary.dark, mr: 1.5, fontSize: 20, mt: 0.2 }} />
+              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                New York, NY
+              </Typography>
+            </Box>
+          </Box>
+        </motion.div>
+
+        {/* Bottom Section */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 2,
+            pt: 3,
+            borderTop: `1px solid ${getRgbaColor(theme.palette.primary.dark, 0.1)}`,
+          }}
+        >
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <Typography
+              variant="body2"
+              sx={{
+                color: theme.palette.text.secondary,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
+              <Favorite sx={{ fontSize: 16, color: theme.palette.primary.dark }} />
+              Made with love for families worldwide
+            </Typography>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
               <Link
                 href="/privacy"
                 sx={{
-                  color: 'text.secondary',
+                  color: theme.palette.text.secondary,
                   textDecoration: 'none',
-                  fontSize: '0.875rem',
-                  fontWeight: 500,
-                  '&:hover': { 
-                    color: '#FFD700',
-                    textDecoration: 'underline',
-                  },
+                  fontSize: '0.9rem',
+                  '&:hover': { color: theme.palette.primary.dark },
                 }}
               >
                 Privacy Policy
@@ -433,14 +455,10 @@ const Footer: React.FC = () => {
               <Link
                 href="/terms"
                 sx={{
-                  color: 'text.secondary',
+                  color: theme.palette.text.secondary,
                   textDecoration: 'none',
-                  fontSize: '0.875rem',
-                  fontWeight: 500,
-                  '&:hover': { 
-                    color: '#FFD700',
-                    textDecoration: 'underline',
-                  },
+                  fontSize: '0.9rem',
+                  '&:hover': { color: theme.palette.primary.dark },
                 }}
               >
                 Terms of Service
@@ -448,19 +466,43 @@ const Footer: React.FC = () => {
               <Link
                 href="/cookies"
                 sx={{
-                  color: 'text.secondary',
+                  color: theme.palette.text.secondary,
                   textDecoration: 'none',
-                  fontSize: '0.875rem',
-                  fontWeight: 500,
-                  '&:hover': { 
-                    color: '#FFD700',
-                    textDecoration: 'underline',
-                  },
+                  fontSize: '0.9rem',
+                  '&:hover': { color: theme.palette.primary.dark },
                 }}
               >
                 Cookie Policy
               </Link>
             </Box>
+          </motion.div>
+        </Box>
+
+        {/* Copyright */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <Box
+            sx={{
+              textAlign: 'center',
+              mt: 4,
+              p: 2,
+              background: theme.palette.primary.dark,
+              borderRadius: 2,
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{
+                color: theme.palette.primary.contrastText,
+                fontWeight: 500,
+              }}
+            >
+              © 2024 Qurrota Kids. All rights reserved.
+            </Typography>
           </Box>
         </motion.div>
       </Container>

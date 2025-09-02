@@ -54,7 +54,7 @@ const LoginPage: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #FFE55C 0%, #FFD700 50%, #FFC000 100%)',
+        background: '#FFD700',
         padding: 2,
       }}
     >
@@ -86,10 +86,7 @@ const LoginPage: React.FC = () => {
                 gutterBottom
                 sx={{
                   fontWeight: 700,
-                  background: 'linear-gradient(45deg, #FFD700, #9C27B0)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
+                  color: '#FFD700',
                   mb: 1,
                 }}
               >
@@ -221,13 +218,13 @@ const LoginPage: React.FC = () => {
                     mt: 3,
                     mb: 2,
                     py: 1.5,
-                    background: 'linear-gradient(45deg, #FFD700, #FFC000)',
+                    background: '#FFD700',
                     color: '#000',
                     fontWeight: 600,
                     fontSize: '1.1rem',
                     borderRadius: 2,
                     '&:hover': {
-                      background: 'linear-gradient(45deg, #FFC000, #FFD700)',
+                      background: '#FFC000',
                     },
                     '&:disabled': {
                       background: 'rgba(255, 215, 0, 0.5)',

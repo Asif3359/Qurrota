@@ -1,8 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Box } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { getRgbaColor } from '../../theme/colors';
 
 interface FloatingElement {
   id: number;
@@ -14,6 +15,7 @@ interface FloatingElement {
 }
 
 const AnimatedBackground: React.FC = () => {
+  const theme = useTheme();
   const [floatingElements, setFloatingElements] = useState<FloatingElement[]>([]);
 
   useEffect(() => {
@@ -39,7 +41,7 @@ const AnimatedBackground: React.FC = () => {
         overflow: 'hidden',
         zIndex: -1,
         height: '100vh',
-        background: 'linear-gradient(135deg, #FFE55C 0%, #FFD700 50%, #FFC000 100%)',
+        background: theme.palette.primary.main,
       }}
     >
       {floatingElements.map((element) => (
@@ -52,8 +54,8 @@ const AnimatedBackground: React.FC = () => {
             width: element.size,
             height: element.size,
             borderRadius: '50%',
-            background: 'rgba(255, 255, 255, 0.1)',
-            border: '2px solid rgba(255, 255, 255, 0.2)',
+            background: 'rgba(255, 255, 255, 0.76)',
+            border: '2px solid rgba(255, 255, 255, 0.77)',
           }}
           animate={{
             x: [0, 30, -30, 0],
@@ -78,7 +80,7 @@ const AnimatedBackground: React.FC = () => {
           left: 0,
           width: '100%',
           height: '100%',
-          background: 'radial-gradient(circle at 50% 50%, transparent 0%, rgba(255, 215, 0, 0.1) 100%)',
+                            background: getRgbaColor(theme.palette.primary.dark, 0.1),
         }}
       />
     </Box>

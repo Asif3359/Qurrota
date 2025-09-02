@@ -1,30 +1,56 @@
 import { createTheme } from '@mui/material/styles';
+import { lightYellowColors, purpleColors, additionalColors, cssCustomProperties } from './theme/colors';
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#FFD700', // Yellow
-      light: '#FFE55C',
-      dark: '#FFC000',
+      main: lightYellowColors.light, // Light yellow
+      light: lightYellowColors.veryLight,
+      dark: lightYellowColors.medium,
       contrastText: '#000000',
     },
     secondary: {
-      main: '#9C27B0', // Purple
-      light: '#BA68C8',
-      dark: '#7B1FA2',
+      main: purpleColors.medium, // Purple
+      light: purpleColors.light,
+      dark: purpleColors.dark,
       contrastText: '#FFFFFF',
     },
     background: {
-      default: '#FFFFFF',
-      paper: '#FFFFFF',
+      default: additionalColors.white,
+      paper: additionalColors.white,
     },
     text: {
-      primary: '#000000',
-      secondary: '#666666',
+      primary: additionalColors.black,
+      secondary: additionalColors.gray.medium,
+    },
+    // Add custom colors for better theming
+    success: {
+      main: additionalColors.green,
+      contrastText: additionalColors.white,
+    },
+    info: {
+      main: additionalColors.blue,
+      contrastText: additionalColors.white,
+    },
+    warning: {
+      main: lightYellowColors.amber,
+      contrastText: additionalColors.black,
+    },
+    error: {
+      main: additionalColors.red,
+      contrastText: additionalColors.white,
     },
   },
   typography: {
     fontFamily: 'var(--font-geist-sans), Arial, sans-serif',
+  },
+  // Add CSS custom properties for flexible theming
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        ':root': cssCustomProperties,
+      },
+    },
   },
 });
 

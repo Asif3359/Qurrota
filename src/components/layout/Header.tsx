@@ -47,10 +47,10 @@ const Header: React.FC = () => {
   };
 
   const menuItems = [
-    { text: 'Home', href: '/' },
-    { text: 'Products', href: '/products' },
-    { text: 'About', href: '/about' },
-    { text: 'Contact', href: '/contact' },
+    { text: 'HOME', href: '/' },
+    { text: 'PRODUCTS', href: '/products' },
+    { text: 'ABOUT', href: '/about' },
+    { text: 'CONTACT', href: '/contact' },
   ];
 
   const drawer = (
@@ -70,9 +70,9 @@ const Header: React.FC = () => {
       <AppBar
         position="fixed"
         sx={{
-          background: 'rgba(255, 255, 255, 0.35)',
-          backdropFilter: 'blur(10px)',
-          borderBottom: '1px solid rgba(255, 215, 0, 0.2)',
+          background: theme.palette.primary.main,
+          boxShadow: 'none',
+          borderBottom: 'none',
         }}
         elevation={0}
       >
@@ -88,10 +88,7 @@ const Header: React.FC = () => {
               sx={{
                 flexGrow: 1,
                 fontWeight: 700,
-                background: 'linear-gradient(45deg, #FFD700, #9C27B0)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                // WebkitTextFillColor: 'transparent',
+                color: theme.palette.primary.contrastText,
                 cursor: 'pointer',
               }}
             >
@@ -105,9 +102,9 @@ const Header: React.FC = () => {
               aria-label="open drawer"
               edge="start"
               onClick={handleDrawerToggle}
-              sx={{ ml: 'auto' }}
+              sx={{ ml: 'auto', color: theme.palette.primary.contrastText }}
             >
-              <MenuIcon sx={{ color: '#FFD700' }} />
+              <MenuIcon />
             </IconButton>
           ) : (
             <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto', gap: 2 }}>
@@ -123,11 +120,13 @@ const Header: React.FC = () => {
                     component="a"
                     href={item.href}
                     sx={{
-                      color: '#333',
+                      color: theme.palette.primary.contrastText,
                       fontWeight: 500,
+                      textTransform: 'none',
+                      fontSize: '1rem',
                       '&:hover': {
-                        color: '#FFD700',
-                        background: 'rgba(255, 255, 255, 0.97)',
+                        color: theme.palette.primary.contrastText,
+                        background: 'rgba(0, 0, 0, 0.05)',
                       },
                     }}
                   >
@@ -144,9 +143,9 @@ const Header: React.FC = () => {
                 >
                   <IconButton
                     onClick={handleProfileMenuOpen}
-                    sx={{ color: '#FFD700' }}
+                    sx={{ color: theme.palette.primary.contrastText }}
                   >
-                    <Avatar sx={{ width: 32, height: 32, bgcolor: '#9C27B0' }}>
+                    <Avatar sx={{ width: 32, height: 32, bgcolor: theme.palette.secondary.main }}>
                       {user?.name.charAt(0)}
                     </Avatar>
                   </IconButton>
@@ -161,15 +160,22 @@ const Header: React.FC = () => {
                     variant="contained"
                     href="/login"
                     sx={{
-                      background: 'linear-gradient(45deg, #FFD700, #FFC000)',
-                      color: '#000',
+                      background: theme.palette.primary.main,
+                      color: theme.palette.primary.contrastText,
                       fontWeight: 600,
+                      textTransform: 'none',
+                      fontSize: '1rem',
+                      borderRadius: '8px',
+                      px: 3,
+                      py: 1,
+                      border: `2px solid ${theme.palette.primary.contrastText}`,
                       '&:hover': {
-                        background: 'linear-gradient(45deg, #FFC000, #FFD700)',
+                        background: theme.palette.primary.dark,
+                        border: `2px solid ${theme.palette.primary.contrastText}`,
                       },
                     }}
                   >
-                    Login
+                    LOGIN
                   </Button>
                 </motion.div>
               )}
@@ -187,7 +193,11 @@ const Header: React.FC = () => {
         }}
         sx={{
           display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 250 },
+          '& .MuiDrawer-paper': { 
+            boxSizing: 'border-box', 
+            width: 250,
+            background: theme.palette.primary.main,
+          },
         }}
       >
         {drawer}
@@ -199,17 +209,16 @@ const Header: React.FC = () => {
         onClose={handleProfileMenuClose}
         sx={{
           '& .MuiPaper-root': {
-            background: 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 215, 0, 0.2)',
+            background: theme.palette.primary.main,
+            border: `2px solid ${theme.palette.primary.contrastText}`,
           },
         }}
       >
         <MenuItem onClick={handleProfileMenuClose}>
-          <Typography>Profile</Typography>
+          <Typography sx={{ color: theme.palette.primary.contrastText }}>Profile</Typography>
         </MenuItem>
         <MenuItem onClick={handleLogout}>
-          <Typography>Logout</Typography>
+          <Typography sx={{ color: theme.palette.primary.contrastText }}>Logout</Typography>
         </MenuItem>
       </Menu>
     </>

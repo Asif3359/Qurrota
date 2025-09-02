@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Favorite, Star } from '@mui/icons-material';
+import { getRgbaColor } from '@/theme/colors';
 
 const ProductsSection: React.FC = () => {
   const theme = useTheme();
@@ -87,13 +88,14 @@ const ProductsSection: React.FC = () => {
   return (
     <Box
       sx={{
-        py: { xs: 4, sm: 6, md: 8 },
-        px: { xs: 2, sm: 3 },
-        background: 'rgba(255, 255, 255, 0.8)',
+        pt: 6,
+        pb: 6,
+        // background: 'rgba(255, 255, 255, 0.8)',
+        background: getRgbaColor(theme.palette.primary.main, 0.76),
         backdropFilter: 'blur(10px)',
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" >
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -107,10 +109,7 @@ const ProductsSection: React.FC = () => {
             gutterBottom
             sx={{
               fontWeight: 700,
-              background: 'linear-gradient(45deg, #FFD700, #9C27B0)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              color: '#FFD700',
               mb: { xs: 1, sm: 2 },
               fontSize: { xs: '1.75rem', sm: '2.125rem', md: '3rem' },
             }}
@@ -195,7 +194,7 @@ const ProductsSection: React.FC = () => {
                           label="New"
                           size={isSmallMobile ? "small" : "small"}
                           sx={{
-                            background: 'linear-gradient(45deg, #FFD700, #FFC000)',
+                            background: '#FFD700',
                             color: '#000',
                             fontWeight: 600,
                             fontSize: { xs: '0.7rem', sm: '0.75rem' },
@@ -208,7 +207,7 @@ const ProductsSection: React.FC = () => {
                           label="Popular"
                           size={isSmallMobile ? "small" : "small"}
                           sx={{
-                            background: 'linear-gradient(45deg, #9C27B0, #BA68C8)',
+                            background: '#9C27B0',
                             color: '#fff',
                             fontWeight: 600,
                             fontSize: { xs: '0.7rem', sm: '0.75rem' },
@@ -305,10 +304,7 @@ const ProductsSection: React.FC = () => {
                         variant={isSmallMobile ? 'subtitle1' : 'h6'}
                         sx={{
                           fontWeight: 700,
-                          background: 'linear-gradient(45deg, #FFD700, #9C27B0)',
-                          backgroundClip: 'text',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
+                          color: '#FFD700',
                           fontSize: { xs: '1rem', sm: '1.25rem' },
                         }}
                       >
@@ -320,7 +316,7 @@ const ProductsSection: React.FC = () => {
                         size={isSmallMobile ? "small" : "small"}
                         startIcon={<ShoppingCart sx={{ fontSize: { xs: 16, sm: 18 } }} />}
                         sx={{
-                          background: 'linear-gradient(45deg, #FFD700, #FFC000)',
+                          background: '#FFD700',
                           color: '#000',
                           fontWeight: 600,
                           borderRadius: 2,
@@ -328,7 +324,7 @@ const ProductsSection: React.FC = () => {
                           px: { xs: 1.5, sm: 2 },
                           py: { xs: 0.5, sm: 0.75 },
                           '&:hover': {
-                            background: 'linear-gradient(45deg, #FFC000, #FFD700)',
+                            background: '#FFC000',
                           },
                         }}
                       >
