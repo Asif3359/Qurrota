@@ -206,7 +206,7 @@ const VideoSlider: React.FC<VideoSliderProps> = ({
               sx={{
                 fontWeight: 700,
                 mb: { xs: 1, sm: 1.5 },
-                color: theme.palette.primary.dark,
+                color: theme.palette.secondary.main,
                 fontSize: { xs: "1.5rem", sm: "2rem", md: "2.5rem" },
               }}
             >

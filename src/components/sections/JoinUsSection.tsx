@@ -29,9 +29,9 @@ const JoinUsSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
         >
-          <Box
+                      <Box
             sx={{
-              p: 4,
+              p: { xs: 4, md: 6 },
               background: getRgbaColor(theme.palette.primary.light, 0.75),
               border: `2px solid ${theme.palette.primary.light}`,
               borderRadius: 4,
@@ -97,6 +97,7 @@ const JoinUsSection = () => {
                     transition: "all 0.3s ease",
                     "&:hover": {
                       transform: "translateY(-2px)",
+                      background: theme.palette.primary.dark,
                       boxShadow: `0 10px 20px ${getRgbaColor(theme.palette.primary.main, 0.3)}`,
                     },
                   }}
@@ -110,7 +111,7 @@ const JoinUsSection = () => {
                     px: 4,
                     py: 2,
                     border: `2px solid ${theme.palette.primary.dark}`,
-                    color: theme.palette.secondary.main,
+                    color: theme.palette.primary.dark,
                     borderRadius: 3,
                     fontWeight: 700,
                     fontSize: "1.1rem",

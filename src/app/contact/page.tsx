@@ -205,7 +205,7 @@ export default function ContactPage() {
           backdropFilter: "blur(10px)",
         }}
       >
-        <Container maxWidth="lg" >
+        <Container maxWidth="lg">
           {/* Contact Form & Info Section */}
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -801,7 +801,7 @@ export default function ContactPage() {
                 mt: { xs: 6, md: 10 },
                 p: { xs: 4, md: 6 },
                 background: getRgbaColor(theme.palette.primary.light, 0.75),
-                border: `2px solid ${theme.palette.primary.main}`,
+                border: `2px solid ${theme.palette.primary.light}`,
                 borderRadius: 4,
                 textAlign: "center",
                 position: "relative",
@@ -813,7 +813,7 @@ export default function ContactPage() {
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  background: getRgbaColor(theme.palette.primary.light, 0.75),
+                  background: getRgbaColor(theme.palette.primary.light, 0.79),
                 },
               }}
             >
@@ -823,7 +823,7 @@ export default function ContactPage() {
                   gutterBottom
                   sx={{
                     fontWeight: 700,
-                    color: "#333",
+                    color: theme.palette.text.primary,
                     mb: 3,
                   }}
                 >
@@ -857,15 +857,19 @@ export default function ContactPage() {
                       textDecoration: "none",
                       px: 4,
                       py: 2,
-                      background: "#FFD700",
-                      color: "#000",
+                      background: theme.palette.primary.main,
+                      color: theme.palette.primary.contrastText,
                       borderRadius: 3,
                       fontWeight: 700,
                       fontSize: "1.1rem",
                       transition: "all 0.3s ease",
                       "&:hover": {
                         transform: "translateY(-2px)",
-                        boxShadow: "0 10px 20px rgba(255, 215, 0, 0.3)",
+                        background: theme.palette.primary.dark,
+                        boxShadow: `0 10px 20px ${getRgbaColor(
+                          theme.palette.primary.main,
+                          0.3
+                        )}`,
                       },
                     }}
                   >
@@ -877,15 +881,15 @@ export default function ContactPage() {
                       textDecoration: "none",
                       px: 4,
                       py: 2,
-                      border: "2px solid #9C27B0",
-                      color: "#9C27B0",
+                      border: `2px solid ${theme.palette.primary.dark}`,
+                      color: theme.palette.primary.dark,
                       borderRadius: 3,
                       fontWeight: 700,
                       fontSize: "1.1rem",
                       transition: "all 0.3s ease",
                       "&:hover": {
-                        background: "#9C27B0",
-                        color: "#fff",
+                        background: theme.palette.primary.dark,
+                        color: theme.palette.primary.contrastText,
                         transform: "translateY(-2px)",
                       },
                     }}
