@@ -4,16 +4,16 @@ import { lightYellowColors, purpleColors, additionalColors, cssCustomProperties 
 const theme = createTheme({
   palette: {
     primary: {
-      main: lightYellowColors.light, // Light yellow
+      main: purpleColors.light, // #D27AE6 - Purple as main color
+      light: purpleColors.veryLight,
+      dark: purpleColors.medium,
+      contrastText: '#FFFFFF',
+    },
+    secondary: {
+      main: lightYellowColors.light, // Light yellow as secondary
       light: lightYellowColors.veryLight,
       dark: lightYellowColors.medium,
       contrastText: '#000000',
-    },
-    secondary: {
-      main: purpleColors.medium, // Purple
-      light: purpleColors.light,
-      dark: purpleColors.dark,
-      contrastText: '#FFFFFF',
     },
     background: {
       default: additionalColors.white,

@@ -21,10 +21,12 @@ import {
 import { motion } from 'framer-motion';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePathname } from 'next/navigation';
 
 const Header: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { user, logout, isAuthenticated } = useAuth();
@@ -46,6 +48,14 @@ const Header: React.FC = () => {
     handleProfileMenuClose();
   };
 
+  // Helper function to check if a menu item is active
+  const isActivePage = (href: string) => {
+    if (href === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(href);
+  };
+
   const menuItems = [
     { text: 'HOME', href: '/' },
     { text: 'PRODUCTS', href: '/products' },
@@ -56,11 +66,34 @@ const Header: React.FC = () => {
   const drawer = (
     <Box sx={{ width: 250 }}>
       <List>
-        {menuItems.map((item) => (
-          <ListItem key={item.text} component="a" href={item.href}>
-            <ListItemText primary={item.text} />
-          </ListItem>
-        ))}
+        {menuItems.map((item) => {
+          const isActive = isActivePage(item.href);
+          return (
+            <ListItem 
+              key={item.text} 
+              component="a" 
+              href={item.href}
+              sx={{
+                background: isActive ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                borderLeft: isActive ? `4px solid ${theme.palette.secondary.main}` : '4px solid transparent',
+                '&:hover': {
+                  background: 'rgba(255, 255, 255, 0.05)',
+                },
+              }}
+            >
+              <ListItemText 
+                primary={item.text}
+                sx={{
+                  '& .MuiListItemText-primary': {
+                    color: isActive ? theme.palette.secondary.main : theme.palette.primary.contrastText,
+                    fontWeight: isActive ? 700 : 400,
+                    fontSize: '1.1rem',
+                  },
+                }}
+              />
+            </ListItem>
+          );
+        })}
       </List>
     </Box>
   );
@@ -108,32 +141,47 @@ const Header: React.FC = () => {
             </IconButton>
           ) : (
             <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto', gap: 2 }}>
-              {menuItems.map((item, index) => (
-                <motion.div
-                  key={item.text}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <Button
-                    color="inherit"
-                    component="a"
-                    href={item.href}
-                    sx={{
-                      color: theme.palette.primary.contrastText,
-                      fontWeight: 500,
-                      textTransform: 'none',
-                      fontSize: '1rem',
-                      '&:hover': {
-                        color: theme.palette.primary.contrastText,
-                        background: 'rgba(0, 0, 0, 0.05)',
-                      },
-                    }}
+              {menuItems.map((item, index) => {
+                const isActive = isActivePage(item.href);
+                return (
+                  <motion.div
+                    key={item.text}
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
-                    {item.text}
-                  </Button>
-                </motion.div>
-              ))}
+                    <Button
+                      color="inherit"
+                      component="a"
+                      href={item.href}
+                      sx={{
+                        color: isActive ? theme.palette.secondary.main : theme.palette.primary.contrastText,
+                        fontWeight: isActive ? 700 : 500,
+                        textTransform: 'none',
+                        fontSize: '1rem',
+                        position: 'relative',
+                        '&:hover': {
+                          color: theme.palette.secondary.main,
+                          background: 'rgba(255, 255, 255, 0.1)',
+                        },
+                        '&::after': isActive ? {
+                          content: '""',
+                          position: 'absolute',
+                          bottom: '-8px',
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          width: '20px',
+                          height: '3px',
+                          background: theme.palette.secondary.main,
+                          borderRadius: '2px',
+                        } : {},
+                      }}
+                    >
+                      {item.text}
+                    </Button>
+                  </motion.div>
+                );
+              })}
 
               {isAuthenticated ? (
                 <motion.div
