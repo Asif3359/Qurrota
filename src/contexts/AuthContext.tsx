@@ -27,7 +27,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AUTH_USER_KEY = 'authUser';
 const AUTH_TOKEN_KEY = 'authToken';
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 // Cookie options for secure token storage
 const COOKIE_OPTIONS = {
