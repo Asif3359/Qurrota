@@ -194,7 +194,7 @@ const Header: React.FC = () => {
                     sx={{ color: theme.palette.primary.contrastText }}
                   >
                     <Avatar sx={{ width: 32, height: 32, bgcolor: theme.palette.secondary.main }}>
-                      {user?.name.charAt(0)}
+                      {user?.name?.charAt(0)}
                     </Avatar>
                   </IconButton>
                 </motion.div>
@@ -205,7 +205,7 @@ const Header: React.FC = () => {
                   transition={{ duration: 0.5 }}
                 >
                   <Button
-                    variant="contained"
+                    variant="outlined"
                     href="/login"
                     sx={{
                       background: theme.palette.primary.main,
@@ -214,12 +214,8 @@ const Header: React.FC = () => {
                       textTransform: 'none',
                       fontSize: '1rem',
                       borderRadius: '8px',
-                      px: 3,
-                      py: 1,
-                      border: `2px solid ${theme.palette.primary.contrastText}`,
                       '&:hover': {
                         background: theme.palette.primary.dark,
-                        border: `2px solid ${theme.palette.primary.contrastText}`,
                       },
                     }}
                   >

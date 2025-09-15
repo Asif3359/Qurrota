@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Paper,
@@ -12,6 +12,10 @@ import {
   InputAdornment,
   IconButton,
   Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { Visibility, VisibilityOff, Email, Lock, Person } from '@mui/icons-material';
@@ -27,8 +31,16 @@ const SignupPage: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
+  const [mounted, setMounted] = useState(false);
+  const { register, verifyEmail } = useAuth();
+  const [verifyOpen, setVerifyOpen] = useState(false);
+  const [verifyCode, setVerifyCode] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,17 +61,42 @@ const SignupPage: React.FC = () => {
     try {
       const success = await register(name, email, password);
       if (success) {
-        router.push('/');
+        setSuccessMsg('Account created. Please verify your email.');
+        setVerifyOpen(true);
       } else {
         setError('Registration failed. Please try again.');
       }
-    } catch (err) {
-      console.log(err);
-      setError('An error occurred. Please try again.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'An error occurred. Please try again.';
+      setError(message);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleVerifyEmail = async () => {
+    setError('');
+    setSuccessMsg('');
+    if (!email || !verifyCode) {
+      setError('Enter your email and code');
+      return;
+    }
+    try {
+      const ok = await (verifyEmail ? verifyEmail(email, verifyCode) : Promise.resolve(false));
+      if (ok) {
+        setSuccessMsg('Email verified! You can sign in now.');
+        setVerifyOpen(false);
+        router.push('/login');
+      } else {
+        setError('Verification failed');
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Verification failed';
+      setError(message);
+    }
+  };
+
+  if (!mounted) return null;
 
   return (
     <Box
@@ -116,15 +153,22 @@ const SignupPage: React.FC = () => {
               </Typography>
             </motion.div>
 
-            {error && (
+            {(error || successMsg) && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <Alert severity="error" sx={{ mb: 3 }}>
-                  {error}
-                </Alert>
+                {error && (
+                  <Alert severity="error" sx={{ mb: 1 }}>
+                    {error}
+                  </Alert>
+                )}
+                {successMsg && (
+                  <Alert severity="success" sx={{ mb: 1 }}>
+                    {successMsg}
+                  </Alert>
+                )}
               </motion.div>
             )}
 
@@ -365,6 +409,32 @@ const SignupPage: React.FC = () => {
           </Paper>
         </motion.div>
       </Container>
+
+      {/* Verify Email Dialog */}
+      <Dialog open={verifyOpen} onClose={() => setVerifyOpen(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Verify Email</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="normal"
+            fullWidth
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            label="Verification Code"
+            value={verifyCode}
+            onChange={(e) => setVerifyCode(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setVerifyOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleVerifyEmail}>Verify</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

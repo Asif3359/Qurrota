@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Paper,
@@ -12,6 +12,10 @@ import {
   InputAdornment,
   IconButton,
   Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { Visibility, VisibilityOff, Email, Lock } from '@mui/icons-material';
@@ -24,8 +28,20 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const [mounted, setMounted] = useState(false);
+  const { login, forgotPassword, resetPassword } = useAuth();
+  const [forgotOpen, setForgotOpen] = useState(false);
+  const [resetOpen, setResetOpen] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetCode, setResetCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,16 +52,60 @@ const LoginPage: React.FC = () => {
       const success = await login(email, password);
       if (success) {
         router.push('/');
-      } else {
-        setError('Invalid email or password. Try: user@qurrota.com / 123456');
       }
-    } catch (err) {
-      console.log(err);
-      setError('An error occurred. Please try again.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Invalid email or password';
+      setError(message);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleForgot = async () => {
+    setError('');
+    setSuccessMsg('');
+    if (!forgotEmail) {
+      setError('Please enter your email');
+      return;
+    }
+    try {
+      const ok = await (forgotPassword ? forgotPassword(forgotEmail) : Promise.resolve(false));
+      if (ok) {
+        setSuccessMsg('Reset code sent to your email');
+        setForgotOpen(false);
+        setResetEmail(forgotEmail);
+        setResetOpen(true);
+      } else {
+        setError('Failed to send reset code');
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to send reset code';
+      setError(message);
+    }
+  };
+
+  const handleReset = async () => {
+    setError('');
+    setSuccessMsg('');
+    if (!resetEmail || !resetCode || !newPassword) {
+      setError('Please fill all fields');
+      return;
+    }
+    try {
+      const ok = await (resetPassword ? resetPassword(resetEmail, resetCode, newPassword) : Promise.resolve(false));
+      if (ok) {
+        setSuccessMsg('Password reset successful. You can login now.');
+        setResetOpen(false);
+      } else {
+        setError('Password reset failed');
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Password reset failed';
+      setError(message);
+    }
+  };
+
+  if (!mounted) return null;
 
   return (
     <Box
@@ -102,15 +162,22 @@ const LoginPage: React.FC = () => {
               </Typography>
             </motion.div>
 
-            {error && (
+            {(error || successMsg) && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <Alert severity="error" sx={{ mb: 3 }}>
-                  {error}
-                </Alert>
+                {error && (
+                  <Alert severity="error" sx={{ mb: 1 }}>
+                    {error}
+                  </Alert>
+                )}
+                {successMsg && (
+                  <Alert severity="success" sx={{ mb: 1 }}>
+                    {successMsg}
+                  </Alert>
+                )}
               </motion.div>
             )}
 
@@ -256,6 +323,20 @@ const LoginPage: React.FC = () => {
                     >
                       Sign up here
                     </Link>
+                    {' '}•{' '}
+                    <Link
+                      href="#"
+                      onClick={(e) => { e.preventDefault(); setForgotOpen(true); }}
+                      sx={{
+                        color: '#9C27B0',
+                        textDecoration: 'none',
+                        fontWeight: 600,
+                        '&:hover': { color: '#FFD700' },
+                        ml: 1
+                      }}
+                    >
+                      Forgot password?
+                    </Link>
                   </Typography>
                 </Box>
               </motion.div>
@@ -263,6 +344,60 @@ const LoginPage: React.FC = () => {
           </Paper>
         </motion.div>
       </Container>
+
+      {/* Forgot Password Dialog */}
+      <Dialog open={forgotOpen} onClose={() => setForgotOpen(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Forgot Password</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="normal"
+            fullWidth
+            label="Email"
+            type="email"
+            value={forgotEmail}
+            onChange={(e) => setForgotEmail(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setForgotOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleForgot}>Send Code</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Reset Password Dialog */}
+      <Dialog open={resetOpen} onClose={() => setResetOpen(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Reset Password</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="normal"
+            fullWidth
+            label="Email"
+            type="email"
+            value={resetEmail}
+            onChange={(e) => setResetEmail(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            label="Verification Code"
+            value={resetCode}
+            onChange={(e) => setResetCode(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            label="New Password"
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setResetOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleReset}>Reset</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
