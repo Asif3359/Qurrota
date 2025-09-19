@@ -7,8 +7,9 @@ interface User {
   id?: string;
   name?: string;
   email: string;
-  role?: 'parent' | 'admin';
-  avatar?: string;
+  role?: 'user' | 'admin' | 'moderator';
+  image?: string;
+
 }
 
 interface AuthContextType {
@@ -16,7 +17,9 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   register: (name: string, email: string, password: string) => Promise<boolean>;
+  updateUser: (userData: Partial<User>) => void;
   isAuthenticated: boolean;
+  isReady: boolean;
   // Optional helpers for future screens
   verifyEmail?: (email: string, code: string) => Promise<boolean>;
   forgotPassword?: (email: string) => Promise<boolean>;
@@ -40,6 +43,7 @@ const COOKIE_OPTIONS = {
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [isReady, setIsReady] = useState<boolean>(false);
 
   const buildHeaders = (base: Record<string, string> = { 'Content-Type': 'application/json' }): HeadersInit => {
     const headers: Record<string, string> = { ...base };
@@ -71,6 +75,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch {
       // ignore
     }
+    setIsReady(true);
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
@@ -99,7 +104,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         name: apiUser.name,
         email: apiUser.email ?? email,
         role: apiUser.role,
-        avatar: apiUser.avatar
+        image: apiUser.image
       };
 
       setUser(normalizedUser);
@@ -158,7 +163,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         name: apiUser.name ?? name,
         email: apiUser.email ?? email,
         role: apiUser.role,
-        avatar: apiUser.avatar
+        image: apiUser.image
       };
 
       setUser(newUser);
@@ -212,12 +217,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const updateUser = (userData: Partial<User>) => {
+    if (user) {
+      setUser({ ...user, ...userData });
+      // Update localStorage as well
+      localStorage.setItem(AUTH_USER_KEY, JSON.stringify({ ...user, ...userData }));
+    }
+  };
+
   const value: AuthContextType = {
     user,
     login,
     logout,
     register,
+    updateUser,
     isAuthenticated: !!user,
+    isReady,
     verifyEmail,
     forgotPassword,
     resetPassword
