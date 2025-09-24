@@ -10,6 +10,7 @@ import {
   Drawer,
   List,
   ListItem,
+  ListItemButton,
   ListItemText,
   Box,
   Avatar,
@@ -17,6 +18,7 @@ import {
   MenuItem,
   useTheme,
   useMediaQuery,
+  Divider,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -51,7 +53,7 @@ const Header: React.FC = () => {
 
   const handleGoToProfile = () => {
     handleProfileMenuClose();
-    router.push('/profile');
+    router.push('/dashboard');
   };
 
   const handleLogoutClick = () => {
@@ -100,63 +102,134 @@ const Header: React.FC = () => {
     { text: 'CONTACT', href: '/contact' },
   ];
 
+  const authMenuItems = [
+    { text: 'LOGIN', href: '/login' }
+  ];
+
   const drawer = (
-    <Box sx={{ width: 250 }}>
-      <List>
+    <Box sx={{ width: 250, display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <List sx={{ py: 1 }}>
         {menuItems.map((item) => {
           const isActive = isActivePage(item.href);
           return (
-            <ListItem 
-              key={item.text} 
-              component="a" 
-              href={item.href}
-              sx={{
-                background: isActive ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                borderLeft: isActive ? `4px solid ${theme.palette.secondary.main}` : '4px solid transparent',
-                '&:hover': {
-                  background: 'rgba(255, 255, 255, 0.05)',
-                },
-              }}
-            >
-              <ListItemText 
-                primary={item.text}
+            <ListItem key={item.text} disablePadding>
+              <ListItemButton
+                onClick={() => { router.push(item.href); setMobileOpen(false); }}
                 sx={{
-                  '& .MuiListItemText-primary': {
-                    color: isActive ? theme.palette.secondary.main : theme.palette.primary.contrastText,
-                    fontWeight: isActive ? 700 : 400,
-                    fontSize: '1.1rem',
-                  },
+                  background: isActive ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                  borderLeft: isActive ? `4px solid ${theme.palette.secondary.main}` : '4px solid transparent',
+                  '&:hover': { background: 'rgba(255, 255, 255, 0.05)' },
                 }}
-              />
+              >
+                <ListItemText 
+                  primary={item.text}
+                  sx={{
+                    '& .MuiListItemText-primary': {
+                      color: isActive ? theme.palette.secondary.main : theme.palette.primary.contrastText,
+                      fontWeight: isActive ? 700 : 400,
+                      fontSize: '1.1rem',
+                    },
+                  }}
+                />
+              </ListItemButton>
             </ListItem>
           );
         })}
         {isAuthenticated && (
-          <ListItem 
-            key={'DASHBOARD'} 
-            component="a" 
-            href={'/dashboard'}
-            sx={{
-              background: isActivePage('/dashboard') ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-              borderLeft: isActivePage('/dashboard') ? `4px solid ${theme.palette.secondary.main}` : '4px solid transparent',
-              '&:hover': {
-                background: 'rgba(255, 255, 255, 0.05)',
-              },
-            }}
-          >
-            <ListItemText 
-              primary={'DASHBOARD'}
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => { router.push('/dashboard'); setMobileOpen(false); }}
               sx={{
-                '& .MuiListItemText-primary': {
-                  color: isActivePage('/dashboard') ? theme.palette.secondary.main : theme.palette.primary.contrastText,
-                  fontWeight: isActivePage('/dashboard') ? 700 : 400,
-                  fontSize: '1.1rem',
-                },
+                background: isActivePage('/dashboard') ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                borderLeft: isActivePage('/dashboard') ? `4px solid ${theme.palette.secondary.main}` : '4px solid transparent',
+                '&:hover': { background: 'rgba(255, 255, 255, 0.05)' },
               }}
-            />
+            >
+              <ListItemText 
+                primary={'DASHBOARD'}
+                sx={{
+                  '& .MuiListItemText-primary': {
+                    color: isActivePage('/dashboard') ? theme.palette.secondary.main : theme.palette.primary.contrastText,
+                    fontWeight: isActivePage('/dashboard') ? 700 : 400,
+                    fontSize: '1.1rem',
+                  },
+                }}
+              />
+            </ListItemButton>
           </ListItem>
         )}
+        {!isAuthenticated && (
+          authMenuItems.map((item) => (
+            <ListItem key={item.text} disablePadding>
+              <ListItemButton
+                onClick={() => { router.push(item.href); setMobileOpen(false); }}
+                sx={{
+                  background: isActivePage(item.href) ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                  borderLeft: isActivePage(item.href) ? `4px solid ${theme.palette.secondary.main}` : '4px solid transparent',
+                  '&:hover': { background: 'rgba(255, 255, 255, 0.05)' },
+                }}
+              >
+                <ListItemText 
+                  primary={item.text}
+                  sx={{
+                    '& .MuiListItemText-primary': {
+                      // color: isActivePage(item.href) ? theme.palette.secondary.main : theme.palette.primary.contrastText,
+                      color: 'black',
+                      fontWeight: isActivePage(item.href) ? 700 : 400,
+                      fontSize: '1.1rem',
+                    },
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))
+        )}
       </List>
+
+      {isAuthenticated && (
+        <Box sx={{ mt: 'auto', p: 2 }}>
+          <Divider sx={{ mb: 2, borderColor: 'rgba(255,255,255,0.2)' }} />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+            <Avatar src={user?.image} />
+            <Box>
+              <Typography variant="subtitle2" sx={{ color: theme.palette.primary.contrastText, fontWeight: 600 }}>
+                {user?.name}
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                {user?.email}
+              </Typography>
+            </Box>
+          </Box>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1 }}>
+            <Button
+              variant="outlined"
+              onClick={() => { router.push('/dashboard'); setMobileOpen(false); }}
+              sx={{
+                color: theme.palette.primary.contrastText,
+                borderColor: 'rgba(255,255,255,0.6)',
+                '&:hover': { borderColor: theme.palette.primary.contrastText, background: 'rgba(255,255,255,0.08)' },
+                textTransform: 'none',
+                fontWeight: 600,
+              }}
+            >
+              Profile
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={handleLogoutClick}
+              sx={{
+                color: theme.palette.primary.contrastText,
+                borderColor: 'rgba(255,255,255,0.6)',
+                '&:hover': { borderColor: theme.palette.primary.contrastText, background: 'rgba(255,255,255,0.08)' },
+                textTransform: 'none',
+                fontWeight: 600,
+              }}
+            >
+              Logout
+            </Button>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 

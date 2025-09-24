@@ -19,18 +19,14 @@ import {
   Dashboard,
   Person,
   ShoppingCart,
-  History,
   Favorite,
-  Settings,
-  Security,
   Support,
-  Notifications,
-  Payment,
   Logout,
 } from "@mui/icons-material";
 import { useAuth } from "@/contexts/AuthContext";
 import { appGradients } from "@/theme/colors";
 import LogoutConfirmationModal from "@/components/ui/LogoutConfirmationModal";
+import { useRouter } from "next/navigation";
 
 interface DashboardDrawerProps {
   open: boolean;
@@ -47,6 +43,7 @@ const DashboardDrawer: React.FC<DashboardDrawerProps> = React.memo(
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
     const { user, logout } = useAuth();
+    const router = useRouter();
     
     // Logout confirmation modal state
     const [logoutModalOpen, setLogoutModalOpen] = React.useState(false);
@@ -68,59 +65,59 @@ const DashboardDrawer: React.FC<DashboardDrawerProps> = React.memo(
       {
         label: "Orders",
         icon: <ShoppingCart />,
-        path: "/orders",
-        active: currentPath === "/orders",
+        path: "/dashboard/user/orders",
+        active: currentPath === "/dashboard/user/orders",
       },
-      {
-        label: "Order History",
-        icon: <History />,
-        path: "/order-history",
-        active: currentPath === "/order-history",
-      },
+      // {
+      //   label: "Order History",
+      //   icon: <History />,
+      //   path: "/order-history",
+      //   active: currentPath === "/order-history",
+      // },
       {
         label: "Wishlist",
         icon: <Favorite />,
-        path: "/wishlist",
-        active: currentPath === "/wishlist",
+        path: "/dashboard/user/wishlist",
+        active: currentPath === "/dashboard/user/wishlist",
       },
-      {
-        label: "Notifications",
-        icon: <Notifications />,
-        path: "/notifications",
-        active: currentPath === "/notifications",
-      },
+      // {
+      //   label: "Notifications",
+      //   icon: <Notifications />,
+      //   path: "/notifications",
+      //   active: currentPath === "/notifications",
+      // },
     ];
 
     const settingsItems = [
-      {
-        label: "Payment Methods",
-        icon: <Payment />,
-        path: "/payment-methods",
-        active: currentPath === "/payment-methods",
-      },
-      {
-        label: "Settings",
-        icon: <Settings />,
-        path: "/settings",
-        active: currentPath === "/settings",
-      },
-      {
-        label: "Security",
-        icon: <Security />,
-        path: "/security",
-        active: currentPath === "/security",
-      },
+      // {
+      //   label: "Payment Methods",
+      //   icon: <Payment />,
+      //   path: "/payment-methods",
+      //   active: currentPath === "/payment-methods",
+      // },
+      // {
+      //   label: "Settings",
+      //   icon: <Settings />,
+      //   path: "/settings",
+      //   active: currentPath === "/settings",
+      // },
+      // {
+      //   label: "Security",
+      //   icon: <Security />,
+      //   path: "/security",
+      //   active: currentPath === "/security",
+      // },
       {
         label: "Support",
         icon: <Support />,
-        path: "/support",
-        active: currentPath === "/support",
+        path: "/dashboard/user/support",
+        active: currentPath === "/dashboard/user/support",
       },
     ];
 
     const handleNavigation = (path: string) => {
       if (path.startsWith("/")) {
-        window.location.href = path;
+        router.push(path);
       }
       if (isMobile) {
         onClose();
@@ -135,7 +132,7 @@ const DashboardDrawer: React.FC<DashboardDrawerProps> = React.memo(
       try {
         setIsLoggingOut(true);
         logout();
-        window.location.href = "/login";
+        router.push("/login");
       } catch (error) {
         console.error('Logout error:', error);
         setIsLoggingOut(false);

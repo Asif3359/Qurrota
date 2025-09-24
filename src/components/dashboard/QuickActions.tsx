@@ -6,13 +6,11 @@ import QuickActionButton from './QuickActionButton';
 import { 
   ShoppingCart, 
   Person, 
-  Settings, 
   Support,
   History,
   Favorite,
-  Payment,
-  Security
 } from '@mui/icons-material';
+import { useRouter } from 'next/navigation';
 
 interface QuickActionsProps {
   onActionClick?: (action: string) => void;
@@ -20,7 +18,7 @@ interface QuickActionsProps {
 
 const QuickActions: React.FC<QuickActionsProps> = React.memo(({ onActionClick }) => {
   const theme = useTheme();
-
+  const router = useRouter();
   const actions = useMemo(() => [
     {
       icon: <ShoppingCart />,
@@ -36,8 +34,8 @@ const QuickActions: React.FC<QuickActionsProps> = React.memo(({ onActionClick })
     },
     {
       icon: <History />,
-      label: 'Order History',
-      action: 'order_history',
+      label: 'Orders',
+      action: 'orders',
       variant: 'outlined' as const,
     },
     {
@@ -46,24 +44,24 @@ const QuickActions: React.FC<QuickActionsProps> = React.memo(({ onActionClick })
       action: 'wishlist',
       variant: 'outlined' as const,
     },
-    {
-      icon: <Payment />,
-      label: 'Payment Methods',
-      action: 'payment_methods',
-      variant: 'outlined' as const,
-    },
-    {
-      icon: <Settings />,
-      label: 'Settings',
-      action: 'settings',
-      variant: 'outlined' as const,
-    },
-    {
-      icon: <Security />,
-      label: 'Security',
-      action: 'security',
-      variant: 'outlined' as const,
-    },
+    // {
+    //   icon: <Payment />,
+    //   label: 'Payment Methods',
+    //   action: 'payment_methods',
+    //   variant: 'outlined' as const,
+    // },
+    // {
+    //   icon: <Settings />,
+    //   label: 'Settings',
+    //   action: 'settings',
+    //   variant: 'outlined' as const,
+    // },
+    // {
+    //   icon: <Security />,
+    //   label: 'Security',
+    //   action: 'security',
+    //   variant: 'outlined' as const,
+    // },
     {
       icon: <Support />,
       label: 'Support',
@@ -79,16 +77,18 @@ const QuickActions: React.FC<QuickActionsProps> = React.memo(({ onActionClick })
       // Default navigation logic
       switch (action) {
         case 'new_order':
-          window.location.href = '/products';
+          router.push('/products');
           break;
         case 'edit_profile':
-          window.location.href = '/profile';
+          router.push('/dashboard/user/profile');
           break;
-        case 'order_history':
+        case 'orders':
           // Navigate to order history
+          router.push('/dashboard/user/orders');
           break;
         case 'wishlist':
           // Navigate to wishlist
+          router.push('/dashboard/user/wishlist');
           break;
         case 'payment_methods':
           // Navigate to payment methods
@@ -100,7 +100,7 @@ const QuickActions: React.FC<QuickActionsProps> = React.memo(({ onActionClick })
           // Navigate to security settings
           break;
         case 'support':
-          window.location.href = '/contact';
+          router.push('/dashboard/user/support');
           break;
         default:
           break;

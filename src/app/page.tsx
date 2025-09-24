@@ -13,7 +13,15 @@ import JoinUsSection from '@/components/sections/JoinUsSection';
 
 export default function HomePage() {
   return (
-    <Box sx={{ minHeight: '100vh', position: 'relative' }}>
+    <Box
+      sx={{
+        minHeight: '100dvh',
+        position: 'relative',
+        overflowX: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       {/* Animated Background */}
       <AnimatedBackground />
       
@@ -21,7 +29,11 @@ export default function HomePage() {
       <Header />
       
       {/* Main Content */}
-      <Box sx={{ pt: 8 }}> {/* Add padding top to account for fixed header */}
+      <Box
+        sx={{
+          pt: { xs: 5, sm: 6, md: 7 },
+        }}
+      >
         <HeroSection />
         <ProductsSection />
         <StorySection />

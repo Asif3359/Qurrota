@@ -36,7 +36,13 @@ export default function UserDashboardPage() {
         router.push('/dashboard/user/profile');
         break;
       case 'support':
-        router.push('/contact');
+        router.push('/dashboard/user/support');
+        break;
+      case 'wishlist':
+        router.push('/dashboard/user/wishlist');
+        break;
+      case 'orders':
+        router.push('/dashboard/user/orders');
         break;
       default:
         // Handle other actions
@@ -111,20 +117,20 @@ export default function UserDashboardPage() {
             <Box>
               {/* Profile Summary and Stats */}
               <Box
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: {
-                    xs: '1fr',
-                    sm: '1fr',
-                    md: '1fr 1fr',
-                    lg: '1fr 2fr',
-                  },
-                  gap: { xs: 3, sm: 4, md: 4, lg: 4 },
-                  mb: { xs: 4, sm: 5, md: 6 },
-                }}
+                // sx={{
+                //   display: 'grid',
+                //   gridTemplateColumns: {
+                //     xs: '1fr',
+                //     sm: '1fr',
+                //     md: '1fr 1fr',
+                //     lg: '1fr 2fr',
+                //   },
+                //   gap: { xs: 3, sm: 4, md: 4, lg: 4 },
+                //   mb: { xs: 4, sm: 5, md: 6 },
+                // }}
               >
                 <UserProfileSummary onEditProfile={handleEditProfile} />
-                <StatsOverview userStats={userStats} />
+                {/* <StatsOverview userStats={userStats} /> */}
               </Box>
 
               {/* Quick Actions */}
@@ -133,7 +139,7 @@ export default function UserDashboardPage() {
               </Box>
 
               {/* Recent Activity */}
-              <RecentActivity />
+              {/* <RecentActivity /> */}
             </Box>
           </Fade>
         </Container>

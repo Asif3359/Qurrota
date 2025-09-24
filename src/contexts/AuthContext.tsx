@@ -3,13 +3,13 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import Cookies from 'js-cookie';
 
-interface User {
+export interface User {
   id?: string;
   name?: string;
   email: string;
   role?: 'user' | 'admin' | 'moderator';
   image?: string;
-
+  bio?: string;
 }
 
 interface AuthContextType {
@@ -104,7 +104,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         name: apiUser.name,
         email: apiUser.email ?? email,
         role: apiUser.role,
-        image: apiUser.image
+        image: apiUser.image,
+        bio: apiUser.bio
       };
 
       setUser(normalizedUser);
@@ -163,7 +164,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         name: apiUser.name ?? name,
         email: apiUser.email ?? email,
         role: apiUser.role,
-        image: apiUser.image
+        image: apiUser.image,
+        bio: apiUser.bio
       };
 
       setUser(newUser);

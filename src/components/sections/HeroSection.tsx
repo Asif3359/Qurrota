@@ -37,7 +37,7 @@ const HeroSection: React.FC = () => {
       title: "Welcome to Qurrota Kids",
       description:
         "Discover premium products for kids and new mothers. Quality, safety, and joy in every item we offer.",
-      poster: "/images/ad1-poster.jpg", // Optional poster image
+      poster: "/videos/1.png", // Optional poster image
       actions: [
         {
           text: "Shop Now",
@@ -57,7 +57,7 @@ const HeroSection: React.FC = () => {
       title: "Safe & Healthy Products",
       description:
         "100% safe materials for your little ones and new mothers with the best quality products for your baby and new mother",
-      poster: "/images/ad2-poster.jpg", // Optional poster image
+      poster: "/videos/2.png", // Optional poster image
       actions: [
         {
           text: "Shop Now",
@@ -77,7 +77,7 @@ const HeroSection: React.FC = () => {
       title: "Fast Delivery Service",
       description:
         "Quick and reliable shipping nationwide with the best quality products for your baby and new mother with the best quality products for your baby and new mother",
-      poster: "/images/ad3-poster.jpg", // Optional poster image
+      poster: "/videos/2.png", // Optional poster image
       actions: [
         {
           text: "Shop Now",

@@ -24,6 +24,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { appGradients } from '@/theme/colors';
 import LogoutConfirmationModal from '@/components/ui/LogoutConfirmationModal';
+import { useRouter } from 'next/navigation';
 
 interface DashboardHeaderProps {
   onMenuClick: () => void;
@@ -32,12 +33,12 @@ interface DashboardHeaderProps {
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = React.memo(({
   onMenuClick,
-  title = 'Dashboard'
+  title = 'Qurrota Kids'
 }) => {
   const theme = useTheme();
   const { user, logout } = useAuth();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  
+  const router = useRouter();
   // Logout confirmation modal state
   const [logoutModalOpen, setLogoutModalOpen] = React.useState(false);
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
@@ -59,7 +60,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = React.memo(({
     try {
       setIsLoggingOut(true);
       logout();
-      window.location.href = '/login';
+      router.push('/login');
     } catch (error) {
       console.error('Logout error:', error);
       setIsLoggingOut(false);
@@ -72,12 +73,12 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = React.memo(({
   };
 
   const handleProfile = () => {
-    window.location.href = '/profile';
+    router.push('/dashboard/user/profile');
     handleProfileMenuClose();
   };
 
   const handleSettings = () => {
-    window.location.href = '/settings';
+    router.push('/dashboard/user/settings');
     handleProfileMenuClose();
   };
 
@@ -131,9 +132,11 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = React.memo(({
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
+              cursor: 'pointer',
             }}
+            onClick={() => router.push('/')}
           >
-            {title}
+            Qurrota Kids
           </Typography>
         </Box>
 
@@ -213,10 +216,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = React.memo(({
               <AccountCircle sx={{ mr: 2 }} />
               Profile
             </MenuItem>
-            <MenuItem onClick={handleSettings}>
+            {/* <MenuItem onClick={handleSettings}>
               <Settings sx={{ mr: 2 }} />
               Settings
-            </MenuItem>
+            </MenuItem> */}
             <Divider />
             <MenuItem onClick={handleLogoutClick} sx={{ color: theme.palette.error.main }}>
               <Logout sx={{ mr: 2 }} />
