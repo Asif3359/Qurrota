@@ -25,6 +25,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePathname, useRouter } from 'next/navigation';
 import LogoutConfirmationModal from '@/components/ui/LogoutConfirmationModal';
+import Link from 'next/link';
 
 const Header: React.FC = () => {
   const theme = useTheme();
@@ -34,6 +35,12 @@ const Header: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { user, logout, isAuthenticated } = useAuth();
+  const getDashboardPathForRole = () => {
+    const role = user?.role;
+    if (role === 'admin') return '/dashboard/admin';
+    if (role === 'moderator') return '/dashboard/moderator';
+    return '/dashboard/user';
+  };
   
   // Logout confirmation modal state
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
@@ -53,7 +60,7 @@ const Header: React.FC = () => {
 
   const handleGoToProfile = () => {
     handleProfileMenuClose();
-    router.push('/dashboard');
+    router.push(getDashboardPathForRole());
   };
 
   const handleLogoutClick = () => {
@@ -138,7 +145,7 @@ const Header: React.FC = () => {
         {isAuthenticated && (
           <ListItem disablePadding>
             <ListItemButton
-              onClick={() => { router.push('/dashboard'); setMobileOpen(false); }}
+              onClick={() => { router.push(getDashboardPathForRole()); setMobileOpen(false); }}
               sx={{
                 background: isActivePage('/dashboard') ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
                 borderLeft: isActivePage('/dashboard') ? `4px solid ${theme.palette.secondary.main}` : '4px solid transparent',
@@ -287,7 +294,7 @@ const Header: React.FC = () => {
                   >
                     <Button
                       color="inherit"
-                      component="a"
+                      component={Link}
                       href={item.href}
                       sx={{
                         color: isActive ? theme.palette.secondary.main : theme.palette.primary.contrastText,
@@ -326,8 +333,8 @@ const Header: React.FC = () => {
                 >
                   <Button
                     color="inherit"
-                    component="a"
-                    href={'/dashboard'}
+                    component={Link}
+                    href={getDashboardPathForRole()}
                     sx={{
                       color: isActivePage('/dashboard') ? theme.palette.secondary.main : theme.palette.primary.contrastText,
                       fontWeight: isActivePage('/dashboard') ? 700 : 500,
@@ -379,6 +386,7 @@ const Header: React.FC = () => {
                 >
                   <Button
                     variant="outlined"
+                    component={Link}
                     href="/login"
                     sx={{
                       background: theme.palette.primary.main,

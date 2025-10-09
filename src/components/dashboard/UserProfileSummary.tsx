@@ -6,7 +6,7 @@ import DashboardCard from "./DashboardCard";
 import { Edit, Verified } from "@mui/icons-material";
 import { useAuth } from "@/contexts/AuthContext";
 import { User } from "@/contexts/AuthContext";
-import { getAuthToken } from "@/app/dashboard/user/profile/page";
+import { getAuthToken } from "@/components/profile/profile";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 

@@ -73,12 +73,22 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = React.memo(({
   };
 
   const handleProfile = () => {
-    router.push('/dashboard/user/profile');
+    const roleBasePath = user?.role === 'admin'
+      ? '/dashboard/admin'
+      : user?.role === 'moderator'
+        ? '/dashboard/moderator'
+        : '/dashboard/user';
+    router.push(`${roleBasePath}/profile`);
     handleProfileMenuClose();
   };
 
   const handleSettings = () => {
-    router.push('/dashboard/user/settings');
+    const roleBasePath = user?.role === 'admin'
+      ? '/dashboard/admin'
+      : user?.role === 'moderator'
+        ? '/dashboard/moderator'
+        : '/dashboard/user';
+    router.push(`${roleBasePath}/settings`);
     handleProfileMenuClose();
   };
 

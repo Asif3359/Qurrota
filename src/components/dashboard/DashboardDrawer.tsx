@@ -22,6 +22,7 @@ import {
   Favorite,
   Support,
   Logout,
+  AdminPanelSettings,
 } from "@mui/icons-material";
 import { useAuth } from "@/contexts/AuthContext";
 import { appGradients } from "@/theme/colors";
@@ -49,70 +50,80 @@ const DashboardDrawer: React.FC<DashboardDrawerProps> = React.memo(
     const [logoutModalOpen, setLogoutModalOpen] = React.useState(false);
     const [isLoggingOut, setIsLoggingOut] = React.useState(false);
 
+    const roleBasePath = user?.role === 'admin'
+      ? '/dashboard/admin'
+      : user?.role === 'moderator'
+        ? '/dashboard/moderator'
+        : '/dashboard/user';
+
+    const isUser = user?.role === 'user';
+    const isAdmin = user?.role === 'admin';
+    const isModerator = user?.role === 'moderator';
+
     const navigationItems = [
       {
         label: "Dashboard",
         icon: <Dashboard />,
-        path: "/dashboard/user",
-        active: currentPath === "/dashboard/user",
+        path: roleBasePath,
+        active: currentPath === roleBasePath,
       },
-      {
-        label: "Profile",
-        icon: <Person />,
-        path: "/dashboard/user/profile",
-        active: currentPath === "/dashboard/user/profile",
-      },
-      {
-        label: "Orders",
-        icon: <ShoppingCart />,
-        path: "/dashboard/user/orders",
-        active: currentPath === "/dashboard/user/orders",
-      },
-      // {
-      //   label: "Order History",
-      //   icon: <History />,
-      //   path: "/order-history",
-      //   active: currentPath === "/order-history",
-      // },
-      {
-        label: "Wishlist",
-        icon: <Favorite />,
-        path: "/dashboard/user/wishlist",
-        active: currentPath === "/dashboard/user/wishlist",
-      },
-      // {
-      //   label: "Notifications",
-      //   icon: <Notifications />,
-      //   path: "/notifications",
-      //   active: currentPath === "/notifications",
-      // },
+      ...(
+        isAdmin
+          ? [
+              {
+                label: "Profile",
+                icon: <Person />,
+                path: `${roleBasePath}/profile`,
+                active: currentPath === `${roleBasePath}/profile`,
+              },
+              {
+                label: "Product",
+                icon: <ShoppingCart />,
+                path: `${roleBasePath}/product`,
+                active: currentPath === `${roleBasePath}/product`,
+              }
+            ]
+          : []
+      ),
+      ...(
+        isUser
+          ? [
+              {
+                label: "Profile",
+                icon: <Person />,
+                path: `${roleBasePath}/profile`,
+                active: currentPath === `${roleBasePath}/profile`,
+              },
+              {
+                label: "Orders",
+                icon: <ShoppingCart />,
+                path: `${roleBasePath}/orders`,
+                active: currentPath === `${roleBasePath}/orders`,
+              },
+              {
+                label: "Wishlist",
+                icon: <Favorite />,
+                path: `${roleBasePath}/wishlist`,
+                active: currentPath === `${roleBasePath}/wishlist`,
+              },
+            ]
+          : []
+      ),
     ];
 
     const settingsItems = [
-      // {
-      //   label: "Payment Methods",
-      //   icon: <Payment />,
-      //   path: "/payment-methods",
-      //   active: currentPath === "/payment-methods",
-      // },
-      // {
-      //   label: "Settings",
-      //   icon: <Settings />,
-      //   path: "/settings",
-      //   active: currentPath === "/settings",
-      // },
-      // {
-      //   label: "Security",
-      //   icon: <Security />,
-      //   path: "/security",
-      //   active: currentPath === "/security",
-      // },
-      {
-        label: "Support",
-        icon: <Support />,
-        path: "/dashboard/user/support",
-        active: currentPath === "/dashboard/user/support",
-      },
+      ...(
+        isUser
+          ? [
+              {
+                label: "Support",
+                icon: <Support />,
+                path: `${roleBasePath}/support`,
+                active: currentPath === `${roleBasePath}/support`,
+              },
+            ]
+          : []
+      ),
     ];
 
     const handleNavigation = (path: string) => {
