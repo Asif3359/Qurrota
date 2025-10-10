@@ -135,7 +135,7 @@ export default function ProductPage() {
     }
   );
 
-  const apiBase = 'http://localhost:3000/api/products';
+  const apiBase = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products`;
 
   const authHeaders = React.useCallback((contentType?: string): HeadersInit => {
     const token = Cookies.get('authToken');

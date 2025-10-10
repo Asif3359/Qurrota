@@ -105,8 +105,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const apiBase = 'http://localhost:3000/api/cart';
-  const productsApiBase = 'http://localhost:3000/api/products';
+  const apiBase = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cart`;
+  const productsApiBase = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products`;
 
   // Get user ID from multiple sources
   const getUserId = (): string | null => {

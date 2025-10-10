@@ -78,7 +78,7 @@ const ProductsSection: React.FC = () => {
   const [wishlistItems, setWishlistItems] = React.useState<Set<string>>(new Set());
   const [loadingStates, setLoadingStates] = React.useState<{[key: string]: boolean}>({});
 
-  const apiBase =  "http://localhost:3000/api/products/published";
+  const apiBase =  `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products/published`;
 
     const getProducts = React.useCallback(async (): Promise<void> => {
       try {
