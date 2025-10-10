@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Box,
   Container,
@@ -17,12 +17,55 @@ import { motion } from 'framer-motion';
 import { ShoppingCart, Favorite, Star } from '@mui/icons-material';
 import { getRgbaColor } from '@/theme/colors';
 
+type Product = {
+  _id: string;
+  name: string;
+  slug?: string;
+  brand?: string;
+  price: number;
+  stock?: number;
+  isPublished?: boolean;
+  updatedAt?: string;
+  currency?:string;
+  images:Array<{ url: string; alt: string }>;
+  ratingCount:number;
+};
+
 const ProductsSection: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [loading, setLoading]=React.useState(false);
+  const [error, setError]= React.useState<string | null>(null);
+  const [products, setProducts] = React.useState<Product[]>([]);
 
-  const products = [
+  const apiBase =  "http://localhost:3000/api/products/published";
+
+    const getProducts = React.useCallback(async (): Promise<void> => {
+      try {
+        setLoading(true);
+        setError(null);
+        const [pubRes] = await Promise.all([
+          fetch(`${apiBase}`, { cache: 'no-store' }),
+        ]);
+        if (!pubRes.ok) throw new Error('Failed to load products');
+        const pubData = await pubRes.json();
+        // console.log(pubData.data)
+        setProducts(pubData.data ?? []);
+
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : 'Something went wrong';
+        setError(message);
+      } finally {
+        setLoading(false);
+      }
+    }, []);
+
+  React.useEffect(() => {
+    getProducts();
+  }, [getProducts]);
+
+  const productss = [
     {
       id: 1,
       name: 'Organic Baby Onesie',
@@ -144,7 +187,7 @@ const ProductsSection: React.FC = () => {
           gap: { xs: 2, sm: 3, md: 3 }
         }}>
           {products.map((product, index) => (
-            <Box key={product.id}>
+            <Box key={product._id}>
               <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -171,7 +214,7 @@ const ProductsSection: React.FC = () => {
                   <Box sx={{ position: 'relative' }}>
                     <CardMedia
                       component="img"
-                      image={product.image}
+                      image={product.images[0].url}
                       alt={product.name}
                       sx={{ 
                         objectFit: 'cover', 
@@ -179,6 +222,7 @@ const ProductsSection: React.FC = () => {
                         height: { xs: '180px', sm: '200px', md: '220px' }
                       }}
                     />
+                    {/* <Typography>{product.images[0].url}</Typography> */}
                     
                     {/* Badges */}
                     <Box sx={{ 
@@ -279,7 +323,7 @@ const ProductsSection: React.FC = () => {
                             key={i}
                             sx={{
                               fontSize: { xs: 14, sm: 16 },
-                              color: i < Math.floor(product.rating) ? '#FFD700' : '#ddd',
+                              color: i < Math.floor(product.ratingCount) ? '#FFD700' : '#ddd',
                             }}
                           />
                         ))}
@@ -289,7 +333,7 @@ const ProductsSection: React.FC = () => {
                         color="text.secondary"
                         sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
                       >
-                        ({product.rating})
+                        ({product.ratingCount})
                       </Typography>
                     </Box>
 
@@ -308,7 +352,7 @@ const ProductsSection: React.FC = () => {
                           fontSize: { xs: '1rem', sm: '1.25rem' },
                         }}
                       >
-                        ${product.price}
+                        {product.price} {product.currency}
                       </Typography>
                       
                       <Button
