@@ -100,11 +100,17 @@ const DashboardDrawer: React.FC<DashboardDrawerProps> = React.memo(
                 path: `${roleBasePath}/orders`,
                 active: currentPath === `${roleBasePath}/orders`,
               },
+              // {
+              //   label: "Wishlist",
+              //   icon: <Favorite />,
+              //   path: `${roleBasePath}/wishlist`,
+              //   active: currentPath === `${roleBasePath}/wishlist`,
+              // },
               {
-                label: "Wishlist",
-                icon: <Favorite />,
-                path: `${roleBasePath}/wishlist`,
-                active: currentPath === `${roleBasePath}/wishlist`,
+                label: "Cart",
+                icon: <ShoppingCart />,
+                path: `${roleBasePath}/cart`,
+                active: currentPath === `${roleBasePath}/cart`,
               },
             ]
           : []
@@ -118,8 +124,10 @@ const DashboardDrawer: React.FC<DashboardDrawerProps> = React.memo(
               {
                 label: "Support",
                 icon: <Support />,
-                path: `${roleBasePath}/support`,
-                active: currentPath === `${roleBasePath}/support`,
+                // path: `${roleBasePath}/support`,
+                // active: currentPath === `${roleBasePath}/support`,
+                path: "/contact",
+                active: currentPath === "/contact",
               },
             ]
           : []

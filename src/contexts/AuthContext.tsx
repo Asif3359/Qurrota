@@ -14,6 +14,7 @@ export interface User {
 
 interface AuthContextType {
   user: User | null;
+  token: string | null;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   register: (name: string, email: string, password: string) => Promise<boolean>;
@@ -54,26 +55,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Rehydrate user from storage on mount
   useEffect(() => {
     try {
+      console.log('AuthContext: Rehydrating user from storage...');
+      
       // Try to get user from sessionStorage first (for current session)
       const storedUser = typeof window !== 'undefined' ? sessionStorage.getItem(AUTH_USER_KEY) : null;
       if (storedUser) {
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        console.log('AuthContext: Found user in sessionStorage:', parsedUser);
+        setUser(parsedUser);
       }
       
       // Try to get token from cookies (persists across sessions)
       const cookieToken = Cookies.get(AUTH_TOKEN_KEY);
       if (cookieToken) {
+        console.log('AuthContext: Found token in cookies');
         setToken(cookieToken);
         // If we have a token but no user in sessionStorage, try to get user from cookie too
         if (!storedUser) {
           const cookieUser = Cookies.get(AUTH_USER_KEY);
           if (cookieUser) {
-            setUser(JSON.parse(cookieUser));
+            const parsedCookieUser = JSON.parse(cookieUser);
+            console.log('AuthContext: Found user in cookies:', parsedCookieUser);
+            setUser(parsedCookieUser);
           }
         }
       }
-    } catch {
-      // ignore
+      
+      console.log('AuthContext: Final state - user:', user, 'token:', token ? 'present' : 'missing');
+    } catch (error) {
+      console.error('AuthContext: Error rehydrating user:', error);
     }
     setIsReady(true);
   }, []);
@@ -99,8 +109,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const apiUser = data?.user || {};
       const apiToken: string | undefined = data?.token || data?.accessToken;
 
+      console.log('AuthContext: Login response data:', data);
+      console.log('AuthContext: API user data:', apiUser);
+      console.log('AuthContext: API token:', apiToken ? 'present' : 'missing');
+
+      // Extract user ID from JWT token if not in response
+      let userId = apiUser.id || apiUser._id;
+      if (!userId && apiToken) {
+        try {
+          const tokenPayload = JSON.parse(atob(apiToken.split('.')[1]));
+          userId = tokenPayload.user?.id;
+          console.log('Extracted user ID from JWT token:', userId);
+        } catch (error) {
+          console.error('Failed to extract user ID from token:', error);
+        }
+      }
+
       const normalizedUser: User = {
-        id: apiUser.id,
+        id: userId,
         name: apiUser.name,
         email: apiUser.email ?? email,
         role: apiUser.role,
@@ -221,14 +247,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const updateUser = (userData: Partial<User>) => {
     if (user) {
-      setUser({ ...user, ...userData });
-      // Update localStorage as well
-      localStorage.setItem(AUTH_USER_KEY, JSON.stringify({ ...user, ...userData }));
+      const updatedUser = { ...user, ...userData };
+      setUser(updatedUser);
+      // Update sessionStorage and cookies
+      try {
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(updatedUser));
+          Cookies.set(AUTH_USER_KEY, JSON.stringify(updatedUser), COOKIE_OPTIONS);
+        }
+      } catch {
+        // ignore storage errors
+      }
     }
   };
 
   const value: AuthContextType = {
     user,
+    token,
     login,
     logout,
     register,

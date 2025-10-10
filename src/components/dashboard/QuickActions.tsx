@@ -38,10 +38,16 @@ const QuickActions: React.FC<QuickActionsProps> = React.memo(({ onActionClick })
       action: 'orders',
       variant: 'outlined' as const,
     },
+    // {
+    //   icon: <Favorite />,
+    //   label: 'Wishlist',
+    //   action: 'wishlist',
+    //   variant: 'outlined' as const,
+    // },
     {
-      icon: <Favorite />,
-      label: 'Wishlist',
-      action: 'wishlist',
+      icon: <ShoppingCart />,
+      label: 'Cart',
+      action: 'cart',
       variant: 'outlined' as const,
     },
     // {

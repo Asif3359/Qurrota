@@ -42,6 +42,8 @@ export default function UserDashboardLayout({ children }: UserDashboardLayoutPro
         return 'User Dashboard';
       case '/dashboard/user/profile':
         return 'Profile Settings';
+      case '/dashboard/user/cart':
+        return 'Cart';
       default:
         return 'User Dashboard';
     }

@@ -36,13 +36,17 @@ export default function UserDashboardPage() {
         router.push('/dashboard/user/profile');
         break;
       case 'support':
-        router.push('/dashboard/user/support');
+        // router.push('/dashboard/user/support');
+        router.push('/contact');
         break;
-      case 'wishlist':
-        router.push('/dashboard/user/wishlist');
-        break;
+      // case 'wishlist':
+      //   router.push('/dashboard/user/wishlist');
+      //   break;
       case 'orders':
         router.push('/dashboard/user/orders');
+        break;
+      case 'cart':
+        router.push('/dashboard/user/cart');
         break;
       default:
         // Handle other actions
