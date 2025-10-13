@@ -23,6 +23,8 @@ import {
   Support,
   Logout,
   AdminPanelSettings,
+  Inventory2,
+  History,
 } from "@mui/icons-material";
 import { useAuth } from "@/contexts/AuthContext";
 import { appGradients } from "@/theme/colors";
@@ -78,9 +80,15 @@ const DashboardDrawer: React.FC<DashboardDrawerProps> = React.memo(
               },
               {
                 label: "Product",
-                icon: <ShoppingCart />,
+                icon: <Inventory2 />,
                 path: `${roleBasePath}/product`,
                 active: currentPath === `${roleBasePath}/product`,
+              },
+              {
+                label: "Order",
+                icon: <History />,
+                path: `${roleBasePath}/orders`,
+                active: currentPath === `${roleBasePath}/orders`,
               }
             ]
           : []

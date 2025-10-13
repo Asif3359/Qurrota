@@ -45,7 +45,7 @@ type Product = {
 };
 
 const formatCurrency = (n?: number) =>
-  typeof n === 'number' ? new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(n) : '-';
+  typeof n === 'number' ? new Intl.NumberFormat(undefined, { style: 'currency', currency: 'BDT' }).format(n) : '-';
 
 export default function ProductPage() {
   const theme = useTheme();
@@ -107,7 +107,7 @@ export default function ProductPage() {
       price: '',
       description: '',
       compareAtPrice: '',
-      currency: 'USD',
+      currency: 'BDT',
       categories: '',
       tags: '',
       isPublished: false,
@@ -238,7 +238,7 @@ export default function ProductPage() {
       price: (p as any)?.price != null ? String((p as any).price) : '',
       description: String(p?.description || ''),
       compareAtPrice: (p as any)?.compareAtPrice != null ? String((p as any).compareAtPrice) : '',
-      currency: String((p as any)?.currency || 'USD'),
+      currency: String((p as any)?.currency || 'BDT'),
       categories: (parseMaybeStringArray((p as any)?.categories) || []).join(', '),
       tags: (parseMaybeStringArray((p as any)?.tags) || []).join(', '),
       isPublished: !!(p as any)?.isPublished,
@@ -267,7 +267,7 @@ export default function ProductPage() {
 
   const handleOpenCreate = () => {
     setForm({
-      name: '', slug: '', brand: '', price: '', description: '', compareAtPrice: '', currency: 'USD',
+      name: '', slug: '', brand: '', price: '', description: '', compareAtPrice: '', currency: 'BDT',
       categories: '', tags: '', isPublished: false, isActive: true, imagesList: [], variants: [],
       sku: '', barcode: '', taxClass: '', stock: '', trackInventory: true, weight: '',
       dimensionLength: '', dimensionWidth: '', dimensionHeight: '', dimensionUnit: 'cm',
@@ -300,7 +300,7 @@ export default function ProductPage() {
         description: form.description.trim() || undefined,
         price: Number(form.price) || 0,
         compareAtPrice: form.compareAtPrice ? Number(form.compareAtPrice) : undefined,
-        currency: form.currency || 'USD',
+        currency: form.currency || 'BDT',
         categories: form.categories ? form.categories.split(',').map(s => s.trim()).filter(Boolean) : undefined,
         tags: form.tags ? form.tags.split(',').map(s => s.trim()).filter(Boolean) : undefined,
         isPublished: form.isPublished,
@@ -361,8 +361,18 @@ export default function ProductPage() {
         }
       }
       setCreateOpen(false);
-      setSuccess('Product created');
+      setSuccess('Product created successfully!');
       await fetchLists();
+      
+      // Reset form after successful creation
+      setForm({
+        name: '', slug: '', brand: '', price: '', description: '', compareAtPrice: '', currency: 'BDT',
+        categories: '', tags: '', isPublished: false, isActive: true, imagesList: [], variants: [],
+        sku: '', barcode: '', taxClass: '', stock: '', trackInventory: true, weight: '',
+        dimensionLength: '', dimensionWidth: '', dimensionHeight: '', dimensionUnit: 'cm',
+        shippingRequired: true, visibility: 'public', seoTitle: '', seoDescription: '', seoKeywords: '',
+        vendor: '', countryOfOrigin: ''
+      });
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Create failed';
       setError(message);
@@ -515,7 +525,7 @@ export default function ProductPage() {
       }
       setEditOpen(false);
       setEditing(null);
-      setSuccess('Product updated');
+      setSuccess('Product updated successfully!');
       await fetchLists();
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Update failed';
@@ -535,7 +545,7 @@ export default function ProductPage() {
         const j: { message?: string } | undefined = await res.json().catch(() => undefined);
         throw new Error(j?.message || 'Failed to delete');
       }
-      setSuccess('Product deleted');
+      setSuccess('Product deleted successfully!');
       await fetchLists();
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Delete failed';
@@ -556,7 +566,12 @@ export default function ProductPage() {
     >
       <Box sx={{ px: 2, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Typography variant="h6" sx={{ fontWeight: 600 }}>{title}</Typography>
-        <IconButton onClick={fetchLists} size="small" aria-label="refresh">
+        <IconButton 
+          onClick={fetchLists} 
+          size="small" 
+          aria-label="refresh"
+          disabled={loading}
+        >
           <Refresh />
         </IconButton>
       </Box>
@@ -604,10 +619,21 @@ export default function ProductPage() {
                 </td>
                 <td>
                   <Stack direction="row" spacing={1}>
-                    <IconButton aria-label="edit" onClick={() => handleOpenEdit(p)} size="small">
+                    <IconButton 
+                      aria-label="edit" 
+                      onClick={() => handleOpenEdit(p)} 
+                      size="small"
+                      disabled={loading}
+                    >
                       <Edit fontSize="small" />
                     </IconButton>
-                    <IconButton aria-label="delete" onClick={() => handleDelete(p._id)} size="small" color="error">
+                    <IconButton 
+                      aria-label="delete" 
+                      onClick={() => handleDelete(p._id)} 
+                      size="small" 
+                      color="error"
+                      disabled={loading}
+                    >
                       <Delete fontSize="small" />
                     </IconButton>
                   </Stack>
@@ -624,7 +650,14 @@ export default function ProductPage() {
     <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h5" sx={{ fontWeight: 700 }}>Products</Typography>
-        <Button variant="contained" startIcon={<Add />} onClick={handleOpenCreate}>Upload Product</Button>
+        <Button 
+          variant="contained" 
+          startIcon={<Add />} 
+          onClick={handleOpenCreate}
+          disabled={loading}
+        >
+          Upload Product
+        </Button>
       </Box>
 
       {loading && (
@@ -925,8 +958,15 @@ export default function ProductPage() {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCreateOpen(false)}>Cancel</Button>
-          <Button onClick={handleCreate} variant="contained">Create</Button>
+          <Button onClick={() => setCreateOpen(false)} disabled={loading}>Cancel</Button>
+          <Button 
+            onClick={handleCreate} 
+            variant="contained" 
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size={16} /> : undefined}
+          >
+            {loading ? 'Creating...' : 'Create'}
+          </Button>
         </DialogActions>
       </Dialog>
 
@@ -1169,8 +1209,15 @@ export default function ProductPage() {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditOpen(false)}>Cancel</Button>
-          <Button onClick={handleEdit} variant="contained">Save</Button>
+          <Button onClick={() => setEditOpen(false)} disabled={loading}>Cancel</Button>
+          <Button 
+            onClick={handleEdit} 
+            variant="contained" 
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size={16} /> : undefined}
+          >
+            {loading ? 'Saving...' : 'Save'}
+          </Button>
         </DialogActions>
       </Dialog>
 
