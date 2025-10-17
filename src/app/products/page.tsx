@@ -58,7 +58,7 @@ export default function ProductsPage() {
         </Container>
         
         {/* <Box sx={{  background: getRgbaColor(theme.palette.primary.main, 0.76), backdropFilter: 'blur(10px)' }}> */}
-            <ProductsSection />
+            <ProductsSection isHomePage={false} />
         {/* </Box> */}
       </Box>
       

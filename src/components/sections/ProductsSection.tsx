@@ -52,7 +52,7 @@ type Product = {
   }>;
 };
 
-const ProductsSection: React.FC = () => {
+const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({ isHomePage = false }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -620,7 +620,8 @@ const ProductsSection: React.FC = () => {
           </Box>
         )}
 
-        <motion.div
+        {isHomePage && (
+          <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
@@ -650,6 +651,7 @@ const ProductsSection: React.FC = () => {
             </Button>
           </Box>
         </motion.div>
+        )}
       </Container>
 
       {/* Product Quick View Modal */}

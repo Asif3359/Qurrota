@@ -35,7 +35,7 @@ export default function HomePage() {
         }}
       >
         <HeroSection />
-        <ProductsSection />
+        <ProductsSection isHomePage={true} />
         <StorySection />
         <GetInTouch />
         <JoinUsSection/>

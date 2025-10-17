@@ -29,6 +29,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import LogoutConfirmationModal from '@/components/ui/LogoutConfirmationModal';
 import Link from 'next/link';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import QurrotaLogo from '../../../public/images/QurrotaLogo';
 
 const Header: React.FC = () => {
   const theme = useTheme();
@@ -312,18 +313,22 @@ const Header: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Typography
-              variant="h4"
-              component="div"
-              sx={{
-                flexGrow: 1,
-                fontWeight: 700,
-                color: theme.palette.primary.contrastText,
-                cursor: 'pointer',
-              }}
-            >
-              Qurrota Kids
-            </Typography>
+            <Link href="/" style={{ textDecoration: 'none' }}>
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  // gap: 1,
+                }}
+             >
+                <Box sx={{ width: 160, height: 50, pb: '5px' }}>
+                  <QurrotaLogo/>
+                </Box>
+              </Box>
+            </Link>
           </motion.div>
 
           {isMobile ? (

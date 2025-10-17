@@ -28,6 +28,7 @@ import {
   Verified
 } from '@mui/icons-material';
 import { getRgbaColor } from '../../theme/colors';
+import QurrotaLogo from '../../../public/images/QurrotaLogo';
 
 const Footer: React.FC = () => {
   const theme = useTheme();
@@ -384,19 +385,19 @@ const Footer: React.FC = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Email sx={{ color: theme.palette.primary.dark, mr: 1.5, fontSize: 20 }} />
               <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                hello@qurrota.com
+              support@qurrota.com 
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Phone sx={{ color: theme.palette.primary.dark, mr: 1.5, fontSize: 20 }} />
               <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                +1 (555) 123-4567
+                +880 01789846204
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <LocationOn sx={{ color: theme.palette.primary.dark, mr: 1.5, fontSize: 20, mt: 0.2 }} />
               <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                New York, NY
+                Dhaka, Bangladesh
               </Typography>
             </Box>
           </Box>
