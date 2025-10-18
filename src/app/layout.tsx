@@ -21,6 +21,14 @@ export const metadata: Metadata = {
     template: '%s | Qurrota Kids'
   },
   description: 'Discover premium products for kids and new mothers. Quality, safety, and joy in every item we offer. Shop the best kids products, baby essentials, and maternity items.',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/images/logo.png', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/images/logo.png',
+  },
   keywords: [
     'kids products',
     'baby products', 
