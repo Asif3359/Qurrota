@@ -91,9 +91,11 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'your-google-verification-code',
-    yandex: 'your-yandex-verification-code',
-    yahoo: 'your-yahoo-verification-code',
+    google: 'lDVrIuoqBexdAaovVfiwJBqnfcgo4ZOy6h_7aK9kYxE',
+    yandex: '99e47a7f2b2e',
+    other: {
+      'msvalidate.01': 'EA8A2E239365D5116525EBCA164EC7EA',
+    },
   },
 };
 
