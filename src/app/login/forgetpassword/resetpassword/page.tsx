@@ -10,47 +10,78 @@ import {
   Link,
   Container,
   InputAdornment,
-  IconButton,
-  Alert
+  Alert,
+  IconButton
 } from '@mui/material';
 import { motion } from 'framer-motion';
-import { Visibility, VisibilityOff, Email, Lock } from '@mui/icons-material';
+import { Email, Lock, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
-import QurrotaKids from '../../../public/images/QurrotaLogo';
+import { useRouter, useSearchParams } from 'next/navigation';
+import QurrotaKids from '../../../../../public/images/QurrotaLogo';
 
-const LoginPage: React.FC = () => {
+const ResetPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [resetCode, setResetCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { login } = useAuth();
+  const { resetPassword } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    // Get email from URL params if available
+    const emailParam = searchParams.get('email');
+    if (emailParam) {
+      setEmail(emailParam);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
+    
+    if (!email || !resetCode || !newPassword || !confirmPassword) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const success = await login(email, password);
-      if (success) {
-        router.push('/');
+      const ok = await (resetPassword ? resetPassword(email, resetCode, newPassword) : Promise.resolve(false));
+      if (ok) {
+        setSuccess('Password reset successful! You can now sign in with your new password.');
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
+      } else {
+        setError('Password reset failed. Please check your verification code and try again.');
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Invalid email or password';
+      const message = err instanceof Error ? err.message : 'Password reset failed';
       setError(message);
     } finally {
       setLoading(false);
     }
   };
-
 
   if (!mounted) return null;
 
@@ -135,11 +166,12 @@ const LoginPage: React.FC = () => {
                   }
                 }}
               >
-                 <Link href="/">
+                <Link href="/">
                   <QurrotaKids width={280} height={90} />
                 </Link>
               </Box>
             </motion.div>
+
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -161,7 +193,7 @@ const LoginPage: React.FC = () => {
                   letterSpacing: '-0.02em',
                 }}
               >
-                Welcome Back
+                Reset Password
               </Typography>
               <Typography
                 variant="body1"
@@ -174,19 +206,26 @@ const LoginPage: React.FC = () => {
                   opacity: 0.8,
                 }}
               >
-                Sign in to your Qurrota account
+                Enter your verification code and new password
               </Typography>
             </motion.div>
 
-            {error && (
+            {(error || success) && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <Alert severity="error" sx={{ mb: 1 }}>
-                  {error}
-                </Alert>
+                {error && (
+                  <Alert severity="error" sx={{ mb: 2 }}>
+                    {error}
+                  </Alert>
+                )}
+                {success && (
+                  <Alert severity="success" sx={{ mb: 2 }}>
+                    {success}
+                  </Alert>
+                )}
               </motion.div>
             )}
 
@@ -252,13 +291,56 @@ const LoginPage: React.FC = () => {
                   margin="normal"
                   required
                   fullWidth
-                  name="password"
-                  label="Password"
+                  id="resetCode"
+                  label="Verification Code"
+                  name="resetCode"
+                  value={resetCode}
+                  onChange={(e) => setResetCode(e.target.value)}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 3,
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                      '& fieldset': {
+                        borderColor: 'rgba(102, 126, 234, 0.2)',
+                        borderWidth: 2,
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#667eea',
+                        borderWidth: 2,
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#667eea',
+                        borderWidth: 2,
+                        boxShadow: '0 0 0 3px rgba(102, 126, 234, 0.1)',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: '#667eea',
+                      fontWeight: 500,
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: '#667eea',
+                    },
+                  }}
+                />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="newPassword"
+                  label="New Password"
                   type={showPassword ? 'text' : 'password'}
-                  id="password"
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  id="newPassword"
+                  autoComplete="new-password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -308,9 +390,73 @@ const LoginPage: React.FC = () => {
               </motion.div>
 
               <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+              >
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="confirmPassword"
+                  label="Confirm New Password"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  id="confirmPassword"
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Lock sx={{ color: '#667eea' }} />
+                      </InputAdornment>
+                    ),
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle confirm password visibility"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          edge="end"
+                          sx={{ color: '#667eea' }}
+                        >
+                          {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 3,
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                      '& fieldset': {
+                        borderColor: 'rgba(102, 126, 234, 0.2)',
+                        borderWidth: 2,
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#667eea',
+                        borderWidth: 2,
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#667eea',
+                        borderWidth: 2,
+                        boxShadow: '0 0 0 3px rgba(102, 126, 234, 0.1)',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: '#667eea',
+                      fontWeight: 500,
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: '#667eea',
+                    },
+                  }}
+                />
+              </motion.div>
+
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
+                transition={{ duration: 0.5, delay: 0.7 }}
               >
                 <Button
                   type="submit"
@@ -358,20 +504,20 @@ const LoginPage: React.FC = () => {
                     },
                   }}
                 >
-                  {loading ? 'Signing In...' : 'Sign In'}
+                  {loading ? 'Resetting Password...' : 'Reset Password'}
                 </Button>
               </motion.div>
 
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.6 }}
+                transition={{ duration: 0.5, delay: 0.8 }}
               >
                 <Box sx={{ textAlign: 'center', mt: 2 }}>
                   <Typography variant="body2" color="text.secondary" sx={{ fontSize: '1rem' }}>
-                    Don&apos;t have an account?{' '}
+                    Remember your password?{' '}
                     <Link
-                      href="/signup"
+                      href="/login"
                       sx={{
                         color: '#667eea',
                         textDecoration: 'none',
@@ -395,35 +541,7 @@ const LoginPage: React.FC = () => {
                         },
                       }}
                     >
-                      Sign up here
-                    </Link>
-                    {' '}•{' '}
-                    <Link
-                      href="/login/forgetpassword"
-                      sx={{
-                        color: '#667eea',
-                        textDecoration: 'none',
-                        fontWeight: 600,
-                        position: 'relative',
-                        '&:hover': { 
-                          color: '#5a6fd8',
-                        },
-                        '&::after': {
-                          content: '""',
-                          position: 'absolute',
-                          bottom: '-2px',
-                          left: 0,
-                          width: '0%',
-                          height: '2px',
-                          background: 'linear-gradient(90deg, #667eea, #764ba2)',
-                          transition: 'width 0.3s ease',
-                        },
-                        '&:hover::after': {
-                          width: '100%',
-                        },
-                      }}
-                    >
-                      Forgot password?
+                      Sign in here
                     </Link>
                   </Typography>
                 </Box>
@@ -432,9 +550,8 @@ const LoginPage: React.FC = () => {
           </Paper>
         </motion.div>
       </Container>
-
     </Box>
   );
 };
 
-export default LoginPage;
+export default ResetPasswordPage;

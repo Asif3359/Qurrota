@@ -23,6 +23,7 @@ interface AuthContextType {
   isReady: boolean;
   // Optional helpers for future screens
   verifyEmail?: (email: string, code: string) => Promise<boolean>;
+  resendVerification?: (email: string) => Promise<boolean>;
   forgotPassword?: (email: string) => Promise<boolean>;
   resetPassword?: (email: string, code: string, newPassword: string) => Promise<boolean>;
 }
@@ -232,6 +233,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const resendVerification = async (email: string): Promise<boolean> => {
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/resend-verification`, {
+        method: 'POST',
+        headers: buildHeaders(),
+        body: JSON.stringify({ email })
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  };
+
   const resetPassword = async (email: string, code: string, newPassword: string): Promise<boolean> => {
     try {
       const res = await fetch(`${API_BASE}/api/auth/reset-password`, {
@@ -271,6 +285,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     isAuthenticated: !!user,
     isReady,
     verifyEmail,
+    resendVerification,
     forgotPassword,
     resetPassword
   };

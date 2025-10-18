@@ -1,6 +1,6 @@
 import { Card, CardContent, Alert, Box, TextField, Button } from '@mui/material'
 import { Send } from '@mui/icons-material'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const SendMessage = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +10,11 @@ const SendMessage = () => {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,6 +35,8 @@ const SendMessage = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  if (!mounted) return null;
 
   return (
     <Card
@@ -84,6 +91,9 @@ const SendMessage = () => {
             value={formData.name}
             onChange={handleChange}
             required
+            inputProps={{
+              suppressHydrationWarning: true,
+            }}
             sx={{
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
@@ -106,6 +116,9 @@ const SendMessage = () => {
             value={formData.email}
             onChange={handleChange}
             required
+            inputProps={{
+              suppressHydrationWarning: true,
+            }}
             sx={{
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
@@ -129,6 +142,9 @@ const SendMessage = () => {
           value={formData.subject}
           onChange={handleChange}
           required
+          inputProps={{
+            suppressHydrationWarning: true,
+          }}
           sx={{
             mb: 3,
             "& .MuiOutlinedInput-root": {
@@ -154,6 +170,9 @@ const SendMessage = () => {
           value={formData.message}
           onChange={handleChange}
           required
+          inputProps={{
+            suppressHydrationWarning: true,
+          }}
           sx={{
             mb: 4,
             "& .MuiOutlinedInput-root": {

@@ -11,16 +11,13 @@ import {
   Container,
   InputAdornment,
   IconButton,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions
+  Alert
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { Visibility, VisibilityOff, Email, Lock, Person } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import QurrotaKids from '../../../public/images/QurrotaLogo';
 
 const SignupPage: React.FC = () => {
   const [name, setName] = useState('');
@@ -32,10 +29,7 @@ const SignupPage: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { register, verifyEmail } = useAuth();
-  const [verifyOpen, setVerifyOpen] = useState(false);
-  const [verifyCode, setVerifyCode] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
+  const { register } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -61,8 +55,8 @@ const SignupPage: React.FC = () => {
     try {
       const success = await register(name, email, password);
       if (success) {
-        setSuccessMsg('Account created. Please verify your email.');
-        setVerifyOpen(true);
+        // Redirect to verification page with email as query parameter
+        router.push(`/signup/veryfication?email=${encodeURIComponent(email)}`);
       } else {
         setError('Registration failed. Please try again.');
       }
@@ -74,27 +68,6 @@ const SignupPage: React.FC = () => {
     }
   };
 
-  const handleVerifyEmail = async () => {
-    setError('');
-    setSuccessMsg('');
-    if (!email || !verifyCode) {
-      setError('Enter your email and code');
-      return;
-    }
-    try {
-      const ok = await (verifyEmail ? verifyEmail(email, verifyCode) : Promise.resolve(false));
-      if (ok) {
-        setSuccessMsg('Email verified! You can sign in now.');
-        setVerifyOpen(false);
-        router.push('/login');
-      } else {
-        setError('Verification failed');
-      }
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Verification failed';
-      setError(message);
-    }
-  };
 
   if (!mounted) return null;
 
@@ -105,26 +78,85 @@ const SignupPage: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#FFD700',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         padding: 2,
+        position: 'relative',
+        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%)',
+          zIndex: 0,
+        }
       }}
     >
-      <Container maxWidth="sm">
+      <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 1 }}>
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
           <Paper
-            elevation={0}
+            elevation={24}
             sx={{
-              padding: { xs: 3, md: 6 },
-              borderRadius: 4,
-              background: 'rgba(255, 255, 255, 0.95)',
+              padding: { xs: 4, md: 6 },
+              borderRadius: 6,
+              background: 'rgba(255, 255, 255, 0.98)',
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 215, 0, 0.2)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+              position: 'relative',
+              overflow: 'hidden',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '4px',
+                background: 'linear-gradient(90deg, #FFD700, #FFA500, #FFD700)',
+                backgroundSize: '200% 100%',
+                animation: 'shimmer 3s ease-in-out infinite',
+              },
+              '@keyframes shimmer': {
+                '0%': { backgroundPosition: '-200% 0' },
+                '100%': { backgroundPosition: '200% 0' },
+              }
             }}
           >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Box 
+                sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  mb: 4,
+                  position: 'relative',
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    bottom: -10,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '80px',
+                    height: '3px',
+                    background: 'linear-gradient(90deg, #FFD700, #FFA500)',
+                    borderRadius: '2px',
+                  }
+                }}
+              >
+                <Link href="/">
+                  <QurrotaKids width={280} height={90} />
+                </Link>
+              </Box>
+            </motion.div>
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -136,39 +168,42 @@ const SignupPage: React.FC = () => {
                 align="center"
                 gutterBottom
                 sx={{
-                  fontWeight: 700,
-                  color: '#FFD700',
+                  fontWeight: 800,
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
                   mb: 1,
+                  fontSize: { xs: '2rem', md: '2.5rem' },
+                  letterSpacing: '-0.02em',
                 }}
               >
-                Join Qurrota Kids
+                Join Qurrota to
               </Typography>
               <Typography
                 variant="body1"
                 align="center"
                 color="text.secondary"
-                sx={{ mb: 4 }}
+                sx={{ 
+                  mb: 4,
+                  fontSize: '1.1rem',
+                  fontWeight: 400,
+                  opacity: 0.8,
+                }}
               >
                 Create your account and start your journey
               </Typography>
             </motion.div>
 
-            {(error || successMsg) && (
+            {error && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                {error && (
-                  <Alert severity="error" sx={{ mb: 1 }}>
-                    {error}
-                  </Alert>
-                )}
-                {successMsg && (
-                  <Alert severity="success" sx={{ mb: 1 }}>
-                    {successMsg}
-                  </Alert>
-                )}
+                <Alert severity="error" sx={{ mb: 1 }}>
+                  {error}
+                </Alert>
               </motion.div>
             )}
 
@@ -192,21 +227,34 @@ const SignupPage: React.FC = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Person sx={{ color: '#FFD700' }} />
+                        <Person sx={{ color: '#667eea' }} />
                       </InputAdornment>
                     ),
                   }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
+                      borderRadius: 3,
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
                       '& fieldset': {
-                        borderColor: 'rgba(255, 215, 0, 0.3)',
+                        borderColor: 'rgba(102, 126, 234, 0.2)',
+                        borderWidth: 2,
                       },
                       '&:hover fieldset': {
-                        borderColor: '#FFD700',
+                        borderColor: '#667eea',
+                        borderWidth: 2,
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: '#9C27B0',
+                        borderColor: '#667eea',
+                        borderWidth: 2,
+                        boxShadow: '0 0 0 3px rgba(102, 126, 234, 0.1)',
                       },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: '#667eea',
+                      fontWeight: 500,
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: '#667eea',
                     },
                   }}
                 />
@@ -230,21 +278,34 @@ const SignupPage: React.FC = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Email sx={{ color: '#FFD700' }} />
+                        <Email sx={{ color: '#667eea' }} />
                       </InputAdornment>
                     ),
                   }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
+                      borderRadius: 3,
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
                       '& fieldset': {
-                        borderColor: 'rgba(255, 215, 0, 0.3)',
+                        borderColor: 'rgba(102, 126, 234, 0.2)',
+                        borderWidth: 2,
                       },
                       '&:hover fieldset': {
-                        borderColor: '#FFD700',
+                        borderColor: '#667eea',
+                        borderWidth: 2,
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: '#9C27B0',
+                        borderColor: '#667eea',
+                        borderWidth: 2,
+                        boxShadow: '0 0 0 3px rgba(102, 126, 234, 0.1)',
                       },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: '#667eea',
+                      fontWeight: 500,
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: '#667eea',
                     },
                   }}
                 />
@@ -269,7 +330,7 @@ const SignupPage: React.FC = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Lock sx={{ color: '#FFD700' }} />
+                        <Lock sx={{ color: '#667eea' }} />
                       </InputAdornment>
                     ),
                     endAdornment: (
@@ -278,6 +339,7 @@ const SignupPage: React.FC = () => {
                           aria-label="toggle password visibility"
                           onClick={() => setShowPassword(!showPassword)}
                           edge="end"
+                          sx={{ color: '#667eea' }}
                         >
                           {showPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
@@ -286,15 +348,28 @@ const SignupPage: React.FC = () => {
                   }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
+                      borderRadius: 3,
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
                       '& fieldset': {
-                        borderColor: 'rgba(255, 215, 0, 0.3)',
+                        borderColor: 'rgba(102, 126, 234, 0.2)',
+                        borderWidth: 2,
                       },
                       '&:hover fieldset': {
-                        borderColor: '#FFD700',
+                        borderColor: '#667eea',
+                        borderWidth: 2,
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: '#9C27B0',
+                        borderColor: '#667eea',
+                        borderWidth: 2,
+                        boxShadow: '0 0 0 3px rgba(102, 126, 234, 0.1)',
                       },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: '#667eea',
+                      fontWeight: 500,
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: '#667eea',
                     },
                   }}
                 />
@@ -319,7 +394,7 @@ const SignupPage: React.FC = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Lock sx={{ color: '#FFD700' }} />
+                        <Lock sx={{ color: '#667eea' }} />
                       </InputAdornment>
                     ),
                     endAdornment: (
@@ -328,6 +403,7 @@ const SignupPage: React.FC = () => {
                           aria-label="toggle confirm password visibility"
                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                           edge="end"
+                          sx={{ color: '#667eea' }}
                         >
                           {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
@@ -336,15 +412,28 @@ const SignupPage: React.FC = () => {
                   }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
+                      borderRadius: 3,
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
                       '& fieldset': {
-                        borderColor: 'rgba(255, 215, 0, 0.3)',
+                        borderColor: 'rgba(102, 126, 234, 0.2)',
+                        borderWidth: 2,
                       },
                       '&:hover fieldset': {
-                        borderColor: '#FFD700',
+                        borderColor: '#667eea',
+                        borderWidth: 2,
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: '#9C27B0',
+                        borderColor: '#667eea',
+                        borderWidth: 2,
+                        boxShadow: '0 0 0 3px rgba(102, 126, 234, 0.1)',
                       },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: '#667eea',
+                      fontWeight: 500,
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: '#667eea',
                     },
                   }}
                 />
@@ -361,19 +450,43 @@ const SignupPage: React.FC = () => {
                   variant="contained"
                   disabled={loading}
                   sx={{
-                    mt: 3,
-                    mb: 2,
-                    py: 1.5,
-                    background: '#FFD700',
-                    color: '#000',
-                    fontWeight: 600,
+                    mt: 4,
+                    mb: 3,
+                    py: 2,
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: '#fff',
+                    fontWeight: 700,
                     fontSize: '1.1rem',
-                    borderRadius: 2,
+                    borderRadius: 3,
+                    textTransform: 'none',
+                    boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+                    position: 'relative',
+                    overflow: 'hidden',
                     '&:hover': {
-                      background: '#FFC000',
+                      background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                      boxShadow: '0 12px 40px rgba(102, 126, 234, 0.4)',
+                      transform: 'translateY(-2px)',
+                    },
+                    '&:active': {
+                      transform: 'translateY(0)',
                     },
                     '&:disabled': {
-                      background: 'rgba(255, 215, 0, 0.5)',
+                      background: 'rgba(102, 126, 234, 0.3)',
+                      boxShadow: 'none',
+                      transform: 'none',
+                    },
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: '-100%',
+                      width: '100%',
+                      height: '100%',
+                      background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
+                      transition: 'left 0.5s',
+                    },
+                    '&:hover::before': {
+                      left: '100%',
                     },
                   }}
                 >
@@ -386,17 +499,31 @@ const SignupPage: React.FC = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.8 }}
               >
-                <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant="body2" color="text.secondary">
+                <Box sx={{ textAlign: 'center', mt: 2 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '1rem' }}>
                     Already have an account?{' '}
                     <Link
                       href="/login"
                       sx={{
-                        color: '#9C27B0',
+                        color: '#667eea',
                         textDecoration: 'none',
                         fontWeight: 600,
+                        position: 'relative',
                         '&:hover': {
-                          color: '#FFD700',
+                          color: '#5a6fd8',
+                        },
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          bottom: '-2px',
+                          left: 0,
+                          width: '0%',
+                          height: '2px',
+                          background: 'linear-gradient(90deg, #667eea, #764ba2)',
+                          transition: 'width 0.3s ease',
+                        },
+                        '&:hover::after': {
+                          width: '100%',
                         },
                       }}
                     >
@@ -410,31 +537,6 @@ const SignupPage: React.FC = () => {
         </motion.div>
       </Container>
 
-      {/* Verify Email Dialog */}
-      <Dialog open={verifyOpen} onClose={() => setVerifyOpen(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Verify Email</DialogTitle>
-        <DialogContent>
-          <TextField
-            margin="normal"
-            fullWidth
-            label="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            label="Verification Code"
-            value={verifyCode}
-            onChange={(e) => setVerifyCode(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setVerifyOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleVerifyEmail}>Verify</Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };

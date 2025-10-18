@@ -8,7 +8,7 @@ type Props = {
 export default function QurrotaLogo({ width = 160, height = 50, className, title = 'Qurrota logo' }: Props) {
   return (
     <svg 
-      viewBox="0 0 310 100" 
+      viewBox="0 0 275 100" 
       xmlns="http://www.w3.org/2000/svg" 
       width={width} 
       height={height} 
@@ -100,7 +100,7 @@ export default function QurrotaLogo({ width = 160, height = 50, className, title
           <ellipse cx="35" cy="65" rx="22" ry="25" fill="url(#qGradient)" stroke="#5e40b9" strokeWidth="3.5"/>
           <ellipse cx="35" cy="65" rx="11" ry="13" fill="white" opacity="0.9"/>
           <path d="M 44 78 L 54 90" stroke="#5e40b9" strokeWidth="3.5" strokeLinecap="round"/>
-          <path d="M 43 77 L 53 89" stroke="url(#qGradient)" strokeWidth="2.5" strokeLinecap="round"/>
+          <path d="M 43 77 L 53 89" stroke="url(#qGradient)" strokeWidth="4.5" strokeLinecap="round"/>
         </g>
 
         {/* u - Adjusted spacing */}
