@@ -1,17 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import {
   Box,
   Container,
   Typography,
-  TextField,
-  Button,
   Breadcrumbs,
   Link,
   Card,
   CardContent,
-  Alert,
   useTheme,
   useMediaQuery,
   Chip,
@@ -21,7 +18,6 @@ import {
   Email,
   Phone,
   LocationOn,
-  Send,
   Support,
   VerifiedUser,
   LocalShipping,
@@ -36,31 +32,6 @@ export default function ContactPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Simulate form submission
-    setTimeout(() => {
-      setSubmitted(true);
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    }, 1000);
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
 
   const contactInfo = [
     {

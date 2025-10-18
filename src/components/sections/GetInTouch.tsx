@@ -4,15 +4,12 @@ import {
   Typography,
   Card,
   CardContent,
-  Alert,
-  TextField,
-  Button,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useMediaQuery } from "@mui/material";
 import { motion } from "framer-motion";
-import React, { useState } from "react";
-import { Email, LocationOn, Phone, Send } from "@mui/icons-material";
+import React from "react";
+import { Email, LocationOn, Phone } from "@mui/icons-material";
 import { getRgbaColor } from "../../theme/colors";
 import SendMessage from "../utils/SendMessage";
 
@@ -50,33 +47,7 @@ const GetInTouch = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isSmallMobile = useMediaQuery(theme.breakpoints.down("xs"));
-  const [submitted, setSubmitted] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-    setFormData({
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-    });
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
   return (
     <Box
       sx={{

@@ -5,9 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Box, Container, Typography, useTheme, Fade } from '@mui/material';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
-  StatsOverview, 
   QuickActions, 
-  RecentActivity, 
   UserProfileSummary
 } from '@/components/dashboard';
 // import { appGradients } from '@/theme/colors';

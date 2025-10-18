@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import {
   Box,
   Paper,
@@ -16,7 +16,7 @@ import { Email, Security } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-const VerificationPage: React.FC = () => {
+const VerificationForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [verifyCode, setVerifyCode] = useState('');
   const [error, setError] = useState('');
@@ -331,6 +331,26 @@ const VerificationPage: React.FC = () => {
         </motion.div>
       </Container>
     </Box>
+  );
+};
+
+const VerificationPage: React.FC = () => {
+  return (
+    <Suspense fallback={
+      <Box
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        }}
+      >
+        <CircularProgress size={60} sx={{ color: '#fff' }} />
+      </Box>
+    }>
+      <VerificationForm />
+    </Suspense>
   );
 };
 

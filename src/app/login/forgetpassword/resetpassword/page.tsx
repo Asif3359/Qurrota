@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import {
   Box,
   Paper,
@@ -11,7 +11,8 @@ import {
   Container,
   InputAdornment,
   Alert,
-  IconButton
+  IconButton,
+  CircularProgress
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { Email, Lock, Visibility, VisibilityOff } from '@mui/icons-material';
@@ -19,7 +20,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import QurrotaKids from '../../../../../public/images/QurrotaLogo';
 
-const ResetPasswordPage: React.FC = () => {
+const ResetPasswordForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [resetCode, setResetCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -551,6 +552,26 @@ const ResetPasswordPage: React.FC = () => {
         </motion.div>
       </Container>
     </Box>
+  );
+};
+
+const ResetPasswordPage: React.FC = () => {
+  return (
+    <Suspense fallback={
+      <Box
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        }}
+      >
+        <CircularProgress size={60} sx={{ color: '#fff' }} />
+      </Box>
+    }>
+      <ResetPasswordForm />
+    </Suspense>
   );
 };
 
