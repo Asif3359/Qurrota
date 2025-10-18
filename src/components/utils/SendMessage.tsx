@@ -1,3 +1,5 @@
+'use client';
+
 import { Card, CardContent, Alert, Box, TextField, Button } from '@mui/material'
 import { Send } from '@mui/icons-material'
 import { useState, useEffect } from 'react';

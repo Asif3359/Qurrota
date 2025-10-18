@@ -10,23 +10,30 @@ import AnimatedBackground from '@/components/ui/AnimatedBackground';
 import StorySection from '@/components/sections/StorySection';
 import GetInTouch from '@/components/sections/GetInTouch';
 import JoinUsSection from '@/components/sections/JoinUsSection';
+import StructuredData, { OrganizationData, WebSiteData, HomePageData } from '@/components/seo/StructuredData';
 
 export default function HomePage() {
   return (
-    <Box
-      sx={{
-        minHeight: '100dvh',
-        position: 'relative',
-        overflowX: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      {/* Animated Background */}
-      <AnimatedBackground />
+    <>
+      {/* Structured Data for SEO */}
+      <StructuredData type="Organization" data={OrganizationData} />
+      <StructuredData type="WebSite" data={WebSiteData} />
+      <StructuredData type="WebPage" data={HomePageData} />
       
-      {/* Header */}
-      <Header />
+      <Box
+        sx={{
+          minHeight: '100dvh',
+          position: 'relative',
+          overflowX: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {/* Animated Background */}
+        <AnimatedBackground />
+        
+        {/* Header */}
+        <Header />
       
       {/* Main Content */}
       <Box
@@ -41,8 +48,9 @@ export default function HomePage() {
         <JoinUsSection/>
       </Box>
       
-      {/* Footer */}
-      <Footer />
-    </Box>
+        {/* Footer */}
+        <Footer />
+      </Box>
+    </>
   );
 }

@@ -7,8 +7,6 @@ import Header from '@/components/layout/Header';
 import ProductsSection from '@/components/sections/ProductsSection';
 import Footer from '@/components/layout/Footer';
 import AnimatedBackground from '@/components/ui/AnimatedBackground';
-import theme from '@/theme';
-import { getRgbaColor } from '@/theme/colors';
 
 export default function ProductsPage() {
   return (
