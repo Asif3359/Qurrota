@@ -73,7 +73,7 @@ interface Order {
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
   paymentMethod: string;
   items: OrderItem[];
-  user: {
+  user?: {
     _id: string;
     name: string;
     email: string;
@@ -740,10 +740,10 @@ const AdminOrdersPage: React.FC = () => {
                     <TableCell>
                       <Box>
                         <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                          {order.user.name}
+                          {order.user?.name || 'Unknown User'}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {order.user.email}
+                          {order.user?.email || 'No email'}
                         </Typography>
                       </Box>
                     </TableCell>
@@ -870,10 +870,10 @@ const AdminOrdersPage: React.FC = () => {
                     </Avatar>
                     <Box>
                       <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                        {selectedOrder.user.name}
+                        {selectedOrder.user?.name || 'Unknown User'}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        {selectedOrder.user.email}
+                        {selectedOrder.user?.email || 'No email'}
                       </Typography>
                     </Box>
                   </Stack>

@@ -16,7 +16,7 @@ import { motion } from 'framer-motion';
 import { Email } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import QurrotaKids from '../../../../public/images/QurrotaLogo';
+import QurrotaKids from '../../../lib/QurrotaLogo';
 
 const ForgetPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');

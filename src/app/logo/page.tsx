@@ -1,6 +1,6 @@
 import React from 'react'
-import QurrotaLogo from '../../../public/images/QurrotaLogo';
-import Fabicon from '../../../public/images/Fabicon';
+import QurrotaLogo from '../../lib/QurrotaLogo';
+import Fabicon from '../../lib/Fabicon';
 
 const LogoPage: React.FC = () => {
   return (

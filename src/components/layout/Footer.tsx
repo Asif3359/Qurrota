@@ -28,7 +28,7 @@ import {
   Verified
 } from '@mui/icons-material';
 import { getRgbaColor } from '../../theme/colors';
-import QurrotaLogo from '../../../public/images/QurrotaLogo';
+import QurrotaLogo from '../../lib/QurrotaLogo';
 
 const Footer: React.FC = () => {
   const theme = useTheme();

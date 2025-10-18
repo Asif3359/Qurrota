@@ -29,7 +29,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import LogoutConfirmationModal from '@/components/ui/LogoutConfirmationModal';
 import Link from 'next/link';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import QurrotaLogo from '../../../public/images/QurrotaLogo';
+import QurrotaLogo from '../../lib/QurrotaLogo';
 
 const Header: React.FC = () => {
   const theme = useTheme();

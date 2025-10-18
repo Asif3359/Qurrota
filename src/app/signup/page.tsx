@@ -17,7 +17,7 @@ import { motion } from 'framer-motion';
 import { Visibility, VisibilityOff, Email, Lock, Person } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import QurrotaKids from '../../../public/images/QurrotaLogo';
+import QurrotaKids from '../../lib/QurrotaLogo';
 
 const SignupPage: React.FC = () => {
   const [name, setName] = useState('');

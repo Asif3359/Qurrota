@@ -13,7 +13,7 @@ import {
 import { motion } from 'framer-motion';
 import { Home, ArrowBack } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
-import QurrotaKids from '../../public/images/QurrotaLogo';
+import QurrotaKids from '../lib/QurrotaLogo';
 import { purpleColors, lightYellowColors, appGradients } from '../theme/colors';
 
 const NotFound = () => {

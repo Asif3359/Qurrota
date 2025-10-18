@@ -98,7 +98,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({ isHomePage = fals
       } finally {
         setLoading(false);
       }
-    }, []);
+    }, [apiBase]);
 
   React.useEffect(() => {
     getProducts();
@@ -664,19 +664,24 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({ isHomePage = fals
           alignItems: 'center',
           justifyContent: 'center',
           p: 2,
+          backdropFilter: 'blur(8px)',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
         }}
       >
         <Box
           sx={{
             position: 'relative',
-            width: { xs: '95%', sm: '90%', md: '80%', lg: '70%' },
-            maxWidth: 900,
-            maxHeight: '90vh',
+            width: { xs: '98%', sm: '95%', md: '90%', lg: '85%' },
+            maxWidth: 1000,
+            maxHeight: { xs: '98vh', sm: '95vh', md: '90vh' },
             bgcolor: 'background.paper',
-            borderRadius: 2,
-            boxShadow: 24,
+            borderRadius: { xs: 2, sm: 3 },
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             overflow: 'auto',
             outline: 'none',
+            border: '1px solid rgba(255, 215, 0, 0.2)',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
           {/* Close Button */}
@@ -684,105 +689,151 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({ isHomePage = fals
             onClick={handleCloseModal}
             sx={{
               position: 'absolute',
-              top: 8,
-              right: 8,
-              zIndex: 1,
-              bgcolor: 'rgba(255, 255, 255, 0.9)',
+              top: 16,
+              right: 16,
+              zIndex: 10,
+              bgcolor: '#FF4444',
+              color: '#fff',
+              width: 40,
+              height: 40,
+              boxShadow: '0 4px 12px rgba(255, 68, 68, 0.3)',
               '&:hover': {
-                bgcolor: 'rgba(255, 255, 255, 1)',
+                bgcolor: '#FF3333',
+                transform: 'scale(1.05)',
+                boxShadow: '0 6px 16px rgba(255, 68, 68, 0.4)',
               },
+              transition: 'all 0.2s ease-in-out',
             }}
           >
-            <Close />
+            <Close sx={{ fontSize: 20 }} />
           </IconButton>
 
           {selectedProduct && (
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: { xs: 'column', md: 'row' },
+              flex: 1,
+              minHeight: 0
+            }}>
               {/* Product Images */}
               <Box sx={{ 
                 flex: { xs: 'none', md: '0 0 50%' },
                 position: 'relative', 
-                height: { xs: 300, md: 400 } 
+                height: { xs: 300, sm: 350, md: 'auto' },
+                minHeight: { xs: 300, sm: 350, md: 500 },
+                maxHeight: { xs: 350, sm: 400, md: '70vh' },
+                background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden'
               }}>
-                <CardMedia
-                  component="img"
-                  image={selectedProduct.images?.[selectedImageIndex]?.url || '/placeholder-image.jpg'}
-                  alt={selectedProduct.name}
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                  }}
-                />
-                {/* Badges */}
+                {/* Main Image Container */}
                 <Box sx={{ 
-                  position: 'absolute', 
-                  top: 16, 
-                  left: 16, 
-                  display: 'flex', 
-                  gap: 1,
-                  flexDirection: 'column'
+                  flex: 1,
+                  position: 'relative',
+                  overflow: 'hidden'
                 }}>
-                  {selectedProduct.createdAt && new Date(selectedProduct.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) && (
-                    <Chip
-                      label="New"
-                      size="small"
-                      sx={{
-                        background: '#FFD700',
-                        color: '#000',
-                        fontWeight: 600,
-                      }}
-                    />
-                  )}
-                  {selectedProduct.ratingCount && selectedProduct.ratingCount >= 5 && (
-                    <Chip
-                      label="Popular"
-                      size="small"
-                      sx={{
-                        background: '#9C27B0',
-                        color: '#fff',
-                        fontWeight: 600,
-                      }}
-                    />
-                  )}
+                  <CardMedia
+                    component="img"
+                    image={selectedProduct.images?.[selectedImageIndex]?.url || '/placeholder-image.jpg'}
+                    alt={selectedProduct.name}
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      transition: 'transform 0.3s ease',
+                      '&:hover': {
+                        transform: 'scale(1.02)',
+                      }
+                    }}
+                  />
+                  
+                  {/* Badges */}
+                  <Box sx={{ 
+                    position: 'absolute', 
+                    top: 20, 
+                    left: 20, 
+                    display: 'flex', 
+                    gap: 1,
+                    flexDirection: 'column',
+                    zIndex: 2
+                  }}>
+                    {selectedProduct.createdAt && new Date(selectedProduct.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) && (
+                      <Chip
+                        label="New"
+                        size="small"
+                        sx={{
+                          background: '#FFD700',
+                          color: '#000',
+                          fontWeight: 700,
+                          fontSize: '0.75rem',
+                          height: 28,
+                          boxShadow: '0 2px 8px rgba(255, 215, 0, 0.3)',
+                          '&:hover': {
+                            transform: 'scale(1.05)',
+                          }
+                        }}
+                      />
+                    )}
+                    {selectedProduct.ratingCount && selectedProduct.ratingCount >= 5 && (
+                      <Chip
+                        label="Popular"
+                        size="small"
+                        sx={{
+                          background: '#9C27B0',
+                          color: '#fff',
+                          fontWeight: 700,
+                          fontSize: '0.75rem',
+                          height: 28,
+                          boxShadow: '0 2px 8px rgba(156, 39, 176, 0.3)',
+                          '&:hover': {
+                            transform: 'scale(1.05)',
+                          }
+                        }}
+                      />
+                    )}
+                  </Box>
                 </Box>
                 
                 {/* Image Gallery */}
                 {selectedProduct.images && selectedProduct.images.length > 1 && (
                   <Box sx={{ 
-                    p: 2, 
-                    borderTop: '1px solid #e0e0e0',
-                    bgcolor: '#fafafa'
+                    p: 3, 
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(10px)',
+                    borderTop: '1px solid rgba(255, 215, 0, 0.2)',
                   }}>
                     <Typography 
                       variant="subtitle2" 
                       sx={{ 
                         mb: 2, 
-                        fontWeight: 600, 
+                        fontWeight: 700, 
                         color: '#333',
-                        fontSize: '0.875rem'
+                        fontSize: '0.9rem',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px'
                       }}
                     >
                       All Images ({selectedProduct.images.length})
                     </Typography>
                     <Box sx={{ 
                       display: 'flex', 
-                      gap: 1, 
+                      gap: 1.5, 
                       overflowX: 'auto',
                       pb: 1,
                       '&::-webkit-scrollbar': {
-                        height: 4,
+                        height: 6,
                       },
                       '&::-webkit-scrollbar-track': {
-                        background: '#f1f1f1',
-                        borderRadius: 2,
+                        background: 'rgba(0, 0, 0, 0.1)',
+                        borderRadius: 3,
                       },
                       '&::-webkit-scrollbar-thumb': {
-                        background: '#c1c1c1',
-                        borderRadius: 2,
+                        background: 'rgba(255, 215, 0, 0.6)',
+                        borderRadius: 3,
                       },
                       '&::-webkit-scrollbar-thumb:hover': {
-                        background: '#a8a8a8',
+                        background: 'rgba(255, 215, 0, 0.8)',
                       },
                     }}>
                       {selectedProduct.images.map((image, index) => (
@@ -791,16 +842,20 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({ isHomePage = fals
                           onClick={() => handleImageSelect(index)}
                           sx={{
                             flex: '0 0 auto',
-                            width: 80,
-                            height: 80,
+                            width: 90,
+                            height: 90,
                             cursor: 'pointer',
-                            border: selectedImageIndex === index ? '2px solid #FFD700' : '2px solid transparent',
-                            borderRadius: 1,
+                            border: selectedImageIndex === index ? '3px solid #FFD700' : '3px solid transparent',
+                            borderRadius: 2,
                             overflow: 'hidden',
-                            transition: 'all 0.2s ease',
+                            transition: 'all 0.3s ease',
+                            boxShadow: selectedImageIndex === index 
+                              ? '0 4px 12px rgba(255, 215, 0, 0.4)' 
+                              : '0 2px 8px rgba(0, 0, 0, 0.1)',
                             '&:hover': {
-                              borderColor: '#9C27B0',
-                              transform: 'scale(1.05)',
+                              borderColor: selectedImageIndex === index ? '#FFD700' : '#9C27B0',
+                              transform: 'scale(1.08)',
+                              boxShadow: '0 6px 16px rgba(0, 0, 0, 0.15)',
                             },
                           }}
                         >
@@ -825,53 +880,94 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({ isHomePage = fals
               <Box sx={{ 
                 flex: { xs: 'none', md: '0 0 50%' },
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                overflow: 'auto',
+                maxHeight: { xs: '50vh', sm: '60vh', md: '80vh' },
+                minHeight: { xs: 300, sm: 400, md: 500 }
               }}>
-                <Box sx={{ p: { xs: 3, md: 4 } }}>
+                <Box sx={{ 
+                  p: { xs: 3, md: 4 },
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  overflow: 'auto'
+                }}>
+                  {/* Categories */}
                   <Typography
                     variant="caption"
                     color="text.secondary"
                     sx={{ 
                       textTransform: 'uppercase', 
-                      fontWeight: 600,
-                      fontSize: '0.75rem'
+                      fontWeight: 700,
+                      fontSize: '0.8rem',
+                      letterSpacing: '1px',
+                      color: '#666'
                     }}
                   >
                     {normalizeCsvInput(selectedProduct.categories ?? '')}
                   </Typography>
                   
+                  {/* Product Name */}
                   <Typography
-                    variant="h4"
+                    variant="h3"
                     component="h1"
                     sx={{ 
-                      fontWeight: 700, 
-                      color: '#333', 
+                      fontWeight: 800, 
+                      color: '#1a1a1a', 
                       mt: 1,
-                      mb: 2
+                      mb: 2,
+                      fontSize: { xs: '1.8rem', md: '2.2rem' },
+                      lineHeight: 1.2
                     }}
                   >
                     {selectedProduct.name}
                   </Typography>
 
                   {/* Rating */}
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    mb: 3,
+                    p: 2,
+                    background: 'rgba(255, 215, 0, 0.1)',
+                    borderRadius: 2,
+                    border: '1px solid rgba(255, 215, 0, 0.2)'
+                  }}>
                     <Rating
                       value={selectedProduct.ratingAverage || (selectedProduct.ratingCount || 0)}
                       readOnly
-                      sx={{ mr: 1 }}
+                      sx={{ 
+                        mr: 2,
+                        '& .MuiRating-iconFilled': {
+                          color: '#FFD700',
+                        },
+                        '& .MuiRating-iconEmpty': {
+                          color: '#ddd',
+                        }
+                      }}
                     />
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography 
+                      variant="body1" 
+                      sx={{ 
+                        fontWeight: 600,
+                        color: '#333',
+                        fontSize: '0.9rem'
+                      }}
+                    >
                       ({selectedProduct.ratingCount || 0} reviews)
                     </Typography>
                   </Box>
 
                   {/* Price */}
                   <Typography
-                    variant="h5"
+                    variant="h4"
                     sx={{
-                      fontWeight: 700,
+                      fontWeight: 800,
                       color: '#FFD700',
-                      mb: 2,
+                      mb: 3,
+                      fontSize: { xs: '1.8rem', md: '2.2rem' },
+                      textShadow: '0 2px 4px rgba(255, 215, 0, 0.3)'
                     }}
                   >
                     {selectedProduct.price} {selectedProduct.currency}
@@ -879,57 +975,160 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({ isHomePage = fals
 
                   {/* Description */}
                   {selectedProduct.description && (
-                    <Box sx={{ mb: 3 }}>
-                      <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
+                    <Box sx={{ mb: 4 }}>
+                      <Typography 
+                        variant="h6" 
+                        sx={{ 
+                          mb: 2, 
+                          fontWeight: 700,
+                          color: '#333',
+                          fontSize: '1.1rem'
+                        }}
+                      >
                         Description
                       </Typography>
-                      <Typography variant="body1" color="text.secondary">
+                      <Typography 
+                        variant="body1" 
+                        sx={{
+                          color: '#555',
+                          lineHeight: 1.6,
+                          fontSize: '1rem'
+                        }}
+                      >
                         {selectedProduct.description}
                       </Typography>
                     </Box>
                   )}
 
                   {/* Product Details */}
-                  <Box sx={{ mb: 3 }}>
-                    <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
+                  <Box sx={{ 
+                    mb: 4,
+                    p: 3,
+                    background: 'rgba(255, 255, 255, 0.8)',
+                    borderRadius: 2,
+                    border: '1px solid rgba(0, 0, 0, 0.05)',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+                  }}>
+                    <Typography 
+                      variant="h6" 
+                      sx={{ 
+                        mb: 2, 
+                        fontWeight: 700,
+                        color: '#333',
+                        fontSize: '1.1rem'
+                      }}
+                    >
                       Product Details
                     </Typography>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                       {selectedProduct.brand && (
-                        <Box sx={{ display: 'flex' }}>
-                          <Typography variant="body2" sx={{ fontWeight: 600, minWidth: 100 }}>
+                        <Box sx={{ 
+                          display: 'flex', 
+                          alignItems: 'center',
+                          p: 1,
+                          background: 'rgba(255, 215, 0, 0.05)',
+                          borderRadius: 1
+                        }}>
+                          <Typography 
+                            variant="body2" 
+                            sx={{ 
+                              fontWeight: 700, 
+                              minWidth: 80,
+                              color: '#333',
+                              fontSize: '0.9rem'
+                            }}
+                          >
                             Brand:
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography 
+                            variant="body2" 
+                            sx={{
+                              color: '#666',
+                              fontSize: '0.9rem',
+                              fontWeight: 500
+                            }}
+                          >
                             {selectedProduct.brand}
                           </Typography>
                         </Box>
                       )}
                       {selectedProduct.sku && (
-                        <Box sx={{ display: 'flex' }}>
-                          <Typography variant="body2" sx={{ fontWeight: 600, minWidth: 100 }}>
+                        <Box sx={{ 
+                          display: 'flex', 
+                          alignItems: 'center',
+                          p: 1,
+                          background: 'rgba(156, 39, 176, 0.05)',
+                          borderRadius: 1
+                        }}>
+                          <Typography 
+                            variant="body2" 
+                            sx={{ 
+                              fontWeight: 700, 
+                              minWidth: 80,
+                              color: '#333',
+                              fontSize: '0.9rem'
+                            }}
+                          >
                             SKU:
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography 
+                            variant="body2" 
+                            sx={{
+                              color: '#666',
+                              fontSize: '0.9rem',
+                              fontWeight: 500
+                            }}
+                          >
                             {selectedProduct.sku}
                           </Typography>
                         </Box>
                       )}
-                      <Box sx={{ display: 'flex' }}>
-                        <Typography variant="body2" sx={{ fontWeight: 600, minWidth: 100 }}>
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        p: 1,
+                        background: 'rgba(76, 175, 80, 0.05)',
+                        borderRadius: 1
+                      }}>
+                        <Typography 
+                          variant="body2" 
+                          sx={{ 
+                            fontWeight: 700, 
+                            minWidth: 80,
+                            color: '#333',
+                            fontSize: '0.9rem'
+                          }}
+                        >
                           Stock:
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography 
+                          variant="body2" 
+                          sx={{
+                            color: '#666',
+                            fontSize: '0.9rem',
+                            fontWeight: 500
+                          }}
+                        >
                           {selectedProduct.stock || 0} available
                         </Typography>
                       </Box>
                     </Box>
                   </Box>
 
-                  <Divider sx={{ my: 2 }} />
+                  <Divider sx={{ my: 3, borderColor: 'rgba(255, 215, 0, 0.3)' }} />
 
                   {/* Action Buttons */}
-                  <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    gap: 2, 
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    mt: 'auto',
+                    pt: 2,
+                    position: 'sticky',
+                    bottom: 0,
+                    background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                    zIndex: 1
+                  }}>
                     <Button
                       variant="contained"
                       size="large"
@@ -937,18 +1136,33 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({ isHomePage = fals
                       onClick={() => addToCart(selectedProduct._id)}
                       disabled={loadingStates[`cart-${selectedProduct._id}`] || isInCart(selectedProduct._id)}
                       sx={{
-                        background: isInCart(selectedProduct._id) ? '#4CAF50' : '#FFD700',
+                        background: isInCart(selectedProduct._id) 
+                          ? 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)' 
+                          : 'linear-gradient(135deg, #FFD700 0%, #FFC000 100%)',
                         color: '#000',
-                        fontWeight: 600,
-                        borderRadius: 2,
-                        px: 3,
-                        py: 1.5,
+                        fontWeight: 700,
+                        borderRadius: 3,
+                        px: 4,
+                        py: 2,
+                        fontSize: '1rem',
+                        textTransform: 'none',
+                        boxShadow: isInCart(selectedProduct._id)
+                          ? '0 4px 12px rgba(76, 175, 80, 0.3)'
+                          : '0 4px 12px rgba(255, 215, 0, 0.3)',
                         '&:hover': {
-                          background: isInCart(selectedProduct._id) ? '#45a049' : '#FFC000',
+                          background: isInCart(selectedProduct._id) 
+                            ? 'linear-gradient(135deg, #45a049 0%, #3d8b40 100%)' 
+                            : 'linear-gradient(135deg, #FFC000 0%, #FFB300 100%)',
+                          transform: 'translateY(-2px)',
+                          boxShadow: isInCart(selectedProduct._id)
+                            ? '0 6px 16px rgba(76, 175, 80, 0.4)'
+                            : '0 6px 16px rgba(255, 215, 0, 0.4)',
                         },
                         '&:disabled': {
                           opacity: 0.6,
+                          transform: 'none',
                         },
+                        transition: 'all 0.3s ease',
                       }}
                     >
                       {loadingStates[`cart-${selectedProduct._id}`] 
@@ -974,19 +1188,28 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({ isHomePage = fals
                       sx={{
                         borderColor: wishlistItems.has(selectedProduct._id) ? '#FFD700' : '#9C27B0',
                         color: wishlistItems.has(selectedProduct._id) ? '#FFD700' : '#9C27B0',
-                        background: wishlistItems.has(selectedProduct._id) ? 'rgba(255, 215, 0, 0.1)' : 'transparent',
-                        fontWeight: 600,
-                        borderRadius: 2,
-                        px: 3,
-                        py: 1.5,
+                        background: wishlistItems.has(selectedProduct._id) 
+                          ? 'rgba(255, 215, 0, 0.1)' 
+                          : 'rgba(156, 39, 176, 0.05)',
+                        fontWeight: 700,
+                        borderRadius: 3,
+                        px: 4,
+                        py: 2,
+                        fontSize: '1rem',
+                        textTransform: 'none',
+                        borderWidth: 2,
                         '&:hover': {
                           borderColor: '#FFD700',
                           color: '#FFD700',
-                          background: 'rgba(255, 215, 0, 0.1)',
+                          background: 'rgba(255, 215, 0, 0.15)',
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 6px 16px rgba(255, 215, 0, 0.2)',
                         },
                         '&:disabled': {
                           opacity: 0.6,
+                          transform: 'none',
                         },
+                        transition: 'all 0.3s ease',
                       }}
                     >
                       {loadingStates[`wishlist-${selectedProduct._id}`] 

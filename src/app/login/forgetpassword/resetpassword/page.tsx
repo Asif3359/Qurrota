@@ -18,7 +18,7 @@ import { motion } from 'framer-motion';
 import { Email, Lock, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-import QurrotaKids from '../../../../../public/images/QurrotaLogo';
+import QurrotaKids from '../../../../lib/QurrotaLogo';
 
 const ResetPasswordForm: React.FC = () => {
   const [email, setEmail] = useState('');
