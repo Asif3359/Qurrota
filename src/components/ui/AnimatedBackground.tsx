@@ -119,6 +119,8 @@ const AnimatedBackground: React.FC = () => {
         zIndex: -1,
         height: "100vh",
         background: theme.palette.primary.main,
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
       }}
     >
       {floatingElements.map((element) => {
@@ -133,8 +135,13 @@ const AnimatedBackground: React.FC = () => {
               width: element.size,
               height: element.size,
               borderRadius: "50%",
-              background: `rgba(255, 255, 255, ${element.opacity})`,
+              background: `linear-gradient(135deg, 
+                rgba(255, 255, 255, ${element.opacity}) 0%, 
+                rgba(255, 255, 255, ${element.opacity * 0.7}) 50%, 
+                rgba(255, 255, 255, ${element.opacity * 0.5}) 100%)`,
               border: `2px solid rgba(255, 255, 255, ${element.opacity + 0.1})`,
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
             }}
             animate={animation.animate}
             transition={animation.transition}
@@ -151,6 +158,8 @@ const AnimatedBackground: React.FC = () => {
           width: "100%",
           height: "100%",
           background: getRgbaColor(theme.palette.primary.dark, 0.1),
+          backdropFilter: 'blur(5px)',
+          WebkitBackdropFilter: 'blur(5px)',
         }}
       />
     </Box>

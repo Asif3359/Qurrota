@@ -21,7 +21,7 @@ const theme = createTheme({
     },
     text: {
       primary: additionalColors.black,
-      secondary: additionalColors.gray.medium,
+      secondary: additionalColors.gray.dark,
     },
     // Add custom colors for better theming
     success: {

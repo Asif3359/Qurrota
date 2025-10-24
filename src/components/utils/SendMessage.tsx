@@ -46,7 +46,7 @@ const SendMessage = () => {
     sx={{
       background: "rgba(255, 255, 255, 0.95)",
       backdropFilter: "blur(20px)",
-      border: "2px solid rgba(255, 215, 0, 0.3)",
+      border: "2px solid rgba(255, 217, 0, 0)",
       borderRadius: 4,
       position: "relative",
       overflow: "hidden",
@@ -99,10 +99,10 @@ const SendMessage = () => {
             sx={{
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
-                  borderColor: "rgba(255, 215, 0, 0.3)",
+                  borderColor: "rgba(0, 0, 0, 0.66)",
                 },
                 "&:hover fieldset": {
-                  borderColor: "#FFD700",
+                  borderColor: "#9C27B0",
                 },
                 "&.Mui-focused fieldset": {
                   borderColor: "#9C27B0",
@@ -124,10 +124,10 @@ const SendMessage = () => {
             sx={{
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
-                  borderColor: "rgba(255, 215, 0, 0.3)",
+                  borderColor: "rgba(0, 0, 0, 0.66)",
                 },
                 "&:hover fieldset": {
-                  borderColor: "#FFD700",
+                  borderColor: "#9C27B0",
                 },
                 "&.Mui-focused fieldset": {
                   borderColor: "#9C27B0",
@@ -151,10 +151,10 @@ const SendMessage = () => {
             mb: 3,
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
-                borderColor: "rgba(255, 215, 0, 0.3)",
+                borderColor: "rgba(0, 0, 0, 0.66)",
               },
               "&:hover fieldset": {
-                borderColor: "#FFD700",
+                borderColor: "#9C27B0",
               },
               "&.Mui-focused fieldset": {
                 borderColor: "#9C27B0",
@@ -179,10 +179,10 @@ const SendMessage = () => {
             mb: 4,
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
-                borderColor: "rgba(255, 215, 0, 0.3)",
+                borderColor: "rgba(0, 0, 0, 0.66)",
               },
               "&:hover fieldset": {
-                borderColor: "#FFD700",
+                borderColor: "#9C27B0",
               },
               "&.Mui-focused fieldset": {
                 borderColor: "#9C27B0",

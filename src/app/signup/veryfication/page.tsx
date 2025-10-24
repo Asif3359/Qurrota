@@ -22,6 +22,8 @@ const VerificationForm: React.FC = () => {
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
   const [mounted, setMounted] = useState(false);
   const { verifyEmail, resendVerification } = useAuth();
   const router = useRouter();
@@ -35,6 +37,24 @@ const VerificationForm: React.FC = () => {
       setEmail(emailParam);
     }
   }, [searchParams]);
+
+  // Cooldown timer effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (resendCooldown > 0) {
+      interval = setInterval(() => {
+        setResendCooldown((prev) => {
+          if (prev <= 1) {
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [resendCooldown]);
 
   const handleVerifyEmail = async () => {
     setError('');
@@ -74,12 +94,18 @@ const VerificationForm: React.FC = () => {
       return;
     }
 
-    setLoading(true);
+    if (resendCooldown > 0) {
+      setError(`Please wait ${resendCooldown} seconds before requesting another code`);
+      return;
+    }
+
+    setResendLoading(true);
     
     try {
       const success = await (resendVerification ? resendVerification(email) : Promise.resolve(false));
       if (success) {
         setSuccessMsg('Verification code resent to your email');
+        setResendCooldown(60); // 60 seconds cooldown
       } else {
         setError('Failed to resend verification code. Please try again.');
       }
@@ -87,7 +113,7 @@ const VerificationForm: React.FC = () => {
       const message = err instanceof Error ? err.message : 'Failed to resend code';
       setError(message);
     } finally {
-      setLoading(false);
+      setResendLoading(false);
     }
   };
 
@@ -291,18 +317,32 @@ const VerificationForm: React.FC = () => {
                   <Button
                     variant="text"
                     onClick={handleResendCode}
-                    disabled={loading}
+                    disabled={loading || resendLoading || resendCooldown > 0}
                     sx={{
-                      color: '#9C27B0',
+                      color: resendCooldown > 0 ? 'text.disabled' : '#9C27B0',
                       fontWeight: 600,
                       '&:hover': {
-                        color: '#FFD700',
-                        backgroundColor: 'rgba(156, 39, 176, 0.04)',
+                        color: resendCooldown > 0 ? 'text.disabled' : '#FFD700',
+                        backgroundColor: resendCooldown > 0 ? 'transparent' : 'rgba(156, 39, 176, 0.04)',
                       },
                     }}
                   >
-                    Resend Code
+                    {resendLoading ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CircularProgress size={16} color="inherit" />
+                        Sending...
+                      </Box>
+                    ) : resendCooldown > 0 ? (
+                      `Resend Code (${resendCooldown}s)`
+                    ) : (
+                      'Resend Code'
+                    )}
                   </Button>
+                  {resendCooldown > 0 && (
+                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                      Please wait before requesting another code
+                    </Typography>
+                  )}
                 </Box>
               </motion.div>
 

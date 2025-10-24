@@ -4,6 +4,7 @@ import './globals.css';
 import ThemeRegistry from '@/components/ThemeRegistry';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { CartProvider } from '@/contexts/CartContext';
+import { Toaster } from 'react-hot-toast';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -111,6 +112,29 @@ export default function RootLayout({
           <AuthProvider>
             <CartProvider>
               {children}
+              <Toaster
+                position="bottom-right"
+                toastOptions={{
+                  duration: 3000,
+                  style: {
+                    background: '#363636',
+                    color: '#fff',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                  },
+                  success: {
+                    style: {
+                      background: '#4CAF50',
+                    },
+                  },
+                  error: {
+                    style: {
+                      background: '#f44336',
+                    },
+                  },
+                }}
+              />
             </CartProvider>
           </AuthProvider>
         </ThemeRegistry>

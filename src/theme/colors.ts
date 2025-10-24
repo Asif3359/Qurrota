@@ -32,7 +32,7 @@ export const additionalColors = {
   red: '#FF6B6B',
   gray: {
     light: '#f8f9ff',
-    medium: '#666666',
+    medium: '#363636',
     dark: '#333333',
     veryLight: '#fff5f5',
   },

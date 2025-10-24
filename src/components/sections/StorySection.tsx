@@ -142,8 +142,8 @@ const StorySection = () => {
                     icon={<Spa />}
                     label="Eco-Friendly"
                     sx={{
-                      background: "rgba(76, 175, 80, 0.1)",
-                      color: "#4CAF50",
+                      background: "rgb(62, 148, 65)",
+                      color: "#ffffff",
                       fontWeight: 600,
                     }}
                   />
@@ -151,8 +151,8 @@ const StorySection = () => {
                     icon={<Support />}
                     label="24/7 Support"
                     sx={{
-                      background: "rgba(33, 150, 243, 0.1)",
-                      color: "#2196F3",
+                      background: "rgba(33, 149, 243, 0.8)",
+                      color: "#ffffff",
                       fontWeight: 600,
                     }}
                   />
@@ -160,8 +160,8 @@ const StorySection = () => {
                     icon={<EmojiEvents />}
                     label="Award Winning"
                     sx={{
-                      background: "rgba(255, 193, 7, 0.1)",
-                      color: "#FFC107",
+                      background: "rgba(255, 193, 7, 0.63)",
+                      color: "#ffffff",
                       fontWeight: 600,
                     }}
                   />
@@ -224,7 +224,7 @@ const StorySection = () => {
                       fontSize: "1.1rem",
                     }}
                   >
-                    &quot;- Our Promise to Every Family&quot;
+                    Our Promise to Every Family.
                   </Typography>
                 </Box>
               </Box>

@@ -15,9 +15,9 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string; needsVerification?: boolean }>;
   logout: () => void;
-  register: (name: string, email: string, password: string) => Promise<boolean>;
+  register: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   updateUser: (userData: Partial<User>) => void;
   isAuthenticated: boolean;
   isReady: boolean;
@@ -89,7 +89,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsReady(true);
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string; needsVerification?: boolean }> => {
     try {
       const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: 'POST',
@@ -99,11 +99,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (!res.ok) {
         let message = 'Login failed';
+        let needsVerification = false;
         try {
           const errData = await res.json();
-          if (errData?.message) message = errData.message;
+          if (errData?.message) {
+            message = errData.message;
+            // Check if the error indicates email verification is needed
+            if (errData?.code === 'EMAIL_NOT_VERIFIED' || 
+                errData?.message?.toLowerCase().includes('verify') ||
+                errData?.message?.toLowerCase().includes('verification')) {
+              needsVerification = true;
+            }
+          }
         } catch {}
-        throw new Error(message);
+        
+        return { 
+          success: false, 
+          error: message,
+          needsVerification 
+        };
       }
 
       const data = await res.json().catch(() => ({}));
@@ -150,7 +164,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       } catch {
         // ignore storage errors
       }
-      return true;
+      return { success: true };
     } catch (e: unknown) {
       // Bubble up error so UI can show specific message
       if (e instanceof Error) throw e;
@@ -173,7 +187,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch {}
   };
 
-  const register = async (name: string, email: string, password: string): Promise<boolean> => {
+  const register = async (name: string, email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
       const res = await fetch(`${API_BASE}/api/auth/signup`, {
         method: 'POST',
@@ -181,7 +195,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         body: JSON.stringify({ name, email, password })
       });
 
-      if (!res.ok) return false;
+      if (!res.ok) {
+        let errorMessage = 'Registration failed. Please try again.';
+        try {
+          const errorData = await res.json();
+          if (errorData?.message) {
+            errorMessage = errorData.message;
+          } else if (res.status === 409 || errorData?.code === 'EMAIL_EXISTS') {
+            errorMessage = 'This email is already registered. Please use a different email or try signing in.';
+          } else if (res.status === 400) {
+            errorMessage = 'Invalid registration data. Please check your information and try again.';
+          }
+        } catch {
+          // Use default error message if parsing fails
+        }
+        return { success: false, error: errorMessage };
+      }
 
       // Many APIs require email verification after signup. We do not auto-login here.
       const data = await res.json().catch(() => ({}));
@@ -201,9 +230,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(newUser));
         }
       } catch {}
-      return true;
-    } catch {
-      return false;
+      return { success: true };
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Registration failed. Please try again.' 
+      };
     }
   };
 

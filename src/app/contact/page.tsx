@@ -79,26 +79,26 @@ export default function ContactPage() {
   ];
 
   const faqs = [
-    {
-      question: "What are your shipping times?",
-      answer:
-        "We typically ship within 1-2 business days and delivery takes 3-5 business days.",
-    },
+    //   {
+    //     question: "What are your shipping times?",
+    //     answer:
+    //       "We typically ship within 1-2 business days and delivery takes 3-5 business days.",
+    //   },
     {
       question: "Do you offer returns?",
       answer:
-        "Yes, we offer a 30-day return policy for unused items in original packaging.",
+        "Yes, we offer a 7-day return policy for unused items in original packaging.",
     },
     {
       question: "Are your products safe for children?",
       answer:
         "Absolutely! All our products meet or exceed safety standards and are tested for quality.",
     },
-    {
-      question: "Do you ship internationally?",
-      answer:
-        "Currently, we ship to all 50 US states. International shipping coming soon!",
-    },
+    // {
+    //   question: "Do you ship internationally?",
+    //   answer:
+    //     "Currently, we ship to all 50 US states. International shipping coming soon!",
+    // },
   ];
 
   return (

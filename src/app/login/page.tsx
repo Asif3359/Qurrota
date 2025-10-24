@@ -11,7 +11,8 @@ import {
   Container,
   InputAdornment,
   IconButton,
-  Alert
+  Alert,
+  CircularProgress
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { Visibility, VisibilityOff, Email, Lock } from '@mui/icons-material';
@@ -25,29 +26,89 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [needsVerification, setNeedsVerification] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { login } = useAuth();
+  const { login, resendVerification } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Cooldown timer effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (resendCooldown > 0) {
+      interval = setInterval(() => {
+        setResendCooldown((prev) => {
+          if (prev <= 1) {
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [resendCooldown]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setNeedsVerification(false);
     setLoading(true);
 
     try {
-      const success = await login(email, password);
-      if (success) {
+      const result = await login(email, password);
+      if (result.success) {
         router.push('/');
+      } else {
+        setError(result.error || 'Login failed');
+        setNeedsVerification(result.needsVerification || false);
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Invalid email or password';
       setError(message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setError('');
+    
+    if (!email) {
+      setError('Please enter your email address');
+      return;
+    }
+
+    if (resendCooldown > 0) {
+      setError(`Please wait ${resendCooldown} seconds before requesting another code`);
+      return;
+    }
+
+    setResendLoading(true);
+    
+    try {
+      const success = await (resendVerification ? resendVerification(email) : Promise.resolve(false));
+      if (success) {
+        setError(''); // Clear any previous errors
+        setResendCooldown(60); // 60 seconds cooldown
+        // Show success message in a temporary way
+        const originalError = error;
+        setError('Verification code resent to your email');
+        setTimeout(() => setError(originalError), 3000);
+      } else {
+        setError('Failed to resend verification code. Please try again.');
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to resend code';
+      setError(message);
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -184,8 +245,68 @@ const LoginPage: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <Alert severity="error" sx={{ mb: 1 }}>
-                  {error}
+                <Alert 
+                  severity={error.includes('resent') ? 'success' : 'error'} 
+                  sx={{ mb: 1 }}
+                >
+                  <Box>
+                    <Typography variant="body2" sx={{ mb: needsVerification ? 1 : 0 }}>
+                      {error}
+                    </Typography>
+                    {needsVerification && (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Need to verify your email?
+                        </Typography>
+                        <Button
+                          variant="text"
+                          onClick={handleResendVerification}
+                          disabled={resendLoading || resendCooldown > 0}
+                          sx={{
+                            color: '#667eea',
+                            textDecoration: 'none',
+                            fontWeight: 600,
+                            minWidth: 'auto',
+                            p: 0.5,
+                            '&:hover': {
+                              color: '#5a6fd8',
+                              backgroundColor: 'rgba(102, 126, 234, 0.04)',
+                            },
+                          }}
+                        >
+                          {resendLoading ? (
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                              <CircularProgress size={12} color="inherit" />
+                              Sending...
+                            </Box>
+                          ) : resendCooldown > 0 ? (
+                            `Resend (${resendCooldown}s)`
+                          ) : (
+                            'Resend Code'
+                          )}
+                        </Button>
+                      </Box>
+                    )}
+                    {needsVerification && (
+                      <Box sx={{ mt: 1 }}>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() => router.push(`/signup/veryfication?email=${encodeURIComponent(email)}`)}
+                          sx={{
+                            borderColor: '#667eea',
+                            color: '#667eea',
+                            '&:hover': {
+                              borderColor: '#5a6fd8',
+                              backgroundColor: 'rgba(102, 126, 234, 0.04)',
+                            },
+                          }}
+                        >
+                          Go to Verification Page
+                        </Button>
+                      </Box>
+                    )}
+                  </Box>
                 </Alert>
               </motion.div>
             )}

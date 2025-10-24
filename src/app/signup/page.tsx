@@ -53,12 +53,12 @@ const SignupPage: React.FC = () => {
     setLoading(true);
 
     try {
-      const success = await register(name, email, password);
-      if (success) {
+      const result = await register(name, email, password);
+      if (result.success) {
         // Redirect to verification page with email as query parameter
         router.push(`/signup/veryfication?email=${encodeURIComponent(email)}`);
       } else {
-        setError('Registration failed. Please try again.');
+        setError(result.error || 'Registration failed. Please try again.');
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'An error occurred. Please try again.';
@@ -178,7 +178,7 @@ const SignupPage: React.FC = () => {
                   letterSpacing: '-0.02em',
                 }}
               >
-                Join Qurrota to
+                Join Qurrota
               </Typography>
               <Typography
                 variant="body1"
@@ -201,8 +201,41 @@ const SignupPage: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <Alert severity="error" sx={{ mb: 1 }}>
-                  {error}
+                <Alert 
+                  severity="error" 
+                  sx={{ 
+                    mb: 1,
+                    '& .MuiAlert-message': {
+                      width: '100%'
+                    }
+                  }}
+                >
+                  <Box>
+                    <Typography variant="body2" sx={{ mb: error.includes('already registered') ? 1 : 0 }}>
+                      {error}
+                    </Typography>
+                    {error.includes('already registered') && (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Already have an account?
+                        </Typography>
+                        <Link
+                          href="/login"
+                          sx={{
+                            color: '#667eea',
+                            textDecoration: 'none',
+                            fontWeight: 600,
+                            '&:hover': {
+                              color: '#5a6fd8',
+                              textDecoration: 'underline',
+                            },
+                          }}
+                        >
+                          Sign in here
+                        </Link>
+                      </Box>
+                    )}
+                  </Box>
                 </Alert>
               </motion.div>
             )}
