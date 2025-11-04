@@ -91,20 +91,20 @@ const HeroSection: React.FC = () => {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        minHeight: "50vh",
         position: "relative",
         overflow: "hidden",
         background: getRgbaColor(theme.palette.primary.main, 0.76),
       }}
     >
       {/* Full Screen Video Slider */}
-      <Box sx={{ width: "100%", height: "100vh" }}>
+      <Box sx={{ width: "100%", height: "50vh" }}>
         <Suspense
           fallback={
             <Box
               sx={{
                 width: "100%",
-                height: "100vh",
+                height: "50vh",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",

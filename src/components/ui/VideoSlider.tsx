@@ -176,7 +176,7 @@ const VideoSlider: React.FC<VideoSliderProps> = ({
       <Box
         sx={{
           position: "absolute",
-          top: 0,
+          bottom:150,
           left: 0,
           width: "100%",
           height: "100%",
@@ -289,7 +289,7 @@ const VideoSlider: React.FC<VideoSliderProps> = ({
           sx={{
             position: "absolute",
             right: 10,
-            top: "50%",
+            top: "25%",
             transform: "translateY(-50%)",
             background: "rgba(255, 255, 255, 0.9)",
             color: theme.palette.text.primary,
@@ -309,7 +309,7 @@ const VideoSlider: React.FC<VideoSliderProps> = ({
         <Box
           sx={{
             position: "absolute",
-            bottom: 80,
+            bottom: 50,
             left: "50%",
             transform: "translateX(-50%)",
             display: "flex",
