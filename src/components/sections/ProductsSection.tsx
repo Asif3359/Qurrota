@@ -32,6 +32,7 @@ import { normalizeCsvInput } from "../utils/displayCsv";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 type Product = {
   _id: string;
@@ -69,6 +70,7 @@ type Product = {
 const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
   isHomePage = false,
 }) => {
+  const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -589,6 +591,9 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                         background: "rgba(255, 255, 255, 0.95)",
                       },
                     }}
+                    onClick={() => {
+                      router.push(`/products/${product._id}`);
+                    }}
                   >
                     <Box sx={{ position: "relative" }}>
                       <CardMedia
@@ -702,7 +707,10 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                             background: "rgba(156, 39, 176, 1)",
                           },
                         }}
-                        onClick={() => handleQuickView(product)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleQuickView(product);
+                        }}
                       >
                         <Visibility
                           sx={{
@@ -807,7 +815,10 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                               sx={{ fontSize: { xs: 16, sm: 18 } }}
                             />
                           }
-                          onClick={() => addToCart(product._id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addToCart(product._id);
+                          }}
                           disabled={
                             loadingStates[`cart-${product._id}`] ||
                             isInCart(product._id)
