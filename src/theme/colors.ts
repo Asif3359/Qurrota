@@ -5,24 +5,24 @@ export const getThemeColor = (theme: Theme, colorType: 'primary' | 'secondary' |
   return theme.palette[colorType];
 };
 
-// Light yellow color palette
-export const lightYellowColors = {
-  light: '#FFE55C',
-  medium: '#FFD700',
-  dark: '#FFA500',
-  veryLight: '#FFF8DC',
-  orange: '#FFA500',
-  amber: '#FFC107',
-  rgba: 'rgba(255, 255, 255, 0.16)',
+// Soft neutral accent palette (replaces legacy yellow usage)
+export const neutralAccentColors = {
+  light: '#F5F5F7',
+  medium: '#E1E3E8',
+  dark: '#9FA3AD',
+  veryLight: '#FFFFFF',
+  accent: '#D0D4DC',
+  accentStrong: '#B4B9C4',
+  rgba: 'rgba(45, 55, 72, 0.12)',
 };
 
 // Purple color palette
 export const purpleColors = {
-  light: '#D27AE6', // Your requested color
-  medium: '#9C27B0',
-  dark: '#7B1FA2',
-  lighter: '#E1BEE7',
-  veryLight: '#ECA3FF',
+  light: '#7C3AED',
+  medium: '#5B21B6',
+  dark: '#3C0D99',
+  lighter: '#A78BFA',
+  veryLight: '#F3F0FF',
 };
 
 // Additional colors used in the app
@@ -43,24 +43,20 @@ export const additionalColors = {
 
 // CSS custom properties for flexible theming
 export const cssCustomProperties = {
-  // Primary colors (Purple - #D27AE6)
-  '--color-primary': purpleColors.light, // #D27AE6 - Main primary color
+  // Primary colors (Royal Purple)
+  '--color-primary': purpleColors.light,
   '--color-primary-light': purpleColors.veryLight,
   '--color-primary-dark': purpleColors.medium,
   '--color-primary-darker': purpleColors.dark,
-  // Secondary colors (Yellow)
-  '--color-secondary': lightYellowColors.light,
-  '--color-secondary-light': lightYellowColors.veryLight,
-  '--color-secondary-dark': lightYellowColors.medium,
-  '--color-secondary-darker': lightYellowColors.dark,
-  // Legacy naming for backward compatibility
-  '--color-light-yellow': lightYellowColors.light,
-  '--color-medium-yellow': lightYellowColors.medium,
-  '--color-dark-yellow': lightYellowColors.dark,
-  '--color-very-light-yellow': lightYellowColors.veryLight,
-  '--color-orange-yellow': lightYellowColors.orange,
-  '--color-amber-yellow': lightYellowColors.amber,
-  '--color-light-purple': purpleColors.light, // #D27AE6 - your requested color
+  // Secondary colors (Soft Lavender accent)
+  '--color-secondary': neutralAccentColors.accent,
+  '--color-secondary-light': neutralAccentColors.light,
+  '--color-secondary-dark': neutralAccentColors.medium,
+  '--color-secondary-darker': neutralAccentColors.dark,
+  '--color-accent': neutralAccentColors.accent,
+  '--color-accent-strong': neutralAccentColors.accentStrong,
+  '--color-accent-light': neutralAccentColors.veryLight,
+  '--color-light-purple': purpleColors.light,
   '--color-medium-purple': purpleColors.medium,
   '--color-dark-purple': purpleColors.dark,
   '--color-lighter-purple': purpleColors.lighter,
@@ -100,14 +96,15 @@ export const getRadialGradient = (color1: string, color2: string, position: stri
 // Predefined gradients used throughout the app
 export const appGradients = {
   primary: (theme: Theme) => getGradient(theme.palette.primary.main, theme.palette.primary.dark), // Purple gradient
-  primaryToSecondary: (theme: Theme) => getGradient(theme.palette.primary.main, theme.palette.secondary.main), // Purple to yellow
-  primaryToOrange: (theme: Theme) => getGradient(theme.palette.primary.main, lightYellowColors.orange), // Purple to orange
-  secondaryToLight: (theme: Theme) => getGradient(theme.palette.secondary.main, lightYellowColors.veryLight), // Yellow to light yellow
-  yellowToOrange: (theme: Theme) => getGradient(theme.palette.secondary.dark, lightYellowColors.orange), // Yellow to orange
-  yellowToRed: (theme: Theme) => getGradient(theme.palette.secondary.dark, additionalColors.red), // Yellow to red
-  // Purple-focused gradients (now primary)
+  primaryToSecondary: (theme: Theme) =>
+    getGradient(theme.palette.primary.main, theme.palette.secondary.main), // Rich to soft neutral
+  primaryToAccent: (theme: Theme) => getGradient(theme.palette.primary.main, neutralAccentColors.accent), // Soft neutral mix
+  secondaryToLight: (theme: Theme) => getGradient(theme.palette.secondary.main, neutralAccentColors.veryLight), // Neutral wash
+  accentSweep: (theme: Theme) => getGradient(theme.palette.secondary.dark, neutralAccentColors.accent), // Accent sweep
+  accentToHighlight: (theme: Theme) => getGradient(theme.palette.secondary.dark, additionalColors.red), // Accent to highlight
+  // Purple-focused gradients
   purpleToLight: () => getGradient(purpleColors.light, purpleColors.veryLight),
-  purpleToYellow: (theme: Theme) => getGradient(theme.palette.primary.main, theme.palette.secondary.main),
+  purpleToAccent: (theme: Theme) => getGradient(theme.palette.primary.main, theme.palette.secondary.main),
   purpleGradient: () => getGradient(purpleColors.light, purpleColors.medium),
   subtlePurple: (theme: Theme) => getGradient(
     getRgbaColor(theme.palette.primary.main, 0.1),
@@ -119,7 +116,7 @@ export const appGradients = {
     '30% 20%'
   ),
   background: () => getGradient(additionalColors.gray.light, additionalColors.gray.veryLight, 135),
-  rainbow: () => getGradient(purpleColors.light, lightYellowColors.orange, 90), // Purple to orange rainbow
+  rainbow: () => getGradient(purpleColors.light, neutralAccentColors.accent, 90), // Purple to accent spectrum
 };
 
 // Theme-aware color getters
@@ -128,7 +125,7 @@ export const getThemeColors = (theme: Theme) => ({
   secondary: theme.palette.secondary,
   text: theme.palette.text,
   background: theme.palette.background,
-  yellow: lightYellowColors,
+  accent: neutralAccentColors,
   purple: purpleColors,
   additional: additionalColors,
 });

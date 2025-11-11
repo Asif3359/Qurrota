@@ -30,39 +30,54 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AnimatedBackground from "@/components/ui/AnimatedBackground";
 import { getRgbaColor } from "@/theme/colors";
+import { orange } from "@mui/material/colors";
 export default function AboutPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const primaryMain = theme.palette.primary.main;
+  const primaryDark = theme.palette.primary.dark;
+  const secondaryMain = theme.palette.secondary.main;
+  const secondaryLight = theme.palette.secondary.light;
+  const secondaryDark = theme.palette.secondary.dark;
+  const successMain = theme.palette.success.main;
+  const infoMain = theme.palette.info.main;
+  const warningMain = theme.palette.warning.main;
+  const errorMain = theme.palette.error.main;
+  const textPrimary = theme.palette.text.primary;
+  const textSecondary = theme.palette.text.secondary;
+  const white = theme.palette.common.white;
+  const black = theme.palette.common.black;
+
   const values = [
     {
-      icon: <Star sx={{ fontSize: 40, color: "#FFD700" }} />,
+      icon: <Star sx={{ fontSize: 40, color: warningMain }} />,
       title: "Premium Quality",
       description:
         "We never compromise on quality. Every product is carefully selected and tested to meet the highest standards.",
-      color: "#FFD700",
+      color: warningMain,
     },
     {
-      icon: <ChildCare sx={{ fontSize: 40, color: "#9C27B0" }} />,
+      icon: <ChildCare sx={{ fontSize: 40, color: primaryMain }} />,
       title: "Child Safety First",
       description:
         "Your child's safety is our top priority. All products are made with safe, non-toxic materials.",
-      color: "#9C27B0",
+      color: primaryMain,
     },
     {
-      icon: <VerifiedUser sx={{ fontSize: 40, color: "#2196F3" }} />,
+      icon: <VerifiedUser sx={{ fontSize: 40, color: infoMain }} />,
       title: "Trust & Reliability",
       description:
         "Building trust with families through transparent practices and reliable customer service.",
-      color: "#2196F3",
+      color: infoMain,
     },
     {
-      icon: <LocalShipping sx={{ fontSize: 40, color: "#4CAF50" }} />,
+      icon: <LocalShipping sx={{ fontSize: 40, color: successMain }} />,
       title: "Fast Delivery",
       description:
         "Making parenting easier with fast delivery, easy returns, and exceptional support.",
-      color: "#4CAF50",
+      color: successMain,
     },
   ];
 
@@ -97,10 +112,12 @@ export default function AboutPage() {
     { number: "4.9★", label: "Customer Rating", icon: <Star /> },
   ];
 
+
+
   return (
     <Box sx={{ minHeight: "100vh", position: "relative" }}>
       {/* Animated Background */}
-      <AnimatedBackground />
+      {/* <AnimatedBackground /> */}
 
       {/* Header */}
       <Header />
@@ -118,7 +135,7 @@ export default function AboutPage() {
               <Link
                 href="/"
                 color="inherit"
-                sx={{ textDecoration: "none", "&:hover": { color: "#FFD700" } }}
+                sx={{ textDecoration: "none", "&:hover": { color: primaryMain } }}
               >
                 Home
               </Link>
@@ -130,8 +147,8 @@ export default function AboutPage() {
                 label="Est. 2020"
                 sx={{
                   mb: 2,
-                  background: "#FFD700",
-                  color: "#000",
+                  background: primaryMain,
+                  color: white,
                   fontWeight: 600,
                   fontSize: "0.9rem",
                 }}
@@ -142,7 +159,7 @@ export default function AboutPage() {
                 gutterBottom
                 sx={{
                   fontWeight: 800,
-                  color: "#FFD700",
+                  color: primaryMain,
                   mb: 3,
                   fontSize: { xs: "2.5rem", sm: "3rem", md: "4rem" },
                 }}
@@ -167,7 +184,7 @@ export default function AboutPage() {
         </Container>
         <Box
           sx={{
-            background: getRgbaColor(theme.palette.primary.main, 0.76),
+            background: theme.palette.background.default,
             backdropFilter: 'blur(10px)',
           }}
         >
@@ -199,7 +216,7 @@ export default function AboutPage() {
                       gutterBottom
                       sx={{
                         fontWeight: 700,
-                        color: "#333",
+                        color: textPrimary,
                         mb: 3,
                         position: "relative",
                         "&::after": {
@@ -209,7 +226,7 @@ export default function AboutPage() {
                           left: 0,
                           width: 60,
                           height: 4,
-                          background: "#FFD700",
+                          background: primaryMain,
                           borderRadius: 2,
                         },
                       }}
@@ -255,8 +272,8 @@ export default function AboutPage() {
                         icon={<Spa />}
                         label="Eco-Friendly"
                         sx={{
-                          background: "rgb(62, 148, 65)",
-                          color: "#ffffff",
+                          background: successMain,
+                          color: white,
                           fontWeight: 600,
                         }}
                       />
@@ -264,8 +281,8 @@ export default function AboutPage() {
                         icon={<Support />}
                         label="24/7 Support"
                         sx={{
-                          background: "rgba(33, 149, 243, 0.8)",
-                          color: "#ffffff",
+                          background: infoMain,
+                          color: white,
                           fontWeight: 600,
                         }}
                       />
@@ -273,8 +290,8 @@ export default function AboutPage() {
                         icon={<EmojiEvents />}
                         label="Award Winning"
                         sx={{
-                          background: "rgba(255, 193, 7, 0.63)",
-                          color: "#ffffff",
+                          background: orange[600],
+                          color: white,
                           fontWeight: 600,
                         }}
                       />
@@ -291,7 +308,7 @@ export default function AboutPage() {
                   <Box
                     sx={{
                       height: { xs: 300, md: 400 },
-                      background: getRgbaColor(theme.palette.primary.light, 0.75),
+                      background: getRgbaColor(theme.palette.primary.main, 0.7),
                       borderRadius: 4,
                       display: "flex",
                       alignItems: "center",
@@ -306,7 +323,7 @@ export default function AboutPage() {
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        background: getRgbaColor(theme.palette.primary.light, 0.75),
+                        background: getRgbaColor(theme.palette.primary.main, 0.7),
                       },
                     }}
                   >
@@ -322,7 +339,7 @@ export default function AboutPage() {
                         variant="h4"
                         sx={{
                           fontWeight: 700,
-                          color: "#333",
+                          color: 'white',
                           mb: 2,
                           fontStyle: "italic",
                         }}
@@ -332,7 +349,7 @@ export default function AboutPage() {
                       <Typography
                         variant="body1"
                         sx={{
-                          color: "#666",
+                          color: 'white',
                           fontStyle: "italic",
                           fontSize: "1.1rem",
                         }}
@@ -358,7 +375,7 @@ export default function AboutPage() {
                   gutterBottom
                   sx={{
                     fontWeight: 700,
-                    color: "#333",
+                    color: textPrimary,
                     mb: 2,
                   }}
                 >
@@ -451,7 +468,7 @@ export default function AboutPage() {
                           gutterBottom
                           sx={{
                             fontWeight: 700,
-                            color: "#333",
+                            color: textPrimary,
                             mb: 2,
                             fontSize: "1.25rem",
                           }}
@@ -724,8 +741,7 @@ export default function AboutPage() {
                 sx={{
                   mt: { xs: 6, md: 10 },
                   p: { xs: 4, md: 6 },
-                  background: getRgbaColor(theme.palette.primary.light, 0.75),
-                  border: `2px solid ${theme.palette.primary.main}`,
+                  background: theme.palette.background.default,
                   borderRadius: 4,
                   textAlign: "center",
                   position: "relative",
@@ -737,7 +753,7 @@ export default function AboutPage() {
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    background: getRgbaColor(theme.palette.primary.light, 0.75),
+                      background: theme.palette.background.default,
                   },
                 }}
               >
@@ -747,7 +763,7 @@ export default function AboutPage() {
                     gutterBottom
                     sx={{
                       fontWeight: 700,
-                      color: "#333",
+                      color: textPrimary,
                       mb: 3,
                     }}
                   >

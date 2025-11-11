@@ -1,19 +1,19 @@
 import { createTheme } from '@mui/material/styles';
-import { lightYellowColors, purpleColors, additionalColors, cssCustomProperties } from './theme/colors';
+import { neutralAccentColors, purpleColors, additionalColors, cssCustomProperties } from './theme/colors';
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: purpleColors.light, // #D27AE6 - Purple as main color
-      light: purpleColors.veryLight,
+      main: purpleColors.light,
+      light: purpleColors.lighter,
       dark: purpleColors.medium,
-      contrastText: '#FFFFFF',
+      contrastText: additionalColors.white,
     },
     secondary: {
-      main: lightYellowColors.light, // Light yellow as secondary
-      light: lightYellowColors.veryLight,
-      dark: lightYellowColors.medium,
-      contrastText: '#000000',
+      main: neutralAccentColors.accent,
+      light: neutralAccentColors.light,
+      dark: neutralAccentColors.accentStrong,
+      contrastText: additionalColors.black,
     },
     background: {
       default: additionalColors.white,
@@ -21,7 +21,7 @@ const theme = createTheme({
     },
     text: {
       primary: additionalColors.black,
-      secondary: additionalColors.gray.dark,
+      secondary: additionalColors.gray.medium,
     },
     // Add custom colors for better theming
     success: {
@@ -33,7 +33,7 @@ const theme = createTheme({
       contrastText: additionalColors.white,
     },
     warning: {
-      main: lightYellowColors.amber,
+      main: neutralAccentColors.accentStrong,
       contrastText: additionalColors.black,
     },
     error: {

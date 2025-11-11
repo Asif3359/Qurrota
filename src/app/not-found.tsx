@@ -14,7 +14,7 @@ import { motion } from 'framer-motion';
 import { Home, ArrowBack } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import QurrotaKids from '../lib/QurrotaLogo';
-import { purpleColors, lightYellowColors, appGradients } from '../theme/colors';
+import { purpleColors, neutralAccentColors, appGradients } from '../theme/colors';
 
 const NotFound = () => {
   const [mounted, setMounted] = useState(false);
@@ -34,7 +34,7 @@ const NotFound = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: appGradients.purpleToYellow(theme),
+        background: appGradients.purpleToAccent(theme),
         padding: 2,
         position: 'relative',
         overflow: 'hidden',
@@ -45,7 +45,7 @@ const NotFound = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          background: `radial-gradient(circle at 20% 80%, ${lightYellowColors.veryLight} 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%)`,
+          background: `radial-gradient(circle at 20% 80%, ${neutralAccentColors.veryLight} 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%)`,
           zIndex: 0,
         }
       }}
@@ -75,7 +75,7 @@ const NotFound = () => {
                 left: 0,
                 right: 0,
                 height: '4px',
-                background: `linear-gradient(90deg, ${lightYellowColors.medium}, ${lightYellowColors.orange}, ${lightYellowColors.medium})`,
+                background: `linear-gradient(90deg, ${neutralAccentColors.medium}, ${neutralAccentColors.accent}, ${neutralAccentColors.medium})`,
                 backgroundSize: '200% 100%',
                 animation: 'shimmer 3s ease-in-out infinite',
               },
@@ -104,7 +104,7 @@ const NotFound = () => {
                     transform: 'translateX(-50%)',
                     width: '80px',
                     height: '3px',
-                    background: `linear-gradient(90deg, ${lightYellowColors.medium}, ${lightYellowColors.orange})`,
+                    background: `linear-gradient(90deg, ${neutralAccentColors.medium}, ${neutralAccentColors.accent})`,
                     borderRadius: '2px',
                   }
                 }}

@@ -27,7 +27,7 @@ import {
   Close,
   Visibility,
 } from "@mui/icons-material";
-import { getRgbaColor } from "@/theme/colors";
+import { getRgbaColor, appGradients } from "@/theme/colors";
 import { normalizeCsvInput } from "../utils/displayCsv";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
@@ -76,6 +76,18 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
   const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { token, user } = useAuth();
   const { addToCart: addToCartContext, isInCart } = useCart();
+
+  // Theme color constants
+  const primaryMain = theme.palette.primary.main;
+  const primaryDark = theme.palette.primary.dark;
+  const secondaryMain = theme.palette.secondary.main;
+  const successMain = theme.palette.success.main;
+  const errorMain = theme.palette.error.main;
+  const textPrimary = theme.palette.text.primary;
+  const textSecondary = theme.palette.text.secondary;
+  const backgroundPaper = theme.palette.background.paper;
+  const white = theme.palette.common.white;
+  const black = theme.palette.common.black;
 
   // Debug user data on component mount
   React.useEffect(() => {
@@ -220,7 +232,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
         token: token ? "present" : "missing",
       });
 
-      const response = await fetch("http://localhost:3000/api/wishlist/add", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/wishlist/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -307,7 +319,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/wishlist/remove/${productId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/wishlist/remove/${productId}`,
         {
           method: "DELETE",
           headers: {
@@ -374,7 +386,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
 
       try {
         const response = await fetch(
-          `http://localhost:3000/api/wishlist/check/${productId}`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/wishlist/check/${productId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -487,7 +499,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
         pt: 6,
         pb: 6,
         // background: 'rgba(255, 255, 255, 0.8)',
-        background: getRgbaColor(theme.palette.primary.main, 0.76),
+        background: theme.palette.background.default,
         backdropFilter: "blur(10px)",
       }}
     >
@@ -498,20 +510,44 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <Typography
-            variant={isSmallMobile ? "h5" : isMobile ? "h4" : "h3"}
-            component="h2"
-            align="center"
-            gutterBottom
-            sx={{
-              fontWeight: 700,
-              color: "#FFD700",
-              mb: { xs: 1, sm: 2 },
-              fontSize: { xs: "1.75rem", sm: "2.125rem", md: "3rem" },
-            }}
-          >
-            Featured Products
-          </Typography>
+          {
+            isHomePage && (
+              <Typography
+                variant="h6"
+                component="h2"
+                align="center"
+                gutterBottom
+                sx={{
+                  fontWeight: 700,
+                  color: theme.palette.text.primary,
+                  mb: { xs: 1, sm: 2 },
+                  fontSize: { xs: "1.75rem", sm: "2.125rem", md: "3rem" },
+                }}
+              >
+                Featured Products
+              </Typography>
+            )
+          }
+
+          {
+            !isHomePage && (
+              <Typography
+                variant="h3"
+                component="h1"
+                align="center"
+                gutterBottom
+                sx={{
+                  fontWeight: 700,
+                  color: theme.palette.text.primary,
+                  mb: { xs: 1, sm: 2 },
+                  fontSize: { xs: "1.75rem", sm: "2.125rem", md: "3rem" },
+                }}
+              >
+               Featured Products
+              </Typography>
+            )
+          }
+ 
 
           <Typography
             variant={isSmallMobile ? "body1" : "h6"}
@@ -546,13 +582,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
           </Box>
         )}
 
-        {!loading && !error && products.length === 0 && (
-          <Box sx={{ textAlign: "center", py: 4 }}>
-            <Typography variant="h6" color="text.secondary">
-              No products available
-            </Typography>
-          </Box>
-        )}
+
 
         {!loading && !error && products.length > 0 && (
           <Box
@@ -580,15 +610,15 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                     elevation={0}
                     sx={{
                       height: "100%",
-                      background: "rgba(255, 255, 255, 0.9)",
+                      background: getRgbaColor(backgroundPaper, 0.9),
                       backdropFilter: "blur(10px)",
-                      border: "1px solid rgba(255, 215, 0, 0.2)",
+                      border: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
                       borderRadius: { xs: 2, sm: 3 },
                       overflow: "hidden",
                       transition: "all 0.3s ease",
                       "&:hover": {
-                        borderColor: "#FFD700",
-                        background: "rgba(255, 255, 255, 0.95)",
+                        borderColor: primaryMain,
+                        background: getRgbaColor(backgroundPaper, 0.95),
                       },
                     }}
                     onClick={() => {
@@ -628,8 +658,8 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                               label="New"
                               size={isSmallMobile ? "small" : "small"}
                               sx={{
-                                background: "#FFD700",
-                                color: "#000",
+                                background: secondaryMain,
+                                color: black,
                                 fontWeight: 600,
                                 fontSize: { xs: "0.7rem", sm: "0.75rem" },
                                 height: { xs: 20, sm: 24 },
@@ -642,8 +672,8 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                             label="Popular"
                             size={isSmallMobile ? "small" : "small"}
                             sx={{
-                              background: "#9C27B0",
-                              color: "#fff",
+                              background: primaryMain,
+                              color: white,
                               fontWeight: 600,
                               fontSize: { xs: "0.7rem", sm: "0.75rem" },
                               height: { xs: 20, sm: 24 },
@@ -701,10 +731,10 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                           width: { xs: 32, sm: 40 },
                           height: { xs: 32, sm: 40 },
                           borderRadius: "50%",
-                          background: "rgba(156, 39, 176, 0.9)",
+                          background: getRgbaColor(primaryMain, 0.9),
                           backdropFilter: "blur(10px)",
                           "&:hover": {
-                            background: "rgba(156, 39, 176, 1)",
+                            background: primaryMain,
                           },
                         }}
                         onClick={(e) => {
@@ -745,7 +775,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                         gutterBottom
                         sx={{
                           fontWeight: 600,
-                          color: "#333",
+                          color: textPrimary,
                           mt: 1,
                           fontSize: { xs: "0.875rem", sm: "1.25rem" },
                           lineHeight: { xs: 1.3, sm: 1.4 },
@@ -800,7 +830,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                           variant={isSmallMobile ? "subtitle1" : "h6"}
                           sx={{
                             fontWeight: 700,
-                            color: "#FFD700",
+                            color: primaryMain,
                             fontSize: { xs: "1rem", sm: "1.25rem" },
                           }}
                         >
@@ -825,9 +855,11 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                           }
                           sx={{
                             background: isInCart(product._id)
-                              ? "#4CAF50"
-                              : "#FFD700",
-                            color: "#000",
+                              ? successMain
+                              : appGradients.primary(theme),
+                            color: isInCart(product._id)
+                              ? white
+                              : theme.palette.primary.contrastText,
                             fontWeight: 600,
                             borderRadius: 2,
                             fontSize: { xs: "0.75rem", sm: "0.875rem" },
@@ -835,8 +867,8 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                             py: { xs: 0.5, sm: 0.75 },
                             "&:hover": {
                               background: isInCart(product._id)
-                                ? "#45a049"
-                                : "#FFC000",
+                                ? successMain
+                                : appGradients.primary(theme),
                             },
                             "&:disabled": {
                               opacity: 0.6,
@@ -873,17 +905,17 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                 size={isSmallMobile ? "medium" : "large"}
                 href="/products"
                 sx={{
-                  borderColor: "#9C27B0",
-                  color: "#9C27B0",
+                  borderColor: theme.palette.primary.main,
+                  color: theme.palette.primary.main,
                   fontWeight: 600,
                   px: { xs: 3, sm: 4 },
                   py: { xs: 1, sm: 1.5 },
                   fontSize: { xs: "0.875rem", sm: "1.1rem" },
                   borderRadius: 3,
                   "&:hover": {
-                    borderColor: "#FFD700",
-                    color: "#FFD700",
-                    background: "rgba(255, 215, 0, 0.1)",
+                    borderColor: theme.palette.primary.dark,
+                    color: theme.palette.primary.dark,
+                    background: getRgbaColor(theme.palette.primary.main, 0.1),
                   },
                 }}
               >
@@ -916,10 +948,10 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
             maxHeight: { xs: "98vh", sm: "95vh", md: "90vh" },
             bgcolor: "background.paper",
             borderRadius: { xs: 2, sm: 3 },
-            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+            boxShadow: `0 25px 50px -12px ${getRgbaColor(black, 0.25)}`,
             overflow: "auto",
             outline: "none",
-            border: "1px solid rgba(255, 215, 0, 0.2)",
+            border: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
             display: "flex",
             flexDirection: "column",
           }}
@@ -932,15 +964,15 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
               top: 16,
               right: 16,
               zIndex: 10,
-              bgcolor: "#FF4444",
-              color: "#fff",
+              bgcolor: errorMain,
+              color: white,
               width: 40,
               height: 40,
-              boxShadow: "0 4px 12px rgba(255, 68, 68, 0.3)",
+              boxShadow: `0 4px 12px ${getRgbaColor(errorMain, 0.3)}`,
               "&:hover": {
-                bgcolor: "#FF3333",
+                bgcolor: errorMain,
                 transform: "scale(1.05)",
-                boxShadow: "0 6px 16px rgba(255, 68, 68, 0.4)",
+                boxShadow: `0 6px 16px ${getRgbaColor(errorMain, 0.4)}`,
               },
               transition: "all 0.2s ease-in-out",
             }}
@@ -965,8 +997,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                   height: { xs: 300, sm: 350, md: "auto" },
                   minHeight: { xs: 300, sm: 350, md: 500 },
                   maxHeight: { xs: 350, sm: 400, md: "70vh" },
-                  background:
-                    "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+                  background: appGradients.background(),
                   display: "flex",
                   flexDirection: "column",
                   overflow: "hidden",
@@ -1017,12 +1048,12 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                           label="New"
                           size="small"
                           sx={{
-                            background: "#FFD700",
-                            color: "#000",
+                            background: secondaryMain,
+                            color: black,
                             fontWeight: 700,
                             fontSize: "0.75rem",
                             height: 28,
-                            boxShadow: "0 2px 8px rgba(255, 215, 0, 0.3)",
+                            boxShadow: `0 2px 8px ${getRgbaColor(secondaryMain, 0.3)}`,
                             "&:hover": {
                               transform: "scale(1.05)",
                             },
@@ -1035,12 +1066,12 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                           label="Popular"
                           size="small"
                           sx={{
-                            background: "#9C27B0",
-                            color: "#fff",
+                            background: primaryMain,
+                            color: white,
                             fontWeight: 700,
                             fontSize: "0.75rem",
                             height: 28,
-                            boxShadow: "0 2px 8px rgba(156, 39, 176, 0.3)",
+                            boxShadow: `0 2px 8px ${getRgbaColor(primaryMain, 0.3)}`,
                             "&:hover": {
                               transform: "scale(1.05)",
                             },
@@ -1056,9 +1087,9 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                     <Box
                       sx={{
                         p: 3,
-                        background: "rgba(255, 255, 255, 0.95)",
+                        background: getRgbaColor(backgroundPaper, 0.95),
                         backdropFilter: "blur(10px)",
-                        borderTop: "1px solid rgba(255, 215, 0, 0.2)",
+                        borderTop: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
                       }}
                     >
                       <Typography
@@ -1066,7 +1097,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                         sx={{
                           mb: 2,
                           fontWeight: 700,
-                          color: "#333",
+                          color: textPrimary,
                           fontSize: "0.9rem",
                           textTransform: "uppercase",
                           letterSpacing: "0.5px",
@@ -1084,15 +1115,15 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                             height: 6,
                           },
                           "&::-webkit-scrollbar-track": {
-                            background: "rgba(0, 0, 0, 0.1)",
+                            background: getRgbaColor(black, 0.1),
                             borderRadius: 3,
                           },
                           "&::-webkit-scrollbar-thumb": {
-                            background: "rgba(255, 215, 0, 0.6)",
+                            background: getRgbaColor(primaryMain, 0.6),
                             borderRadius: 3,
                           },
                           "&::-webkit-scrollbar-thumb:hover": {
-                            background: "rgba(255, 215, 0, 0.8)",
+                            background: getRgbaColor(primaryMain, 0.8),
                           },
                         }}
                       >
@@ -1107,22 +1138,19 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                               cursor: "pointer",
                               border:
                                 selectedImageIndex === index
-                                  ? "3px solid #FFD700"
-                                  : "3px solid transparent",
+                                  ? `3px solid ${primaryMain}`
+                                  : `3px solid ${getRgbaColor(primaryMain, 0.1)}`,
                               borderRadius: 2,
                               overflow: "hidden",
                               transition: "all 0.3s ease",
                               boxShadow:
                                 selectedImageIndex === index
-                                  ? "0 4px 12px rgba(255, 215, 0, 0.4)"
-                                  : "0 2px 8px rgba(0, 0, 0, 0.1)",
+                                  ? `0 4px 12px ${getRgbaColor(primaryMain, 0.4)}`
+                                  : `0 2px 8px ${getRgbaColor(black, 0.1)}`,
                               "&:hover": {
-                                borderColor:
-                                  selectedImageIndex === index
-                                    ? "#FFD700"
-                                    : "#9C27B0",
-                                transform: "scale(1.08)",
-                                boxShadow: "0 6px 16px rgba(0, 0, 0, 0.15)",
+                                borderColor: primaryMain,
+                                transform: "scale(1.05)",
+                                boxShadow: `0 4px 12px ${getRgbaColor(primaryMain, 0.3)}`,
                               },
                             }}
                           >
@@ -1151,8 +1179,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                   flex: { xs: "none", md: "0 0 50%" },
                   display: "flex",
                   flexDirection: "column",
-                  background:
-                    "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
+                  background: appGradients.background(),
                   overflow: "auto",
                   maxHeight: { xs: "50vh", sm: "60vh", md: "80vh" },
                   minHeight: { xs: 300, sm: 400, md: 500 },
@@ -1176,7 +1203,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       fontWeight: 700,
                       fontSize: "0.8rem",
                       letterSpacing: "1px",
-                      color: "#666",
+                      color: textSecondary,
                     }}
                   >
                     {normalizeCsvInput(selectedProduct.categories ?? "")}
@@ -1188,7 +1215,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                     component="h1"
                     sx={{
                       fontWeight: 800,
-                      color: "#1a1a1a",
+                      color: textPrimary,
                       mt: 1,
                       mb: 2,
                       fontSize: { xs: "1.8rem", md: "2.2rem" },
@@ -1205,9 +1232,9 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       alignItems: "center",
                       mb: 3,
                       p: 2,
-                      background: "rgba(255, 215, 0, 0.1)",
+                      background: getRgbaColor(primaryMain, 0.1),
                       borderRadius: 2,
-                      border: "1px solid rgba(255, 215, 0, 0.2)",
+                      border: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
                     }}
                   >
                     <Rating
@@ -1231,7 +1258,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       variant="body1"
                       sx={{
                         fontWeight: 600,
-                        color: "#333",
+                        color: textPrimary,
                         fontSize: "0.9rem",
                       }}
                     >
@@ -1244,10 +1271,10 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                     variant="h4"
                     sx={{
                       fontWeight: 800,
-                      color: "#FFD700",
+                      color: primaryMain,
                       mb: 3,
                       fontSize: { xs: "1.8rem", md: "2.2rem" },
-                      textShadow: "0 2px 4px rgba(255, 215, 0, 0.3)",
+                      textShadow: `0 2px 4px ${getRgbaColor(primaryMain, 0.3)}`,
                     }}
                   >
                     {selectedProduct.price} {selectedProduct.currency}
@@ -1261,7 +1288,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                         sx={{
                           mb: 2,
                           fontWeight: 700,
-                          color: "#333",
+                          color: textPrimary,
                           fontSize: "1.1rem",
                         }}
                       >
@@ -1270,7 +1297,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       <Typography
                         variant="body1"
                         sx={{
-                          color: "#555",
+                          color: textSecondary,
                           lineHeight: 1.6,
                           fontSize: "1rem",
                         }}
@@ -1285,10 +1312,10 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                     sx={{
                       mb: 4,
                       p: 3,
-                      background: "rgba(255, 255, 255, 0.8)",
+                      background: getRgbaColor(backgroundPaper, 0.8),
                       borderRadius: 2,
-                      border: "1px solid rgba(0, 0, 0, 0.05)",
-                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+                      border: `1px solid ${getRgbaColor(black, 0.05)}`,
+                      boxShadow: `0 2px 8px ${getRgbaColor(black, 0.05)}`,
                     }}
                   >
                     <Typography
@@ -1296,7 +1323,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       sx={{
                         mb: 2,
                         fontWeight: 700,
-                        color: "#333",
+                        color: textPrimary,
                         fontSize: "1.1rem",
                       }}
                     >
@@ -1315,7 +1342,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                             display: "flex",
                             alignItems: "center",
                             p: 1,
-                            background: "rgba(255, 215, 0, 0.05)",
+                            background: getRgbaColor(primaryMain, 0.05),
                             borderRadius: 1,
                           }}
                         >
@@ -1324,7 +1351,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                             sx={{
                               fontWeight: 700,
                               minWidth: 80,
-                              color: "#333",
+                              color: textPrimary,
                               fontSize: "0.9rem",
                             }}
                           >
@@ -1333,7 +1360,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                           <Typography
                             variant="body2"
                             sx={{
-                              color: "#666",
+                              color: textSecondary,
                               fontSize: "0.9rem",
                               fontWeight: 500,
                             }}
@@ -1348,7 +1375,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                             display: "flex",
                             alignItems: "center",
                             p: 1,
-                            background: "rgba(156, 39, 176, 0.05)",
+                            background: getRgbaColor(primaryMain, 0.05),
                             borderRadius: 1,
                           }}
                         >
@@ -1357,7 +1384,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                             sx={{
                               fontWeight: 700,
                               minWidth: 80,
-                              color: "#333",
+                              color: textPrimary,
                               fontSize: "0.9rem",
                             }}
                           >
@@ -1366,7 +1393,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                           <Typography
                             variant="body2"
                             sx={{
-                              color: "#666",
+                              color: textSecondary,
                               fontSize: "0.9rem",
                               fontWeight: 500,
                             }}
@@ -1380,7 +1407,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                           display: "flex",
                           alignItems: "center",
                           p: 1,
-                          background: "rgba(76, 175, 80, 0.05)",
+                          background: getRgbaColor(successMain, 0.05),
                           borderRadius: 1,
                         }}
                       >
@@ -1389,7 +1416,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                           sx={{
                             fontWeight: 700,
                             minWidth: 80,
-                            color: "#333",
+                            color: textPrimary,
                             fontSize: "0.9rem",
                           }}
                         >
@@ -1398,7 +1425,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                         <Typography
                           variant="body2"
                           sx={{
-                            color: "#666",
+                            color: textSecondary,
                             fontSize: "0.9rem",
                             fontWeight: 500,
                           }}
@@ -1410,7 +1437,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                   </Box>
 
                   <Divider
-                    sx={{ my: 3, borderColor: "rgba(255, 215, 0, 0.3)" }}
+                    sx={{ my: 3, borderColor: getRgbaColor(primaryMain, 0.3) }}
                   />
 
                   {/* Action Buttons */}
@@ -1423,8 +1450,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       pt: 2,
                       position: "sticky",
                       bottom: 0,
-                      background:
-                        "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
+                      background: appGradients.background(),
                       zIndex: 1,
                     }}
                   >
@@ -1439,9 +1465,11 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       }
                       sx={{
                         background: isInCart(selectedProduct._id)
-                          ? "linear-gradient(135deg, #4CAF50 0%, #45a049 100%)"
-                          : "linear-gradient(135deg, #FFD700 0%, #FFC000 100%)",
-                        color: "#000",
+                          ? successMain
+                          : appGradients.primary(theme),
+                        color: isInCart(selectedProduct._id)
+                          ? white
+                          : theme.palette.primary.contrastText,
                         fontWeight: 700,
                         borderRadius: 3,
                         px: 4,
@@ -1449,16 +1477,16 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                         fontSize: "1rem",
                         textTransform: "none",
                         boxShadow: isInCart(selectedProduct._id)
-                          ? "0 4px 12px rgba(76, 175, 80, 0.3)"
-                          : "0 4px 12px rgba(255, 215, 0, 0.3)",
+                          ? `0 4px 12px ${getRgbaColor(successMain, 0.3)}`
+                          : `0 4px 12px ${getRgbaColor(primaryMain, 0.3)}`,
                         "&:hover": {
                           background: isInCart(selectedProduct._id)
-                            ? "linear-gradient(135deg, #45a049 0%, #3d8b40 100%)"
-                            : "linear-gradient(135deg, #FFC000 0%, #FFB300 100%)",
+                            ? successMain
+                            : appGradients.primary(theme),
                           transform: "translateY(-2px)",
                           boxShadow: isInCart(selectedProduct._id)
-                            ? "0 6px 16px rgba(76, 175, 80, 0.4)"
-                            : "0 6px 16px rgba(255, 215, 0, 0.4)",
+                            ? `0 6px 16px ${getRgbaColor(successMain, 0.4)}`
+                            : `0 6px 16px ${getRgbaColor(primaryMain, 0.4)}`,
                         },
                         "&:disabled": {
                           opacity: 0.6,
@@ -1490,14 +1518,14 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       }
                       sx={{
                         borderColor: wishlistItems.has(selectedProduct._id)
-                          ? "#FFD700"
-                          : "#9C27B0",
+                          ? primaryMain
+                          : primaryDark,
                         color: wishlistItems.has(selectedProduct._id)
-                          ? "#FFD700"
-                          : "#9C27B0",
+                          ? primaryMain
+                          : primaryDark,
                         background: wishlistItems.has(selectedProduct._id)
-                          ? "rgba(255, 215, 0, 0.1)"
-                          : "rgba(156, 39, 176, 0.05)",
+                          ? getRgbaColor(primaryMain, 0.1)
+                          : getRgbaColor(primaryMain, 0.05),
                         fontWeight: 700,
                         borderRadius: 3,
                         px: 4,
@@ -1506,11 +1534,11 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                         textTransform: "none",
                         borderWidth: 2,
                         "&:hover": {
-                          borderColor: "#FFD700",
-                          color: "#FFD700",
-                          background: "rgba(255, 215, 0, 0.15)",
+                          borderColor: primaryMain,
+                          color: primaryMain,
+                          background: getRgbaColor(primaryMain, 0.15),
                           transform: "translateY(-2px)",
-                          boxShadow: "0 6px 16px rgba(255, 215, 0, 0.2)",
+                          boxShadow: `0 6px 16px ${getRgbaColor(primaryMain, 0.2)}`,
                         },
                         "&:disabled": {
                           opacity: 0.6,
@@ -1557,7 +1585,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
             boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
             overflow: "hidden",
             outline: "none",
-            border: "1px solid rgba(255, 215, 0, 0.2)",
+            border: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
             p: 4,
           }}
         >
@@ -1572,7 +1600,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                 component="h2"
                 sx={{
                   fontWeight: 700,
-                  color: "#FFD700",
+                  color: primaryMain,
                   mb: 2,
                   fontSize: { xs: "1.5rem", sm: "2rem" },
                 }}
@@ -1588,9 +1616,9 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                     gap: 2,
                     mb: 3,
                     p: 2,
-                    background: "rgba(255, 215, 0, 0.1)",
+                    background: getRgbaColor(primaryMain, 0.1),
                     borderRadius: 2,
-                    border: "1px solid rgba(255, 215, 0, 0.2)",
+                    border: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
                   }}
                 >
                   <Box
@@ -1612,7 +1640,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       variant="subtitle1"
                       sx={{
                         fontWeight: 600,
-                        color: "#333",
+                        color: textPrimary,
                         fontSize: "1rem",
                         lineHeight: 1.3,
                       }}
@@ -1623,7 +1651,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       variant="h6"
                       sx={{
                         fontWeight: 700,
-                        color: "#FFD700",
+                        color: primaryMain,
                         fontSize: "1.1rem",
                       }}
                     >
@@ -1652,9 +1680,9 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                 justifyContent: 'center',
                 mb: 2,
                 p: 2,
-                background: 'rgba(255, 215, 0, 0.05)',
+                background: getRgbaColor(primaryMain, 0.05),
                 borderRadius: 2,
-                border: '1px solid rgba(255, 215, 0, 0.2)'
+                border: `1px solid ${getRgbaColor(primaryMain, 0.2)}`
               }}>
                 <FormControlLabel
                   control={
@@ -1662,9 +1690,9 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       checked={dontShowAgain}
                       onChange={(e) => setDontShowAgain(e.target.checked)}
                       sx={{
-                        color: '#FFD700',
+                        color: primaryMain,
                         '&.Mui-checked': {
-                          color: '#FFD700',
+                          color: primaryMain,
                         },
                       }}
                     />
@@ -1673,7 +1701,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                     <Typography
                       variant="body2"
                       sx={{
-                        color: '#666',
+                        color: textSecondary,
                         fontSize: '0.9rem',
                         fontWeight: 500,
                       }}
@@ -1698,17 +1726,17 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                 size="large"
                 onClick={cancelAddToCart}
                 sx={{
-                  borderColor: "#9C27B0",
-                  color: "#9C27B0",
+                  borderColor: primaryMain,
+                  color: primaryMain,
                   fontWeight: 600,
                   px: 4,
                   py: 1.5,
                   fontSize: "1rem",
                   borderRadius: 3,
                   "&:hover": {
-                    borderColor: "#7B1FA2",
-                    color: "#7B1FA2",
-                    background: "rgba(156, 39, 176, 0.05)",
+                    borderColor: primaryDark,
+                    color: primaryDark,
+                    background: getRgbaColor(primaryMain, 0.05),
                   },
                 }}
               >
@@ -1727,20 +1755,18 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                   }}
                   disabled={loadingStates[`cart-${pendingCartProduct?._id}`]}
                   sx={{
-                    background:
-                      "linear-gradient(135deg, #FFD700 0%, #FFC000 100%)",
-                    color: "#000",
+                    background: appGradients.primary(theme),
+                    color: theme.palette.primary.contrastText,
                     fontWeight: 700,
                     px: 4,
                     py: 1.5,
                     fontSize: "1rem",
                     borderRadius: 3,
-                    boxShadow: "0 4px 12px rgba(255, 215, 0, 0.3)",
+                    boxShadow: `0 4px 12px ${getRgbaColor(primaryMain, 0.3)}`,
                     "&:hover": {
-                      background:
-                        "linear-gradient(135deg, #FFC000 0%, #FFB300 100%)",
+                      background: appGradients.primary(theme),
                       transform: "translateY(-2px)",
-                      boxShadow: "0 6px 16px rgba(255, 215, 0, 0.4)",
+                      boxShadow: `0 6px 16px ${getRgbaColor(primaryMain, 0.4)}`,
                     },
                     "&:disabled": {
                       opacity: 0.6,

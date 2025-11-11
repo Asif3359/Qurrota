@@ -2,13 +2,29 @@ import { motion } from "framer-motion";
 import { Box, Typography, Chip, Container } from "@mui/material";
 import { Spa, Support, EmojiEvents } from "@mui/icons-material";
 import { useMediaQuery } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { useTheme, withTheme } from "@mui/material/styles";
 import React from "react";
 import { getRgbaColor } from "../../theme/colors";
+import { orange } from "@mui/material/colors";
 
 const StorySection = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+
+  const primaryMain = theme.palette.primary.main;
+  const primaryDark = theme.palette.primary.dark;
+  const secondaryMain = theme.palette.secondary.main;
+  const secondaryLight = theme.palette.secondary.light;
+  const secondaryDark = theme.palette.secondary.dark;
+  const successMain = theme.palette.success.main;
+  const infoMain = theme.palette.info.main;
+  const warningMain = theme.palette.warning.main;
+  const errorMain = theme.palette.error.main;
+  const textPrimary = theme.palette.text.primary;
+  const textSecondary = theme.palette.text.secondary;
+  const white = theme.palette.common.white;
+  const black = theme.palette.common.black;
 
   return (
     <Box
@@ -17,7 +33,7 @@ const StorySection = () => {
         display: "flex",
         flexDirection: "column",
         gap: 2,
-        background: getRgbaColor(theme.palette.primary.main, 0.76),
+        background: theme.palette.background.default,
         backdropFilter: "blur(10px)",
         borderRadius: 2,
       }}
@@ -36,7 +52,7 @@ const StorySection = () => {
             gutterBottom
             sx={{
               fontWeight: 700,
-              color: "#FFD700",
+              color: theme.palette.text.primary,
               mb: { xs: 1, sm: 2 },
               fontSize: { xs: "1.75rem", sm: "2.125rem", md: "3rem" },
             }}
@@ -86,7 +102,7 @@ const StorySection = () => {
                   gutterBottom
                   sx={{
                     fontWeight: 700,
-                    color: "#333",
+                    color: theme.palette.text.primary,
                     mb: 3,
                     position: "relative",
                     "&::after": {
@@ -96,7 +112,7 @@ const StorySection = () => {
                       left: 0,
                       width: 60,
                       height: 4,
-                      background: "#FFD700",
+                      background: theme.palette.primary.main,
                       borderRadius: 2,
                     },
                   }}
@@ -142,8 +158,8 @@ const StorySection = () => {
                     icon={<Spa />}
                     label="Eco-Friendly"
                     sx={{
-                      background: "rgb(62, 148, 65)",
-                      color: "#ffffff",
+                      background: successMain,
+                      color: white,
                       fontWeight: 600,
                     }}
                   />
@@ -151,8 +167,8 @@ const StorySection = () => {
                     icon={<Support />}
                     label="24/7 Support"
                     sx={{
-                      background: "rgba(33, 149, 243, 0.8)",
-                      color: "#ffffff",
+                      background: getRgbaColor(infoMain, 0.8),
+                      color: white,
                       fontWeight: 600,
                     }}
                   />
@@ -160,8 +176,8 @@ const StorySection = () => {
                     icon={<EmojiEvents />}
                     label="Award Winning"
                     sx={{
-                      background: "rgba(255, 193, 7, 0.63)",
-                      color: "#ffffff",
+                      background: orange[600],
+                      color: white,
                       fontWeight: 600,
                     }}
                   />
@@ -209,7 +225,7 @@ const StorySection = () => {
                     variant="h4"
                     sx={{
                       fontWeight: 700,
-                      color: "#333",
+                      color: theme.palette.text.primary,
                       mb: 2,
                       fontStyle: "italic",
                     }}
@@ -219,7 +235,7 @@ const StorySection = () => {
                   <Typography
                     variant="body1"
                     sx={{
-                      color: "#666",
+                      color: theme.palette.text.secondary,
                       fontStyle: "italic",
                       fontSize: "1.1rem",
                     }}

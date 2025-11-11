@@ -40,9 +40,9 @@ const DashboardCard: React.FC<DashboardCardProps> = React.memo(({
       case 'info':
         return appGradients.primary(theme);
       case 'warning':
-        return appGradients.primaryToOrange(theme);
+        return appGradients.primaryToAccent(theme);
       case 'error':
-        return appGradients.yellowToRed(theme);
+        return appGradients.accentToHighlight(theme);
       default:
         return appGradients.primary(theme);
     }

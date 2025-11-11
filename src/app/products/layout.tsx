@@ -7,7 +7,7 @@ import AnimatedBackground from '@/components/ui/AnimatedBackground';
 export default function ProductsLayout({ children }: { children: React.ReactNode }) {
   return (
     <Box sx={{ minHeight: '100vh', position: 'relative' }}>
-      <AnimatedBackground />
+      {/* <AnimatedBackground /> */}
       <Header />
       <Box component="main" sx={{ pt: 8 }}>{children}</Box>
       <Footer />

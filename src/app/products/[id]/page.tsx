@@ -11,12 +11,14 @@ import {
   Button,
   FormControlLabel,
   Checkbox,
+  useTheme,
 } from "@mui/material";
 import { ShoppingCart, Favorite } from "@mui/icons-material";
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import toast from "react-hot-toast";
+import { getRgbaColor, appGradients } from "@/theme/colors";
 
 type Product = {
   _id: string;
@@ -34,10 +36,21 @@ type Product = {
 };
 
 export default function ProductDetailPage() {
+  const theme = useTheme();
   const params = useParams<{ id: string }>();
   const productId = params?.id as string;
   const { token, user } = useAuth();
   const { addToCart: addToCartContext, isInCart } = useCart();
+
+  const primaryMain = theme.palette.primary.main;
+  const primaryDark = theme.palette.primary.dark;
+  const successMain = theme.palette.success.main;
+  const errorMain = theme.palette.error.main;
+  const textPrimary = theme.palette.text.primary;
+  const textSecondary = theme.palette.text.secondary;
+  const white = theme.palette.common.white;
+  const black = theme.palette.common.black;
+  const backgroundPaper = theme.palette.background.paper;
 
   const [product, setProduct] = React.useState<Product | null>(null);
   const [loading, setLoading] = React.useState(false);
@@ -114,8 +127,8 @@ export default function ProductDetailPage() {
         duration: 3000,
         position: "bottom-right",
         style: {
-          background: "#4CAF50",
-          color: "#fff",
+          background: successMain,
+          color: white,
           borderRadius: "8px",
           fontSize: "14px",
           fontWeight: "500",
@@ -128,8 +141,8 @@ export default function ProductDetailPage() {
           duration: 4000,
           position: "bottom-right",
           style: {
-            background: "#f44336",
-            color: "#fff",
+            background: errorMain,
+            color: white,
             borderRadius: "8px",
             fontSize: "14px",
             fontWeight: "500",
@@ -185,8 +198,8 @@ export default function ProductDetailPage() {
           duration: 3000,
           position: "bottom-right",
           style: {
-            background: "#4CAF50",
-            color: "#fff",
+            background: successMain,
+            color: white,
             borderRadius: "8px",
             fontSize: "14px",
             fontWeight: "500",
@@ -202,8 +215,8 @@ export default function ProductDetailPage() {
             duration: 4000,
             position: "bottom-right",
             style: {
-              background: "#f44336",
-              color: "#fff",
+              background: errorMain,
+              color: white,
               borderRadius: "8px",
               fontSize: "14px",
               fontWeight: "500",
@@ -220,8 +233,8 @@ export default function ProductDetailPage() {
           duration: 4000,
           position: "bottom-right",
           style: {
-            background: "#f44336",
-            color: "#fff",
+            background: errorMain,
+            color: white,
             borderRadius: "8px",
             fontSize: "14px",
             fontWeight: "500",
@@ -254,8 +267,8 @@ export default function ProductDetailPage() {
           duration: 3000,
           position: "bottom-right",
           style: {
-            background: "#4CAF50",
-            color: "#fff",
+            background: successMain,
+            color: white,
             borderRadius: "8px",
             fontSize: "14px",
             fontWeight: "500",
@@ -267,8 +280,8 @@ export default function ProductDetailPage() {
           duration: 4000,
           position: "bottom-right",
           style: {
-            background: "#f44336",
-            color: "#fff",
+            background: errorMain,
+            color: white,
             borderRadius: "8px",
             fontSize: "14px",
             fontWeight: "500",
@@ -280,8 +293,8 @@ export default function ProductDetailPage() {
         duration: 4000,
         position: "bottom-right",
         style: {
-          background: "#f44336",
-          color: "#fff",
+          background: errorMain,
+          color: white,
           borderRadius: "8px",
           fontSize: "14px",
           fontWeight: "500",
@@ -302,14 +315,12 @@ export default function ProductDetailPage() {
           justifyContent: "center",
         }}
       >
-        <Typography variant="h6" color="text.secondary">
+        <Typography variant="h6" color={theme.palette.text.secondary}>
           Loading product...
         </Typography>
       </Box>
     );
-  }
-
-  if (error || !product) {
+  } else if (error || !product) {
     return (
       <Box
         sx={{
@@ -319,7 +330,7 @@ export default function ProductDetailPage() {
           justifyContent: "center",
         }}
       >
-        <Typography variant="h6" color="error">
+        <Typography variant="h6" color={theme.palette.error.main}>
           {error || "Product not found"}
         </Typography>
       </Box>
@@ -327,38 +338,49 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <Box sx={{ height: "100vh", backgroundColor: "background.paper" }}>
+    <Box sx={{ minHeight: "100vh", backgroundColor: backgroundPaper }}>
       <Container
         maxWidth="lg"
         sx={{
-          position: "relative",
-          overflow: "hidden",
-          height: "100%",
-          pt: { xs: 3, md: 6 },
-          px: { xs: 2, md: 4 },
-          pb: { xs: 3, md: 6 },
+          pt: { xs: 2, sm: 3, md: 4, lg: 6 },
+          px: { xs: 2, sm: 3, md: 4 },
+          pb: { xs: 4, sm: 5, md: 6 },
         }}
       >
         <Box
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", md: "row" },
+            flexDirection: { xs: "column", lg: "row" },
+            alignItems: { xs: "stretch", lg: "flex-start" },
+            bgcolor: black,
           }}
         >
           {/* Left: Images */}
           <Box
             sx={{
-              flex: { xs: "none", md: "0 0 50%" },
-              position: "relative",
-              minHeight: { xs: 280, sm: 360, md: 520 },
-              background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+              flex: { xs: "none", lg: "0 0 50%" },
+              width: { xs: "100%", lg: "auto" },
+              height: { xs: "90vh", lg: "90vh" },
+              background: appGradients.background(),
               display: "flex",
               flexDirection: "column",
               overflow: "hidden",
+              borderLeft: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
+              borderTop: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
+              borderBottom: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
+              boxShadow: `0 4px 20px ${getRgbaColor(black, 0.1)}, 0 0 0 1px ${getRgbaColor(primaryMain, 0.1)}`,
             }}
           >
             {/* Main Image Container */}
-            <Box sx={{ flex: 1, position: "relative", overflow: "hidden" }}>
+            <Box 
+              sx={{ 
+                flex: 1, 
+                position: "relative", 
+                overflow: "hidden",
+                minHeight: { xs: 250, sm: 300, md: 350, lg: 400 },
+                background: getRgbaColor(backgroundPaper, 0.3),
+              }}
+            >
               <CardMedia
                 component="img"
                 image={
@@ -369,9 +391,9 @@ export default function ProductDetailPage() {
                 sx={{
                   width: "100%",
                   height: "100%",
-                  objectFit: "cover",
+                  objectFit: "contain",
                   transition: "transform 0.3s ease",
-                  "&:hover": { transform: "scale(1.02)" },
+                  "&:hover": { transform: "scale(1.05)" },
                 }}
               />
 
@@ -395,10 +417,12 @@ export default function ProductDetailPage() {
             {product.images && product.images.length > 1 && (
               <Box
                 sx={{
-                  p: 3,
-                  background: "rgba(255, 255, 255, 0.95)",
+                  p: { xs: 2, sm: 2.5, md: 3 },
+                  pt: { xs: 2.5, sm: 3 },
+                  background: getRgbaColor(backgroundPaper, 0.98),
                   backdropFilter: "blur(10px)",
-                  borderTop: "1px solid rgba(255, 215, 0, 0.2)",
+                  borderTop: `1px solid ${getRgbaColor(primaryMain, 0.15)}`,
+                  boxShadow: `0 -2px 10px ${getRgbaColor(black, 0.05)}`,
                 }}
               >
                 <Typography
@@ -406,7 +430,7 @@ export default function ProductDetailPage() {
                   sx={{
                     mb: 2,
                     fontWeight: 700,
-                    color: "#333",
+                    color: textPrimary,
                     fontSize: "0.9rem",
                     textTransform: "uppercase",
                     letterSpacing: "0.5px",
@@ -417,25 +441,28 @@ export default function ProductDetailPage() {
                 <Box
                   sx={{
                     display: "flex",
-                    gap: 1.5,
+                    gap: { xs: 1, sm: 1.5 },
                     overflowX: "auto",
                     overflowY: "hidden",
                     pb: 1,
                     scrollSnapType: "x mandatory",
                     WebkitOverflowScrolling: "touch",
-                    overscrollBehavior: "contain", // prevent scroll chaining to body
-                    "&::-webkit-scrollbar": { height: 6 }, // or hide:
-                    // "&::-webkit-scrollbar": { display: "none" },
+                    overscrollBehavior: "contain",
+                    scrollbarWidth: "thin",
+                    scrollbarColor: `${getRgbaColor(primaryMain, 0.6)} ${getRgbaColor(black, 0.1)}`,
+                    "&::-webkit-scrollbar": { 
+                      height: { xs: 4, sm: 6 },
+                    },
                     "&::-webkit-scrollbar-track": {
-                      background: "rgba(0, 0, 0, 0.1)",
+                      background: getRgbaColor(black, 0.05),
                       borderRadius: 3,
                     },
                     "&::-webkit-scrollbar-thumb": {
-                      background: "rgba(255, 215, 0, 0.6)",
+                      background: getRgbaColor(primaryMain, 0.5),
                       borderRadius: 3,
-                    },
-                    "&::-webkit-scrollbar-thumb:hover": {
-                      background: "rgba(255, 215, 0, 0.8)",
+                      "&:hover": {
+                        background: getRgbaColor(primaryMain, 0.7),
+                      },
                     },
                   }}
                   ref={thumbsRef}
@@ -449,28 +476,25 @@ export default function ProductDetailPage() {
                       onClick={() => handleImageSelect(index)}
                       sx={{
                         flex: "0 0 auto",
-                        width: 90,
-                        height: 90,
+                        width: { xs: 70, sm: 80, md: 90 },
+                        height: { xs: 70, sm: 80, md: 90 },
                         cursor: "pointer",
                         scrollSnapAlign: "start",
                         border:
                           selectedImageIndex === index
-                            ? "3px solid #FFD700"
-                            : "3px solid transparent",
+                            ? `3px solid ${primaryMain}`
+                            : `3px solid ${getRgbaColor(primaryMain, 0.1)}`,
                         borderRadius: 2,
                         overflow: "hidden",
                         transition: "all 0.3s ease",
                         boxShadow:
                           selectedImageIndex === index
-                            ? "0 4px 12px rgba(255, 215, 0, 0.4)"
-                            : "0 2px 8px rgba(0, 0, 0, 0.1)",
+                            ? `0 4px 12px ${getRgbaColor(primaryMain, 0.4)}`
+                            : `0 2px 6px ${getRgbaColor(black, 0.08)}`,
                         "&:hover": {
-                          borderColor:
-                            selectedImageIndex === index
-                              ? "#FFD700"
-                              : "#9C27B0",
-                          transform: "scale(1.08)",
-                          boxShadow: "0 6px 16px rgba(0, 0, 0, 0.15)",
+                          borderColor: primaryMain,
+                          transform: "scale(1.05)",
+                          boxShadow: `0 4px 12px ${getRgbaColor(primaryMain, 0.3)}`,
                         },
                       }}
                     >
@@ -496,15 +520,26 @@ export default function ProductDetailPage() {
           {/* Right: Details */}
           <Box
             sx={{
-              flex: { xs: "none", md: "0 0 50%" },
+              flex: { xs: "none", lg: "0 0 50%" },
+              width: { xs: "100%", lg: "auto" },
+              height: { xs: "90vh", lg: "90vh" },
               display: "flex",
               flexDirection: "column",
-              background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
-              maxHeight: { md: "80vh" },
-              minHeight: { xs: 300, sm: 380, md: 520 },
+              background: appGradients.background(),
+              boxShadow: `0 2px 10px ${getRgbaColor(black, 0.05)}`,
+              overflow: "hidden",
             }}
           >
-            <Box sx={{ p: { xs: 3, md: 4 }, flex: 1 }}>
+            <Box 
+              sx={{ 
+                p: { xs: 2.5, sm: 3, md: 4 }, 
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                overflowY: { lg: "auto" },
+                maxHeight: { lg: "100vh" },
+              }}
+            >
               {/* Category placeholder */}
               <Typography
                 variant="caption"
@@ -514,7 +549,7 @@ export default function ProductDetailPage() {
                   fontWeight: 700,
                   fontSize: "0.8rem",
                   letterSpacing: "1px",
-                  color: "#666",
+                  color: textSecondary,
                 }}
               >
                 Product
@@ -526,7 +561,7 @@ export default function ProductDetailPage() {
                 component="h1"
                 sx={{
                   fontWeight: 800,
-                  color: "#1a1a1a",
+                  color: textPrimary,
                   mt: 1,
                   mb: 2,
                   fontSize: { xs: "1.8rem", md: "2.2rem" },
@@ -542,10 +577,10 @@ export default function ProductDetailPage() {
                   display: "flex",
                   alignItems: "center",
                   mb: 3,
-                  p: 2,
-                  background: "rgba(255, 215, 0, 0.1)",
+                  p: { xs: 1.5, sm: 2 },
+                  background: getRgbaColor(primaryMain, 0.08),
                   borderRadius: 2,
-                  border: "1px solid rgba(255, 215, 0, 0.2)",
+                  boxShadow: `0 2px 8px ${getRgbaColor(primaryMain, 0.1)}`,
                 }}
               >
                 <Rating
@@ -555,7 +590,7 @@ export default function ProductDetailPage() {
                 />
                 <Typography
                   variant="body1"
-                  sx={{ fontWeight: 600, color: "#333", fontSize: "0.9rem" }}
+                  sx={{ fontWeight: 600, color: textPrimary, fontSize: "0.9rem" }}
                 >
                   ({product.ratingCount || 0} reviews)
                 </Typography>
@@ -566,10 +601,10 @@ export default function ProductDetailPage() {
                 variant="h4"
                 sx={{
                   fontWeight: 800,
-                  color: "#FFD700",
+                  color: primaryMain,
                   mb: 3,
                   fontSize: { xs: "1.8rem", md: "2.2rem" },
-                  textShadow: "0 2px 4px rgba(255, 215, 0, 0.3)",
+                  textShadow: `0 2px 4px ${getRgbaColor(primaryMain, 0.3)}`,
                 }}
               >
                 {product.price} {product.currency}
@@ -583,7 +618,7 @@ export default function ProductDetailPage() {
                     sx={{
                       mb: 2,
                       fontWeight: 700,
-                      color: "#333",
+                      color: textPrimary,
                       fontSize: "1.1rem",
                     }}
                   >
@@ -591,7 +626,7 @@ export default function ProductDetailPage() {
                   </Typography>
                   <Typography
                     variant="body1"
-                    sx={{ color: "#555", lineHeight: 1.6, fontSize: "1rem" }}
+                    sx={{ color: textSecondary, lineHeight: 1.6, fontSize: "1rem" }}
                   >
                     {product.description}
                   </Typography>
@@ -602,11 +637,10 @@ export default function ProductDetailPage() {
               <Box
                 sx={{
                   mb: 4,
-                  p: 3,
-                  background: "rgba(255, 255, 255, 0.8)",
+                  p: { xs: 2, sm: 2.5, md: 3 },
+                  background: getRgbaColor(backgroundPaper, 0.6),
                   borderRadius: 2,
-                  border: "1px solid rgba(0, 0, 0, 0.05)",
-                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+                  boxShadow: `0 2px 8px ${getRgbaColor(black, 0.05)}`,
                 }}
               >
                 <Typography
@@ -614,7 +648,7 @@ export default function ProductDetailPage() {
                   sx={{
                     mb: 2,
                     fontWeight: 700,
-                    color: "#333",
+                    color: textPrimary,
                     fontSize: "1.1rem",
                   }}
                 >
@@ -629,7 +663,7 @@ export default function ProductDetailPage() {
                         display: "flex",
                         alignItems: "center",
                         p: 1,
-                        background: "rgba(255, 215, 0, 0.05)",
+                        background: getRgbaColor(primaryMain, 0.05),
                         borderRadius: 1,
                       }}
                     >
@@ -638,7 +672,7 @@ export default function ProductDetailPage() {
                         sx={{
                           fontWeight: 700,
                           minWidth: 80,
-                          color: "#333",
+                          color: textPrimary,
                           fontSize: "0.9rem",
                         }}
                       >
@@ -647,7 +681,7 @@ export default function ProductDetailPage() {
                       <Typography
                         variant="body2"
                         sx={{
-                          color: "#666",
+                          color: textSecondary,
                           fontSize: "0.9rem",
                           fontWeight: 500,
                         }}
@@ -662,7 +696,7 @@ export default function ProductDetailPage() {
                         display: "flex",
                         alignItems: "center",
                         p: 1,
-                        background: "rgba(156, 39, 176, 0.05)",
+                        background: getRgbaColor(primaryMain, 0.05),
                         borderRadius: 1,
                       }}
                     >
@@ -671,7 +705,7 @@ export default function ProductDetailPage() {
                         sx={{
                           fontWeight: 700,
                           minWidth: 80,
-                          color: "#333",
+                          color: textPrimary,
                           fontSize: "0.9rem",
                         }}
                       >
@@ -680,7 +714,7 @@ export default function ProductDetailPage() {
                       <Typography
                         variant="body2"
                         sx={{
-                          color: "#666",
+                          color: textSecondary,
                           fontSize: "0.9rem",
                           fontWeight: 500,
                         }}
@@ -694,7 +728,7 @@ export default function ProductDetailPage() {
                       display: "flex",
                       alignItems: "center",
                       p: 1,
-                      background: "rgba(76, 175, 80, 0.05)",
+                      background: getRgbaColor(successMain, 0.05),
                       borderRadius: 1,
                     }}
                   >
@@ -703,7 +737,7 @@ export default function ProductDetailPage() {
                       sx={{
                         fontWeight: 700,
                         minWidth: 80,
-                        color: "#333",
+                        color: textPrimary,
                         fontSize: "0.9rem",
                       }}
                     >
@@ -712,7 +746,7 @@ export default function ProductDetailPage() {
                     <Typography
                       variant="body2"
                       sx={{
-                        color: "#666",
+                        color: textSecondary,
                         fontSize: "0.9rem",
                         fontWeight: 500,
                       }}
@@ -723,21 +757,19 @@ export default function ProductDetailPage() {
                 </Box>
               </Box>
 
-              <Divider sx={{ my: 3, borderColor: "rgba(255, 215, 0, 0.3)" }} />
+              <Divider sx={{ my: 1, borderColor: getRgbaColor(primaryMain, 0.3) }} />
 
               {/* Action Buttons */}
               <Box
                 sx={{
                   display: "flex",
                   justifyContent: "center",
-                  gap: 2,
+                  gap: { xs: 1.5, sm: 2 },
                   flexDirection: { xs: "column", sm: "row" },
                   mt: "auto",
-                  pt: 2,
-                  position: "sticky",
-                  bottom: 0,
+                  pt: { xs: 2, sm: 3 },
+                  pb: { xs: 1, sm: 0 },
                   width: "100%",
-                  zIndex: 1,
                 }}
               >
                 <Button
@@ -750,30 +782,27 @@ export default function ProductDetailPage() {
                     isInCart(product._id)
                   }
                   sx={{
-                    background: isInCart(product._id)
-                      ? "linear-gradient(135deg, #4CAF50 0%, #45a049 100%)"
-                      : "linear-gradient(135deg, #FFD700 0%, #FFC000 100%)",
-                    color: "#000",
+                    background: appGradients.primary(theme),
+                    color: theme.palette.primary.contrastText,
                     fontWeight: 700,
                     borderRadius: 3,
-                    px: 4,
-                    py: 2,
-                    fontSize: "1rem",
+                    px: { xs: 3, sm: 4 },
+                    py: { xs: 1.5, sm: 2 },
+                    fontSize: { xs: "0.9rem", sm: "1rem" },
                     textTransform: "none",
                     boxShadow: isInCart(product._id)
-                      ? "0 4px 12px rgba(76, 175, 80, 0.3)"
-                      : "0 4px 12px rgba(255, 215, 0, 0.3)",
+                      ? `0 4px 12px ${getRgbaColor(successMain, 0.3)}`
+                      : `0 4px 12px ${getRgbaColor(primaryMain, 0.3)}`,
                     "&:hover": {
-                      background: isInCart(product._id)
-                        ? "linear-gradient(135deg, #45a049 0%, #3d8b40 100%)"
-                        : "linear-gradient(135deg, #FFC000 0%, #FFB300 100%)",
+                      background: appGradients.primary(theme),
                       transform: "translateY(-2px)",
                       boxShadow: isInCart(product._id)
-                        ? "0 6px 16px rgba(76, 175, 80, 0.4)"
-                        : "0 6px 16px rgba(255, 215, 0, 0.4)",
+                        ? `0 6px 16px ${getRgbaColor(successMain, 0.4)}`
+                        : `0 6px 16px ${getRgbaColor(primaryMain, 0.4)}`,
                     },
                     "&:disabled": { opacity: 0.6, transform: "none" },
                     transition: "all 0.3s ease",
+                    width: { xs: "100%", sm: "auto" },
                   }}
                 >
                   {loadingStates[`cart-${product._id}`]
@@ -797,30 +826,31 @@ export default function ProductDetailPage() {
                   disabled={loadingStates[`wishlist-${product._id}`]}
                   sx={{
                     borderColor: wishlistItems.has(product._id)
-                      ? "#FFD700"
-                      : "#9C27B0",
+                      ? primaryMain
+                      : primaryDark,
                     color: wishlistItems.has(product._id)
-                      ? "#FFD700"
-                      : "#9C27B0",
+                      ? primaryMain
+                      : primaryDark,
                     background: wishlistItems.has(product._id)
-                      ? "rgba(255, 215, 0, 0.1)"
-                      : "rgba(156, 39, 176, 0.05)",
+                      ? getRgbaColor(primaryMain, 0.1)
+                      : getRgbaColor(primaryMain, 0.05),
                     fontWeight: 700,
                     borderRadius: 3,
-                    px: 4,
-                    py: 2,
-                    fontSize: "1rem",
+                    px: { xs: 3, sm: 4 },
+                    py: { xs: 1.5, sm: 2 },
+                    fontSize: { xs: "0.9rem", sm: "1rem" },
                     textTransform: "none",
                     borderWidth: 2,
                     "&:hover": {
-                      borderColor: "#FFD700",
-                      color: "#FFD700",
-                      background: "rgba(255, 215, 0, 0.15)",
+                      borderColor: primaryMain,
+                      color: primaryMain,
+                      background: getRgbaColor(primaryMain, 0.15),
                       transform: "translateY(-2px)",
-                      boxShadow: "0 6px 16px rgba(255, 215, 0, 0.2)",
+                      boxShadow: `0 6px 16px ${getRgbaColor(primaryMain, 0.2)}`,
                     },
                     "&:disabled": { opacity: 0.6, transform: "none" },
                     transition: "all 0.3s ease",
+                    width: { xs: "100%", sm: "auto" },
                   }}
                 >
                   {loadingStates[`wishlist-${product._id}`]

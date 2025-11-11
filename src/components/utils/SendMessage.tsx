@@ -1,10 +1,12 @@
 'use client';
 
-import { Card, CardContent, Alert, Box, TextField, Button } from '@mui/material'
+import { Card, CardContent, Alert, Box, TextField, Button, useTheme } from '@mui/material'
 import { Send } from '@mui/icons-material'
 import { useState, useEffect } from 'react';
+import { getRgbaColor, appGradients } from '@/theme/colors';
 
 const SendMessage = () => {
+  const theme = useTheme();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -13,6 +15,12 @@ const SendMessage = () => {
   });
   const [submitted, setSubmitted] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  const primaryMain = theme.palette.primary.main;
+  const primaryDark = theme.palette.primary.dark;
+  const backgroundPaper = theme.palette.background.paper;
+  const textPrimary = theme.palette.text.primary;
+  const black = theme.palette.common.black;
 
   useEffect(() => {
     setMounted(true);
@@ -44,9 +52,8 @@ const SendMessage = () => {
     <Card
     elevation={0}
     sx={{
-      background: "rgba(255, 255, 255, 0.95)",
+      background: getRgbaColor(backgroundPaper, 0.95),
       backdropFilter: "blur(20px)",
-      border: "2px solid rgba(255, 217, 0, 0)",
       borderRadius: 4,
       position: "relative",
       overflow: "hidden",
@@ -58,7 +65,7 @@ const SendMessage = () => {
         left: 0,
         right: 0,
         bottom: 0,
-        background: "rgba(255, 215, 0, 0.05)",
+        background: getRgbaColor(primaryMain, 0.05),
       },
     }}
   >
@@ -99,13 +106,13 @@ const SendMessage = () => {
             sx={{
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
-                  borderColor: "rgba(0, 0, 0, 0.66)",
+                  borderColor: getRgbaColor(black, 0.66),
                 },
                 "&:hover fieldset": {
-                  borderColor: "#9C27B0",
+                  borderColor: primaryMain,
                 },
                 "&.Mui-focused fieldset": {
-                  borderColor: "#9C27B0",
+                  borderColor: primaryMain,
                 },
               },
             }}
@@ -124,13 +131,13 @@ const SendMessage = () => {
             sx={{
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
-                  borderColor: "rgba(0, 0, 0, 0.66)",
+                  borderColor: getRgbaColor(black, 0.66),
                 },
                 "&:hover fieldset": {
-                  borderColor: "#9C27B0",
+                  borderColor: primaryMain,
                 },
                 "&.Mui-focused fieldset": {
-                  borderColor: "#9C27B0",
+                  borderColor: primaryMain,
                 },
               },
             }}
@@ -151,7 +158,7 @@ const SendMessage = () => {
             mb: 3,
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
-                borderColor: "rgba(0, 0, 0, 0.66)",
+                borderColor: getRgbaColor(black, 0.66),
               },
               "&:hover fieldset": {
                 borderColor: "#9C27B0",
@@ -179,7 +186,7 @@ const SendMessage = () => {
             mb: 4,
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
-                borderColor: "rgba(0, 0, 0, 0.66)",
+                borderColor: getRgbaColor(black, 0.66),
               },
               "&:hover fieldset": {
                 borderColor: "#9C27B0",
@@ -197,8 +204,8 @@ const SendMessage = () => {
           size="large"
           startIcon={<Send />}
           sx={{
-            background: "#FFD700",
-            color: "#000",
+            background: appGradients.primary(theme),
+            color: theme.palette.primary.contrastText,
             fontWeight: 700,
             px: 4,
             py: 1.5,
@@ -206,9 +213,9 @@ const SendMessage = () => {
             borderRadius: 3,
             transition: "all 0.3s ease",
             "&:hover": {
-              background: "#FFC000",
+              background: appGradients.primary(theme),
               transform: "translateY(-2px)",
-              boxShadow: "0 10px 20px rgba(255, 215, 0, 0.3)",
+              boxShadow: `0 10px 20px ${getRgbaColor(primaryMain, 0.3)}`,
             },
           }}
         >

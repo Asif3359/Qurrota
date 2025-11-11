@@ -108,7 +108,7 @@ const HeroSection: React.FC = () => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: "rgba(255, 255, 255, 0.52)",
+                background: getRgbaColor(theme.palette.background.paper, 0.52),
               }}
             >
               <Typography variant="h6" color="text.secondary">
@@ -142,8 +142,8 @@ const HeroSection: React.FC = () => {
             width: 100,
             height: 100,
             borderRadius: "50%",
-            background: "rgba(255, 217, 0, 0.1)",
-            border: "2px solid rgba(255, 215, 0, 0.3)",
+            background: getRgbaColor(theme.palette.secondary.main, 0.1),
+            border: `2px solid ${getRgbaColor(theme.palette.secondary.main, 0.3)}`,
           }}
           animate={{
             y: [0, -20, 0],
@@ -166,8 +166,8 @@ const HeroSection: React.FC = () => {
             width: 60,
             height: 60,
             borderRadius: "50%",
-            background: "rgba(255, 217, 0, 0.1)",
-            border: "2px solid rgba(156, 39, 176, 0.3)",
+            background: getRgbaColor(theme.palette.secondary.main, 0.1),
+            border: `2px solid ${getRgbaColor(theme.palette.primary.main, 0.3)}`,
           }}
           animate={{
             y: [0, 15, 0],

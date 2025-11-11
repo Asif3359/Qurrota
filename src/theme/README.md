@@ -5,16 +5,20 @@ This theme system provides a consistent and flexible way to manage colors throug
 
 ## Color Palette
 
-### Light Yellow Colors (Primary)
-- **Light**: `#FFF4B0` - Very light yellow for backgrounds
-- **Medium**: `#FFE55C` - Medium yellow for borders and accents
-- **Dark**: `#FFD700` - Darker yellow for text and strong accents
-- **Very Light**: `#FFF8D1` - Extremely light yellow for subtle backgrounds
+### Neutral Accent Colors
+- **Very Light**: `#FFFFFF` - Crisp base for backgrounds
+- **Light**: `#F5F5F7` - Subtle neutral for surfaces
+- **Medium**: `#E1E3E8` - Balanced accent for borders
+- **Accent**: `#D0D4DC` - Highlight for interactive states
+- **Accent Strong**: `#B4B9C4` - Stronger accent for emphasis
+- **Dark**: `#9FA3AD` - Deep neutral for contrast
 
-### Purple Colors (Secondary)
-- **Light**: `#E1BEE7` - Light purple for subtle accents
-- **Medium**: `#9C27B0` - Main purple for primary actions
-- **Dark**: `#7B1FA2` - Dark purple for hover states
+### Purple Colors
+- **Very Light**: `#F3F0FF` - Gentle lavender wash
+- **Light**: `#7C3AED` - Primary brand purple
+- **Medium**: `#5B21B6` - Hover and focus state purple
+- **Dark**: `#3C0D99` - Rich purple for depth
+- **Lighter**: `#A78BFA` - Soft supporting purple
 
 ## Usage
 
@@ -26,11 +30,13 @@ const MyComponent = () => {
   const theme = useTheme();
   
   return (
-    <Box sx={{ 
-      backgroundColor: theme.palette.primary.main, // Light yellow
-      color: theme.palette.primary.contrastText,  // Black text
-      border: `2px solid ${theme.palette.primary.dark}` // Medium yellow border
-    }}>
+    <Box
+      sx={{
+        backgroundColor: theme.palette.secondary.main, // Neutral accent
+        color: theme.palette.text.primary,             // High contrast text
+        border: `2px solid ${theme.palette.secondary.dark}` // Strong accent border
+      }}
+    >
       Content
     </Box>
   );
@@ -43,10 +49,12 @@ import { getGradient, getRgbaColor } from '../theme/colors';
 
 const MyComponent = () => {
   return (
-    <Box sx={{ 
-      background: getGradient('#FFF4B0', '#FFE55C'), // Linear gradient
-      boxShadow: `0 4px 8px ${getRgbaColor('#FFF4B0', 0.3)}` // With transparency
-    }}>
+    <Box
+      sx={{
+        background: getGradient('#7C3AED', '#5B21B6'), // Brand gradient
+        boxShadow: `0 4px 8px ${getRgbaColor('#000000', 0.15)}` // Soft shadow
+      }}
+    >
       Content
     </Box>
   );
@@ -57,11 +65,13 @@ const MyComponent = () => {
 ```tsx
 const MyComponent = () => {
   return (
-    <Box sx={{ 
-      backgroundColor: 'var(--color-light-yellow)',
-      color: 'var(--color-black)',
-      border: '2px solid var(--color-medium-yellow)'
-    }}>
+    <Box
+      sx={{
+        backgroundColor: 'var(--color-secondary)',
+        color: 'var(--color-black)',
+        border: '2px solid var(--color-secondary-dark)'
+      }}
+    >
       Content
     </Box>
   );
@@ -88,8 +98,8 @@ const MyComponent = () => {
 
 To migrate existing components from hardcoded colors:
 
-1. Replace `#FFD700` with `theme.palette.primary.dark`
-2. Replace `#9C27B0` with `theme.palette.secondary.main`
-3. Replace `#FFC000` with `theme.palette.primary.dark`
+1. Replace `#FFD700` (or other yellows) with `theme.palette.secondary.dark`
+2. Replace `#9C27B0` with `theme.palette.primary.light`
+3. Replace `#FFC000` with `neutralAccentColors.accent` from `@/theme/colors`
 4. Use `getGradient()` for linear gradients
 5. Use `getRgbaColor()` for transparency effects

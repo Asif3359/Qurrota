@@ -1,11 +1,14 @@
 'use client';
 
 import React from 'react';
-import { Box, Container, Typography, Breadcrumbs, Link } from '@mui/material';
+import { Box, Container, Typography, Breadcrumbs, Link, useTheme } from '@mui/material';
 import { motion } from 'framer-motion';
 import ProductsSection from '@/components/sections/ProductsSection';
 
 export default function ProductsPage() {
+  const theme = useTheme();
+  const primaryMain = theme.palette.primary.main;
+
   return (
     <Box>
       <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -27,7 +30,7 @@ export default function ProductsPage() {
             gutterBottom
             sx={{
               fontWeight: 700,
-              color: '#FFD700',
+              color: primaryMain,
               mb: 2,
             }}
           >

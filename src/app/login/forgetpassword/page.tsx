@@ -10,15 +10,18 @@ import {
   Link,
   Container,
   InputAdornment,
-  Alert
+  Alert,
+  useTheme
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { Email } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import QurrotaKids from '../../../lib/QurrotaLogo';
+import { getRgbaColor, appGradients } from '@/theme/colors';
 
 const ForgetPasswordPage: React.FC = () => {
+  const theme = useTheme();
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -26,6 +29,12 @@ const ForgetPasswordPage: React.FC = () => {
   const [mounted, setMounted] = useState(false);
   const { forgotPassword } = useAuth();
   const router = useRouter();
+
+  const primaryMain = theme.palette.primary.main;
+  const primaryDark = theme.palette.primary.dark;
+  const backgroundDefault = theme.palette.background.default;
+  const backgroundPaper = theme.palette.background.paper;
+  const white = theme.palette.common.white;
 
   useEffect(() => {
     setMounted(true);
@@ -71,20 +80,10 @@ const ForgetPasswordPage: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: backgroundDefault,
         padding: 2,
         position: 'relative',
         overflow: 'hidden',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%)',
-          zIndex: 0,
-        }
       }}
     >
       <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 1 }}>
@@ -98,10 +97,10 @@ const ForgetPasswordPage: React.FC = () => {
             sx={{
               padding: { xs: 4, md: 6 },
               borderRadius: 6,
-              background: 'rgba(255, 255, 255, 0.98)',
+              background: backgroundPaper,
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+              border: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
+              boxShadow: `0 25px 50px -12px ${getRgbaColor(theme.palette.common.black, 0.25)}, 0 0 0 1px ${getRgbaColor(white, 0.1)}`,
               position: 'relative',
               overflow: 'hidden',
               '&::before': {
@@ -111,7 +110,7 @@ const ForgetPasswordPage: React.FC = () => {
                 left: 0,
                 right: 0,
                 height: '4px',
-                background: 'linear-gradient(90deg, #FFD700, #FFA500, #FFD700)',
+                background: appGradients.primary(theme),
                 backgroundSize: '200% 100%',
                 animation: 'shimmer 3s ease-in-out infinite',
               },
@@ -140,7 +139,7 @@ const ForgetPasswordPage: React.FC = () => {
                     transform: 'translateX(-50%)',
                     width: '80px',
                     height: '3px',
-                    background: 'linear-gradient(90deg, #FFD700, #FFA500)',
+                    background: appGradients.primary(theme),
                     borderRadius: '2px',
                   }
                 }}
@@ -163,7 +162,7 @@ const ForgetPasswordPage: React.FC = () => {
                 gutterBottom
                 sx={{
                   fontWeight: 800,
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  background: appGradients.primary(theme),
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
@@ -228,34 +227,34 @@ const ForgetPasswordPage: React.FC = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <Email sx={{ color: '#667eea' }} />
+                        <Email sx={{ color: primaryMain }} />
                       </InputAdornment>
                     ),
                   }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: 3,
-                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                      backgroundColor: getRgbaColor(backgroundPaper, 0.8),
                       '& fieldset': {
-                        borderColor: 'rgba(102, 126, 234, 0.2)',
+                        borderColor: getRgbaColor(primaryMain, 0.2),
                         borderWidth: 2,
                       },
                       '&:hover fieldset': {
-                        borderColor: '#667eea',
+                        borderColor: primaryMain,
                         borderWidth: 2,
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: '#667eea',
+                        borderColor: primaryMain,
                         borderWidth: 2,
-                        boxShadow: '0 0 0 3px rgba(102, 126, 234, 0.1)',
+                        boxShadow: `0 0 0 3px ${getRgbaColor(primaryMain, 0.1)}`,
                       },
                     },
                     '& .MuiInputLabel-root': {
-                      color: '#667eea',
+                      color: primaryMain,
                       fontWeight: 500,
                     },
                     '& .MuiInputLabel-root.Mui-focused': {
-                      color: '#667eea',
+                      color: primaryMain,
                     },
                   }}
                 />
@@ -275,25 +274,25 @@ const ForgetPasswordPage: React.FC = () => {
                     mt: 4,
                     mb: 3,
                     py: 2,
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    color: '#fff',
+                    background: appGradients.primary(theme),
+                    color: theme.palette.primary.contrastText,
                     fontWeight: 700,
                     fontSize: '1.1rem',
                     borderRadius: 3,
                     textTransform: 'none',
-                    boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+                    boxShadow: `0 8px 32px ${getRgbaColor(primaryMain, 0.3)}`,
                     position: 'relative',
                     overflow: 'hidden',
                     '&:hover': {
-                      background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                      boxShadow: '0 12px 40px rgba(102, 126, 234, 0.4)',
+                      background: appGradients.primary(theme),
+                      boxShadow: `0 12px 40px ${getRgbaColor(primaryMain, 0.4)}`,
                       transform: 'translateY(-2px)',
                     },
                     '&:active': {
                       transform: 'translateY(0)',
                     },
                     '&:disabled': {
-                      background: 'rgba(102, 126, 234, 0.3)',
+                      background: getRgbaColor(primaryMain, 0.3),
                       boxShadow: 'none',
                       transform: 'none',
                     },
@@ -304,7 +303,7 @@ const ForgetPasswordPage: React.FC = () => {
                       left: '-100%',
                       width: '100%',
                       height: '100%',
-                      background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
+                      background: `linear-gradient(90deg, transparent, ${getRgbaColor(white, 0.2)}, transparent)`,
                       transition: 'left 0.5s',
                     },
                     '&:hover::before': {
@@ -327,12 +326,12 @@ const ForgetPasswordPage: React.FC = () => {
                     <Link
                       href="/login"
                       sx={{
-                        color: '#667eea',
+                        color: primaryMain,
                         textDecoration: 'none',
                         fontWeight: 600,
                         position: 'relative',
                         '&:hover': {
-                          color: '#5a6fd8',
+                          color: primaryDark,
                         },
                         '&::after': {
                           content: '""',
@@ -341,7 +340,7 @@ const ForgetPasswordPage: React.FC = () => {
                           left: 0,
                           width: '0%',
                           height: '2px',
-                          background: 'linear-gradient(90deg, #667eea, #764ba2)',
+                          background: appGradients.primary(theme),
                           transition: 'width 0.3s ease',
                         },
                         '&:hover::after': {

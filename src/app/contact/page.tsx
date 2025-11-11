@@ -33,48 +33,61 @@ export default function ContactPage() {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const primaryMain = theme.palette.primary.main;
+  const primaryDark = theme.palette.primary.dark;
+  const secondaryMain = theme.palette.secondary.main;
+  const successMain = theme.palette.success.main;
+  const infoMain = theme.palette.info.main;
+  const warningMain = theme.palette.warning.main;
+  const errorMain = theme.palette.error.main;
+  const textPrimary = theme.palette.text.primary;
+  const textSecondary = theme.palette.text.secondary;
+  const white = theme.palette.common.white;
+  const black = theme.palette.common.black;
+  const backgroundPaper = theme.palette.background.paper;
+
   const contactInfo = [
     {
-      icon: <Email sx={{ fontSize: 40, color: "#FFD700" }} />,
+      icon: <Email sx={{ fontSize: 40, color: warningMain }} />,
       title: "Email Us",
       info: "info@qurrota.com",
       description: "We'll get back to you within 24 hours",
-      color: "#FFD700",
+      color: warningMain,
     },
     {
-      icon: <Phone sx={{ fontSize: 40, color: "#9C27B0" }} />,
+      icon: <Phone sx={{ fontSize: 40, color: primaryMain }} />,
       title: "Call Us",
       info: "+880 01789846204",
       description: "Monday - Friday from 8am to 6pm",
-      color: "#9C27B0",
+      color: primaryMain,
     },
     {
-      icon: <LocationOn sx={{ fontSize: 40, color: "#2196F3" }} />,
+      icon: <LocationOn sx={{ fontSize: 40, color: infoMain }} />,
       title: "Visit Us",
       info: "Dhaka, Bangladesh",
       description: "Visit us for any questions or inquiries",
-      color: "#2196F3",
+      color: infoMain,
     },
   ];
 
   const features = [
     {
-      icon: <Support sx={{ fontSize: 30, color: "#4CAF50" }} />,
+      icon: <Support sx={{ fontSize: 30, color: successMain }} />,
       title: "24/7 Support",
       description: "Round-the-clock customer service",
-      color: "#4CAF50",
+      color: successMain,
     },
     {
-      icon: <VerifiedUser sx={{ fontSize: 30, color: "#FF9800" }} />,
+      icon: <VerifiedUser sx={{ fontSize: 30, color: warningMain }} />,
       title: "Trusted Brand",
       description: "Thousands of happy families",
-      color: "#FF9800",
+      color: warningMain,
     },
     {
-      icon: <LocalShipping sx={{ fontSize: 30, color: "#E91E63" }} />,
+      icon: <LocalShipping sx={{ fontSize: 30, color: errorMain }} />,
       title: "Fast Delivery",
       description: "Quick and reliable shipping",
-      color: "#E91E63",
+      color: errorMain,
     },
   ];
 
@@ -104,7 +117,7 @@ export default function ContactPage() {
   return (
     <Box sx={{ minHeight: "100vh", position: "relative" }}>
       {/* Animated Background */}
-      <AnimatedBackground />
+      {/* <AnimatedBackground /> */}
 
       {/* Header */}
       <Header />
@@ -120,7 +133,7 @@ export default function ContactPage() {
               <Link
                 href="/"
                 color="inherit"
-                sx={{ textDecoration: "none", "&:hover": { color: "#FFD700" } }}
+                sx={{ textDecoration: "none", "&:hover": { color: primaryMain } }}
               >
                 Home
               </Link>
@@ -132,8 +145,8 @@ export default function ContactPage() {
                 label="Get Support"
                 sx={{
                   mb: 2,
-                  background: "#FFD700",
-                  color: "#000",
+                  background: primaryMain,
+                  color: white,
                   fontWeight: 600,
                   fontSize: "0.9rem",
                 }}
@@ -144,7 +157,7 @@ export default function ContactPage() {
                 gutterBottom
                 sx={{
                   fontWeight: 800,
-                  color: "#FFD700",
+                  color: primaryMain,
                   mb: 3,
                   fontSize: { xs: "2.5rem", sm: "3rem", md: "4rem" },
                 }}
@@ -173,7 +186,7 @@ export default function ContactPage() {
         sx={{
           pt: { xs: 6, md: 8 },
           pb: 10,
-          background: getRgbaColor(theme.palette.primary.main, 0.76),
+          background: theme.palette.background.default,
           backdropFilter: "blur(10px)",
         }}
       >
@@ -213,19 +226,8 @@ export default function ContactPage() {
                     gutterBottom
                     sx={{
                       fontWeight: 700,
-                      color: "#333",
+                      color: textPrimary,
                       mb: 3,
-                      position: "relative",
-                      "&::after": {
-                        content: '""',
-                        position: "absolute",
-                        bottom: -10,
-                        left: 0,
-                        width: 60,
-                        height: 4,
-                        background: "#FFD700",
-                        borderRadius: 2,
-                      },
                     }}
                   >
                     Send Us a Message
@@ -255,19 +257,8 @@ export default function ContactPage() {
                     gutterBottom
                     sx={{
                       fontWeight: 700,
-                      color: "#333",
+                      color: textPrimary,
                       mb: 3,
-                      position: "relative",
-                      "&::after": {
-                        content: '""',
-                        position: "absolute",
-                        bottom: -10,
-                        left: 0,
-                        width: 60,
-                        height: 4,
-                        background: "#FFD700",
-                        borderRadius: 2,
-                      },
                     }}
                   >
                     Contact Information
@@ -288,9 +279,9 @@ export default function ContactPage() {
                         <Card
                           elevation={0}
                           sx={{
-                            background: "rgba(255, 255, 255, 0.95)",
+                            background: getRgbaColor(backgroundPaper, 0.95),
                             backdropFilter: "blur(20px)",
-                            border: `2px solid ${info.color}20`,
+                            border: `2px solid ${getRgbaColor(info.color, 0.2)}`,
                             borderRadius: 4,
                             transition: "all 0.4s ease",
                             position: "relative",
@@ -309,10 +300,7 @@ export default function ContactPage() {
                             "&:hover": {
                               borderColor: info.color,
                               transform: "translateY(-5px)",
-                              boxShadow: `0 15px 30px ${info.color}20`,
-                              "&::before": {
-                                transform: "scaleX(1)",
-                              },
+                              boxShadow: `0 15px 30px ${getRgbaColor(info.color, 0.2)}`,
                             },
                           }}
                         >
@@ -329,8 +317,7 @@ export default function ContactPage() {
                                   display: "flex",
                                   p: 2,
                                   borderRadius: "50%",
-                                  background: `${info.color}15`,
-                                  border: `2px solid ${info.color}30`,
+                                  background: getRgbaColor(info.color, 0.15),
                                 }}
                               >
                                 {info.icon}
@@ -340,13 +327,13 @@ export default function ContactPage() {
                                   variant="h6"
                                   component="h3"
                                   gutterBottom
-                                  sx={{ fontWeight: 700, color: "#333", mb: 1 }}
+                                  sx={{ fontWeight: 700, color: textPrimary, mb: 1 }}
                                 >
                                   {info.title}
                                 </Typography>
                                 <Typography
                                   variant="body1"
-                                  sx={{ fontWeight: 600, color: "#666", mb: 1 }}
+                                  sx={{ fontWeight: 600, color: textSecondary, mb: 1 }}
                                 >
                                   {info.info}
                                 </Typography>
@@ -382,7 +369,7 @@ export default function ContactPage() {
                 gutterBottom
                 sx={{
                   fontWeight: 700,
-                  color: "#333",
+                  color: textPrimary,
                   mb: 2,
                 }}
               >
@@ -428,32 +415,16 @@ export default function ContactPage() {
                     elevation={0}
                     sx={{
                       height: "100%",
-                      background: "rgba(255, 255, 255, 0.95)",
+                      background: getRgbaColor(backgroundPaper, 0.95),
                       backdropFilter: "blur(20px)",
-                      border: `2px solid ${feature.color}20`,
                       borderRadius: 4,
                       transition: "all 0.4s ease",
                       position: "relative",
                       overflow: "hidden",
                       textAlign: "center",
-                      "&::before": {
-                        content: '""',
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: 4,
-                        background: feature.color,
-                        transform: "scaleX(0)",
-                        transition: "transform 0.4s ease",
-                      },
                       "&:hover": {
-                        borderColor: feature.color,
                         transform: "translateY(-10px)",
-                        boxShadow: `0 20px 40px ${feature.color}20`,
-                        "&::before": {
-                          transform: "scaleX(1)",
-                        },
+                        boxShadow: `0 20px 40px ${getRgbaColor(feature.color, 0.2)}`,
                       },
                     }}
                   >
@@ -464,8 +435,7 @@ export default function ContactPage() {
                           display: "inline-flex",
                           p: 2,
                           borderRadius: "50%",
-                          background: `${feature.color}15`,
-                          border: `2px solid ${feature.color}30`,
+                          background: getRgbaColor(feature.color, 0.15),
                         }}
                       >
                         {feature.icon}
@@ -476,7 +446,7 @@ export default function ContactPage() {
                         gutterBottom
                         sx={{
                           fontWeight: 700,
-                          color: "#333",
+                          color: textPrimary,
                           mb: 2,
                           fontSize: "1.25rem",
                         }}
@@ -510,22 +480,12 @@ export default function ContactPage() {
             <Box
               sx={{
                 p: { xs: 4, md: 6 },
-                background: getRgbaColor(theme.palette.primary.light, 0.75),
+                background: getRgbaColor(primaryMain, 0.1),
                 backdropFilter: "blur(20px)",
-                border: `2px solid ${theme.palette.primary.main}`,
                 borderRadius: 4,
                 textAlign: "center",
                 position: "relative",
                 overflow: "hidden",
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background: getRgbaColor(theme.palette.primary.light, 0.75),
-                },
               }}
             >
               <Box sx={{ position: "relative", zIndex: 1 }}>
@@ -534,7 +494,7 @@ export default function ContactPage() {
                   gutterBottom
                   sx={{
                     fontWeight: 700,
-                    color: "#333",
+                    color: textPrimary,
                     mb: 4,
                   }}
                 >
@@ -559,14 +519,13 @@ export default function ContactPage() {
                       <Box
                         sx={{
                           p: 3,
-                          background: "rgba(255, 255, 255, 0.8)",
+                          background: getRgbaColor(backgroundPaper, 0.8),
                           borderRadius: 3,
-                          border: "1px solid rgba(255, 215, 0, 0.2)",
                           transition: "all 0.3s ease",
                           "&:hover": {
-                            background: "rgba(255, 255, 255, 0.95)",
-                            borderColor: "#FFD700",
+                            background: getRgbaColor(backgroundPaper, 0.95),
                             transform: "translateY(-2px)",
+                            boxShadow: `0 8px 16px ${getRgbaColor(primaryMain, 0.15)}`,
                           },
                         }}
                       >
@@ -574,7 +533,7 @@ export default function ContactPage() {
                           variant="h6"
                           sx={{
                             fontWeight: 700,
-                            color: "#333",
+                            color: textPrimary,
                             mb: 2,
                             fontSize: "1.1rem",
                           }}
@@ -609,21 +568,12 @@ export default function ContactPage() {
               sx={{
                 mt: { xs: 6, md: 10 },
                 p: { xs: 4, md: 6 },
-                background: getRgbaColor(theme.palette.primary.light, 0.75),
-                border: `2px solid ${theme.palette.primary.light}`,
+                background: getRgbaColor(primaryMain, 0.1),
+                backdropFilter: "blur(20px)",
                 borderRadius: 4,
                 textAlign: "center",
                 position: "relative",
                 overflow: "hidden",
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background: getRgbaColor(theme.palette.primary.light, 0.79),
-                },
               }}
             >
               <Box sx={{ position: "relative", zIndex: 1 }}>
@@ -632,7 +582,7 @@ export default function ContactPage() {
                   gutterBottom
                   sx={{
                     fontWeight: 700,
-                    color: theme.palette.text.primary,
+                    color: textPrimary,
                     mb: 3,
                   }}
                 >
@@ -690,16 +640,17 @@ export default function ContactPage() {
                       textDecoration: "none",
                       px: 4,
                       py: 2,
-                      border: `2px solid ${theme.palette.primary.dark}`,
-                      color: theme.palette.primary.dark,
+                      background: getRgbaColor(primaryDark, 0.1),
+                      color: primaryDark,
                       borderRadius: 3,
                       fontWeight: 700,
                       fontSize: "1.1rem",
                       transition: "all 0.3s ease",
                       "&:hover": {
-                        background: theme.palette.primary.dark,
+                        background: primaryDark,
                         color: theme.palette.primary.contrastText,
                         transform: "translateY(-2px)",
+                        boxShadow: `0 10px 20px ${getRgbaColor(primaryDark, 0.3)}`,
                       },
                     }}
                   >

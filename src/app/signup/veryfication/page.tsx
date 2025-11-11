@@ -9,14 +9,17 @@ import {
   Typography,
   Container,
   Alert,
-  CircularProgress
+  CircularProgress,
+  useTheme
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { Email, Security } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { getRgbaColor, appGradients } from '@/theme/colors';
 
 const VerificationForm: React.FC = () => {
+  const theme = useTheme();
   const [email, setEmail] = useState('');
   const [verifyCode, setVerifyCode] = useState('');
   const [error, setError] = useState('');
@@ -28,6 +31,13 @@ const VerificationForm: React.FC = () => {
   const { verifyEmail, resendVerification } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const primaryMain = theme.palette.primary.main;
+  const primaryDark = theme.palette.primary.dark;
+  const backgroundDefault = theme.palette.background.default;
+  const backgroundPaper = theme.palette.background.paper;
+  const white = theme.palette.common.white;
+  const black = theme.palette.common.black;
 
   useEffect(() => {
     setMounted(true);
@@ -126,7 +136,7 @@ const VerificationForm: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#FFD700',
+        background: backgroundDefault,
         padding: 2,
       }}
     >
@@ -141,9 +151,9 @@ const VerificationForm: React.FC = () => {
             sx={{
               padding: { xs: 3, md: 6 },
               borderRadius: 4,
-              background: 'rgba(255, 255, 255, 0.95)',
+              background: backgroundPaper,
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 215, 0, 0.2)',
+              border: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
             }}
           >
             <motion.div
@@ -158,7 +168,7 @@ const VerificationForm: React.FC = () => {
                 gutterBottom
                 sx={{
                   fontWeight: 700,
-                  color: '#FFD700',
+                  color: primaryMain,
                   mb: 1,
                 }}
               >
@@ -212,19 +222,19 @@ const VerificationForm: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   InputProps={{
                     startAdornment: (
-                      <Email sx={{ color: '#FFD700', mr: 1 }} />
+                      <Email sx={{ color: primaryMain, mr: 1 }} />
                     ),
                   }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       '& fieldset': {
-                        borderColor: 'rgba(255, 215, 0, 0.3)',
+                        borderColor: getRgbaColor(primaryMain, 0.3),
                       },
                       '&:hover fieldset': {
-                        borderColor: '#FFD700',
+                        borderColor: primaryMain,
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: '#9C27B0',
+                        borderColor: primaryDark,
                       },
                     },
                   }}
@@ -247,19 +257,19 @@ const VerificationForm: React.FC = () => {
                   onChange={(e) => setVerifyCode(e.target.value)}
                   InputProps={{
                     startAdornment: (
-                      <Security sx={{ color: '#FFD700', mr: 1 }} />
+                      <Security sx={{ color: primaryMain, mr: 1 }} />
                     ),
                   }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       '& fieldset': {
-                        borderColor: 'rgba(255, 215, 0, 0.3)',
+                        borderColor: getRgbaColor(primaryMain, 0.3),
                       },
                       '&:hover fieldset': {
-                        borderColor: '#FFD700',
+                        borderColor: primaryMain,
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: '#9C27B0',
+                        borderColor: primaryDark,
                       },
                     },
                   }}
@@ -281,16 +291,16 @@ const VerificationForm: React.FC = () => {
                     mt: 3,
                     mb: 2,
                     py: 1.5,
-                    background: '#FFD700',
-                    color: '#000',
+                    background: appGradients.primary(theme),
+                    color: theme.palette.primary.contrastText,
                     fontWeight: 600,
                     fontSize: '1.1rem',
                     borderRadius: 2,
                     '&:hover': {
-                      background: '#FFC000',
+                      background: appGradients.primary(theme),
                     },
                     '&:disabled': {
-                      background: 'rgba(255, 215, 0, 0.5)',
+                      background: getRgbaColor(primaryMain, 0.5),
                     },
                   }}
                 >
@@ -319,11 +329,11 @@ const VerificationForm: React.FC = () => {
                     onClick={handleResendCode}
                     disabled={loading || resendLoading || resendCooldown > 0}
                     sx={{
-                      color: resendCooldown > 0 ? 'text.disabled' : '#9C27B0',
+                      color: resendCooldown > 0 ? 'text.disabled' : primaryDark,
                       fontWeight: 600,
                       '&:hover': {
-                        color: resendCooldown > 0 ? 'text.disabled' : '#FFD700',
-                        backgroundColor: resendCooldown > 0 ? 'transparent' : 'rgba(156, 39, 176, 0.04)',
+                        color: resendCooldown > 0 ? 'text.disabled' : primaryMain,
+                        backgroundColor: resendCooldown > 0 ? 'transparent' : getRgbaColor(primaryMain, 0.04),
                       },
                     }}
                   >
@@ -358,7 +368,7 @@ const VerificationForm: React.FC = () => {
                     sx={{
                       color: 'text.secondary',
                       '&:hover': {
-                        color: '#FFD700',
+                        color: primaryMain,
                       },
                     }}
                   >
@@ -375,6 +385,7 @@ const VerificationForm: React.FC = () => {
 };
 
 const VerificationPage: React.FC = () => {
+  const theme = useTheme();
   return (
     <Suspense fallback={
       <Box
@@ -383,10 +394,10 @@ const VerificationPage: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: theme.palette.background.default,
         }}
       >
-        <CircularProgress size={60} sx={{ color: '#fff' }} />
+        <CircularProgress size={60} sx={{ color: theme.palette.primary.main }} />
       </Box>
     }>
       <VerificationForm />

@@ -30,7 +30,7 @@ export default function HomePage() {
         }}
       >
         {/* Animated Background */}
-        <AnimatedBackground />
+        {/* <AnimatedBackground /> */}
         
         {/* Header */}
         <Header />

@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Box, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
-import { getRgbaColor } from "../../theme/colors";
+import { appGradients, getRgbaColor } from "../../theme/colors";
 
 interface FloatingElement {
   id: number;
@@ -118,9 +118,10 @@ const AnimatedBackground: React.FC = () => {
         overflow: "hidden",
         zIndex: -1,
         height: "100vh",
-        background: theme.palette.primary.main,
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
+        background: appGradients.background(),
+        backdropFilter: 'white(20px)',
+        WebkitBackdropFilter: 'white(20px)',
+        color: theme.palette.text.primary,
       }}
     >
       {floatingElements.map((element) => {
@@ -157,7 +158,7 @@ const AnimatedBackground: React.FC = () => {
           left: 0,
           width: "100%",
           height: "100%",
-          background: getRgbaColor(theme.palette.primary.dark, 0.1),
+          background: getRgbaColor(theme.palette.text.primary, 0.05),
           backdropFilter: 'blur(5px)',
           WebkitBackdropFilter: 'blur(5px)',
         }}

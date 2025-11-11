@@ -55,7 +55,7 @@ const GetInTouch = () => {
         display: "flex",
         flexDirection: "column",
         // gap: 2,
-        background: getRgbaColor(theme.palette.primary.main, 0.76),
+        background: theme.palette.background.default,
         backdropFilter: "blur(10px)",
       }}
     >
@@ -72,7 +72,7 @@ const GetInTouch = () => {
               gutterBottom
               sx={{
                 fontWeight: 800,
-                color: "#FFD700",
+                color: theme.palette.text.primary,
                 mb: 3,
                 fontSize: { xs: "2.5rem", sm: "3rem", md: "4rem" },
               }}
@@ -129,7 +129,7 @@ const GetInTouch = () => {
                   gutterBottom
                   sx={{
                     fontWeight: 700,
-                    color: "#333",
+                    color: theme.palette.text.primary,
                     mb: 3,
                     position: "relative",
                     "&::after": {
@@ -139,7 +139,7 @@ const GetInTouch = () => {
                       left: 0,
                       width: 60,
                       height: 4,
-                      background: "#FFD700",
+                      background: theme.palette.primary.main,
                       borderRadius: 2,
                     },
                   }}
@@ -171,7 +171,7 @@ const GetInTouch = () => {
                   gutterBottom
                   sx={{
                     fontWeight: 700,
-                    color: "#333",
+                    color: theme.palette.text.primary,
                     mb: 3,
                     position: "relative",
                     "&::after": {
@@ -181,7 +181,7 @@ const GetInTouch = () => {
                       left: 0,
                       width: 60,
                       height: 4,
-                      background: "#FFD700",
+                      background: theme.palette.primary.main,
                       borderRadius: 2,
                     },
                   }}
@@ -254,13 +254,13 @@ const GetInTouch = () => {
                                 variant="h6"
                                 component="h3"
                                 gutterBottom
-                                sx={{ fontWeight: 700, color: "#333", mb: 1 }}
+                                sx={{ fontWeight: 700, color: theme.palette.text.primary, mb: 1 }}
                               >
                                 {info.title}
                               </Typography>
                               <Typography
                                 variant="body1"
-                                sx={{ fontWeight: 600, color: "#666", mb: 1 }}
+                                sx={{ fontWeight: 600, color: theme.palette.text.secondary, mb: 1 }}
                               >
                                 {info.info}
                               </Typography>
