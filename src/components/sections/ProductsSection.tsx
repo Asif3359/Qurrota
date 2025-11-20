@@ -24,6 +24,7 @@ import {
   FormControl,
   InputLabel,
   Skeleton,
+  SelectChangeEvent,
 } from "@mui/material";
 import { motion } from "framer-motion";
 import {
@@ -291,7 +292,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
   };
 
   // Handle sort change
-  const handleSortChange = (event: any) => {
+  const handleSortChange = (event: SelectChangeEvent<string>) => {
     setSortBy(event.target.value);
     setCurrentPage(1); // Reset to first page when sorting changes
   };
