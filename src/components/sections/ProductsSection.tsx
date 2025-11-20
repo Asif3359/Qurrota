@@ -18,6 +18,12 @@ import {
   Rating,
   FormControlLabel,
   Checkbox,
+  Pagination,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Skeleton,
 } from "@mui/material";
 import { motion } from "framer-motion";
 import {
@@ -26,6 +32,8 @@ import {
   Star,
   Close,
   Visibility,
+  ArrowRight,
+  ShoppingBag,
 } from "@mui/icons-material";
 import { getRgbaColor, appGradients } from "@/theme/colors";
 import { normalizeCsvInput } from "../utils/displayCsv";
@@ -66,6 +74,8 @@ type Product = {
     isActive?: boolean;
   }>;
 };
+import SectionHeaders from "../Headers/SectionHeaders";
+import OutLineButton from "../buttons/OutLineButton";
 
 const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
   isHomePage = false,
@@ -107,9 +117,6 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
   );
   const [modalOpen, setModalOpen] = React.useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = React.useState(0);
-  const [wishlistItems, setWishlistItems] = React.useState<Set<string>>(
-    new Set()
-  );
   const [loadingStates, setLoadingStates] = React.useState<{
     [key: string]: boolean;
   }>({});
@@ -117,6 +124,10 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
   const [pendingCartProduct, setPendingCartProduct] =
     React.useState<Product | null>(null);
   const [dontShowAgain, setDontShowAgain] = React.useState(false);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [totalProducts, setTotalProducts] = React.useState(0);
+  const [sortBy, setSortBy] = React.useState<string>("newest");
+  const productsPerPage = 12;
 
   const apiBase = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products/published`;
 
@@ -135,28 +146,57 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
     }
   };
 
-  const getProducts = React.useCallback(async (): Promise<void> => {
+  const getProducts = React.useCallback(async (page: number = 1, limit: number = 12, sort: string = "newest"): Promise<void> => {
     try {
       setLoading(true);
       setError(null);
-      const [pubRes] = await Promise.all([
-        fetch(`${apiBase}`, { cache: "no-store" }),
-      ]);
-      if (!pubRes.ok) throw new Error("Failed to load products");
-      const pubData = await pubRes.json();
-      // console.log(pubData.data)
-      setProducts(pubData.data ?? []);
+      
+      // Build URL with pagination and sort params
+      // Home page: always page 1, limit 12, but respects sort
+      // Products page: uses all params
+      const actualPage = isHomePage ? 1 : page;
+      const actualLimit = isHomePage ? 12 : limit;
+      
+      const url = `${apiBase}?page=${actualPage}&limit=${actualLimit}&sort=${sort}`;
+      
+      console.log('🔗 Fetching URL:', url);
+      
+      const response = await fetch(url, { 
+        cache: "no-cache",
+        next: { revalidate: 0 }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error('❌ Response error:', errorData);
+        throw new Error(`Failed to load products: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      setProducts(data.data ?? []);
+      setTotalProducts(data.total ?? 0);
+      
+      console.log('📦 Products loaded:', {
+        page: actualPage,
+        limit: actualLimit,
+        sort,
+        received: data.data?.length,
+        total: data.total
+      });
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Something went wrong";
       setError(message);
+      console.error('❌ Error fetching products:', e);
     } finally {
       setLoading(false);
     }
-  }, [apiBase]);
+  }, [apiBase, isHomePage]);
 
+  // Fetch products on mount and when page or sort changes
   React.useEffect(() => {
-    getProducts();
-  }, [getProducts]);
+    getProducts(currentPage, productsPerPage, sortBy);
+  }, [getProducts, currentPage, sortBy]);
 
   const handleQuickView = (product: Product) => {
     setSelectedProduct(product);
@@ -173,238 +213,6 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
   const handleImageSelect = (index: number) => {
     setSelectedImageIndex(index);
   };
-
-  // Wishlist API functions
-  const addToWishlist = async (productId: string) => {
-    if (!token) {
-      alert("Please login to add items to wishlist");
-      return;
-    }
-
-    // Try to get user ID from multiple sources
-    let userId = user?.id;
-
-    // Fallback: try to get user ID from token payload (if it's a JWT)
-    if (!userId && token) {
-      try {
-        const tokenPayload = JSON.parse(atob(token.split(".")[1]));
-        userId = tokenPayload.id || tokenPayload.userId || tokenPayload.sub;
-        console.log("Extracted user ID from token for wishlist:", userId);
-      } catch (error) {
-        console.error(
-          "Failed to extract user ID from token for wishlist:",
-          error
-        );
-      }
-    }
-
-    if (!userId) {
-      console.error("User ID is missing for wishlist:", {
-        user,
-        token: token ? "present" : "missing",
-      });
-
-      // Try to get user ID from localStorage/sessionStorage as last resort
-      try {
-        const storedUser =
-          localStorage.getItem("authUser") ||
-          sessionStorage.getItem("authUser");
-        if (storedUser) {
-          const parsedUser = JSON.parse(storedUser);
-          userId = parsedUser.id || parsedUser._id;
-          console.log("Found user ID in storage for wishlist:", userId);
-        }
-      } catch (error) {
-        console.error("Failed to get user from storage for wishlist:", error);
-      }
-
-      if (!userId) {
-        alert("User information is missing. Please login again.");
-        return;
-      }
-    }
-
-    setLoadingStates((prev) => ({ ...prev, [`wishlist-${productId}`]: true }));
-
-    try {
-      console.log("Adding to wishlist:", {
-        productId,
-        token: token ? "present" : "missing",
-      });
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/wishlist/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          productId: productId,
-          notes: "",
-          userId: userId,
-        }),
-      });
-
-      console.log(
-        "Wishlist API response:",
-        response.status,
-        response.statusText
-      );
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log("Wishlist API success:", result);
-        setWishlistItems((prev) => new Set([...prev, productId]));
-        toast.success("Added to wishlist!", {
-          duration: 3000,
-          position: "bottom-right",
-          style: {
-            background: "#4CAF50",
-            color: "#fff",
-            borderRadius: "8px",
-            fontSize: "14px",
-            fontWeight: "500",
-          },
-        });
-      } else {
-        const error = await response
-          .json()
-          .catch(() => ({ message: "Unknown error" }));
-        console.error("Wishlist API error:", error);
-        toast.error(
-          `Error adding item to wishlist: ${error.message || "Unknown error"}`,
-          {
-            duration: 4000,
-            position: "bottom-right",
-            style: {
-              background: "#f44336",
-              color: "#fff",
-              borderRadius: "8px",
-              fontSize: "14px",
-              fontWeight: "500",
-            },
-          }
-        );
-      }
-    } catch (error) {
-      console.error("Wishlist network error:", error);
-      toast.error(
-        `Network error: ${
-          error instanceof Error ? error.message : "Failed to add to wishlist"
-        }`,
-        {
-          duration: 4000,
-          position: "bottom-right",
-          style: {
-            background: "#f44336",
-            color: "#fff",
-            borderRadius: "8px",
-            fontSize: "14px",
-            fontWeight: "500",
-          },
-        }
-      );
-    } finally {
-      setLoadingStates((prev) => ({
-        ...prev,
-        [`wishlist-${productId}`]: false,
-      }));
-    }
-  };
-
-  const removeFromWishlist = async (productId: string) => {
-    if (!token) return;
-
-    setLoadingStates((prev) => ({ ...prev, [`wishlist-${productId}`]: true }));
-
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/wishlist/remove/${productId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.ok) {
-        setWishlistItems((prev) => {
-          const newSet = new Set(prev);
-          newSet.delete(productId);
-          return newSet;
-        });
-        toast.success("Removed from wishlist!", {
-          duration: 3000,
-          position: "bottom-right",
-          style: {
-            background: "#4CAF50",
-            color: "#fff",
-            borderRadius: "8px",
-            fontSize: "14px",
-            fontWeight: "500",
-          },
-        });
-      } else {
-        const error = await response.json();
-        toast.error(error.message || "Failed to remove from wishlist", {
-          duration: 4000,
-          position: "bottom-right",
-          style: {
-            background: "#f44336",
-            color: "#fff",
-            borderRadius: "8px",
-            fontSize: "14px",
-            fontWeight: "500",
-          },
-        });
-      }
-    } catch (error) {
-      console.error("Wishlist error:", error);
-      toast.error("Failed to remove from wishlist", {
-        duration: 4000,
-        position: "bottom-right",
-        style: {
-          background: "#f44336",
-          color: "#fff",
-          borderRadius: "8px",
-          fontSize: "14px",
-          fontWeight: "500",
-        },
-      });
-    } finally {
-      setLoadingStates((prev) => ({
-        ...prev,
-        [`wishlist-${productId}`]: false,
-      }));
-    }
-  };
-
-  const checkWishlistStatus = React.useCallback(
-    async (productId: string) => {
-      if (!token) return false;
-
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/wishlist/check/${productId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          return data.inWishlist || false;
-        }
-      } catch (error) {
-        console.error("Wishlist check error:", error);
-      }
-      return false;
-    },
-    [token]
-  );
 
   // Cart function using context
   const addToCart = async (productId: string) => {
@@ -472,105 +280,239 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
     setDontShowAgain(false);
   };
 
-  // Check wishlist status for all products
-  React.useEffect(() => {
-    if (products.length > 0 && token) {
-      const checkAllWishlistStatuses = async () => {
-        const wishlistPromises = products.map((product) =>
-          checkWishlistStatus(product._id)
-        );
-        const wishlistResults = await Promise.all(wishlistPromises);
+  // Calculate total pages from backend total
+  const totalPages = Math.ceil(totalProducts / productsPerPage);
 
-        const wishlistSet = new Set<string>();
-        products.forEach((product, index) => {
-          if (wishlistResults[index]) wishlistSet.add(product._id);
-        });
+  // Handle page change
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setCurrentPage(value);
+    // Scroll to top of products section smoothly
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-        setWishlistItems(wishlistSet);
-      };
-
-      checkAllWishlistStatuses();
-    }
-  }, [products, token, checkWishlistStatus]);
+  // Handle sort change
+  const handleSortChange = (event: any) => {
+    setSortBy(event.target.value);
+    setCurrentPage(1); // Reset to first page when sorting changes
+  };
 
   return (
     <Box
       sx={{
         pt: 6,
         pb: 6,
-        // background: 'rgba(255, 255, 255, 0.8)',
-        background: theme.palette.background.default,
-        backdropFilter: "blur(10px)",
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          {
-            isHomePage && (
-              <Typography
-                variant="h6"
-                component="h2"
-                align="center"
-                gutterBottom
+        <Box sx={{ mb: 6, textAlign: "center" }}>
+          <SectionHeaders
+            title={isHomePage ? "Trending Products" : "All Products"}
+            description="Discover our carefully curated collection of premium products for kids and new mothers"
+          />
+          
+            {/* Sort Controls - Show on both home and products page */}
+            <Box
+              sx={{
+                mt: 4,
+                display: "flex",
+                justifyContent: isHomePage ? "flex-end" : "space-between",
+                alignItems: "center",
+                flexDirection: { xs: "column", sm: "row" },
+                gap: 2,
+              }}
+            >
+              {/* Products count - Only on products page */}
+              {!isHomePage && !loading && totalProducts > 0 && (
+                <Typography
+                  variant="body1"
+                  color="text.secondary"
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  }}
+                >
+                  Showing {((currentPage - 1) * productsPerPage) + 1} - {Math.min(currentPage * productsPerPage, totalProducts)} of {totalProducts} products
+                </Typography>
+              )}
+
+              {/* Sort Dropdown - Show on both pages */}
+              <FormControl
+                size="small"
                 sx={{
-                  fontWeight: 700,
-                  color: theme.palette.text.primary,
-                  mb: { xs: 1, sm: 2 },
-                  fontSize: { xs: "1.75rem", sm: "2.125rem", md: "3rem" },
+                  minWidth: { xs: "100%", sm: 200 },
                 }}
               >
-                Featured Products
-              </Typography>
-            )
-          }
-
-          {
-            !isHomePage && (
-              <Typography
-                variant="h3"
-                component="h1"
-                align="center"
-                gutterBottom
-                sx={{
-                  fontWeight: 700,
-                  color: theme.palette.text.primary,
-                  mb: { xs: 1, sm: 2 },
-                  fontSize: { xs: "1.75rem", sm: "2.125rem", md: "3rem" },
-                }}
-              >
-               Featured Products
-              </Typography>
-            )
-          }
- 
-
-          <Typography
-            variant={isSmallMobile ? "body1" : "h6"}
-            align="center"
-            color="text.secondary"
+                <InputLabel id="sort-label">Sort By</InputLabel>
+                <Select
+                  labelId="sort-label"
+                  id="sort-select"
+                  value={sortBy}
+                  label="Sort By"
+                  onChange={handleSortChange}
+                  sx={{
+                    background: theme.palette.background.paper,
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: getRgbaColor(primaryMain, 0.3),
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: primaryMain,
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: primaryMain,
+                    },
+                  }}
+                >
+                  <MenuItem value="newest">Newest First</MenuItem>
+                  <MenuItem value="price-low">Price: Low to High</MenuItem>
+                  <MenuItem value="price-high">Price: High to Low</MenuItem>
+                  <MenuItem value="name-asc">Name: A to Z</MenuItem>
+                  <MenuItem value="name-desc">Name: Z to A</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          </Box>
+        </motion.div>
+        {loading && (
+          <Box
             sx={{
-              mb: { xs: 4, sm: 5, md: 6 },
-              maxWidth: 600,
-              mx: "auto",
-              px: { xs: 1, sm: 2 },
-              fontSize: { xs: "0.875rem", sm: "1.25rem" },
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "1fr",
+                sm: "repeat(2, 1fr)",
+                md: "repeat(3, 1fr)",
+                lg: "repeat(4, 1fr)",
+              },
+              gap: { xs: 2, sm: 2, md: 3 },
             }}
           >
-            Discover our carefully curated collection of premium products for
-            kids and new mothers
-          </Typography>
-        </motion.div>
+            {Array.from({ length: isHomePage ? 12 : 8 }).map((_, index) => (
+              <Card
+                key={index}
+                elevation={0}
+                sx={{
+                  height: "100%",
+                  background: getRgbaColor(backgroundPaper, 0.9),
+                  border: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
+                  borderRadius: { xs: 2, sm: 3 },
+                  overflow: "hidden",
+                }}
+              >
+                {/* Image Skeleton */}
+                <Skeleton
+                  variant="rectangular"
+                  width="100%"
+                  height={isSmallMobile ? 180 : isMobile ? 200 : 250}
+                  sx={{
+                    bgcolor: getRgbaColor(primaryMain, 0.1),
+                  }}
+                />
 
-        {loading && (
-          <Box sx={{ textAlign: "center", py: 4 }}>
-            <Typography variant="h6" color="text.secondary">
-              Loading products...
-            </Typography>
+                <CardContent
+                  sx={{
+                    p: { xs: 2, sm: 2.5, md: 3 },
+                    "&:last-child": { pb: { xs: 2, sm: 2.5, md: 3 } },
+                  }}
+                >
+                  {/* Title Skeleton */}
+                  <Skeleton
+                    variant="text"
+                    width="80%"
+                    height={isSmallMobile ? 24 : 32}
+                    sx={{
+                      mb: 1,
+                      bgcolor: getRgbaColor(primaryMain, 0.1),
+                    }}
+                  />
+
+                  {/* Description Skeleton */}
+                  <Skeleton
+                    variant="text"
+                    width="100%"
+                    height={16}
+                    sx={{
+                      mb: 0.5,
+                      bgcolor: getRgbaColor(primaryMain, 0.08),
+                    }}
+                  />
+                  <Skeleton
+                    variant="text"
+                    width="90%"
+                    height={16}
+                    sx={{
+                      mb: 2,
+                      bgcolor: getRgbaColor(primaryMain, 0.08),
+                    }}
+                  />
+
+                  {/* Rating Skeleton */}
+                  <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                    <Skeleton
+                      variant="rectangular"
+                      width={100}
+                      height={16}
+                      sx={{
+                        mr: 1,
+                        bgcolor: getRgbaColor(primaryMain, 0.1),
+                        borderRadius: 1,
+                      }}
+                    />
+                    <Skeleton
+                      variant="text"
+                      width={40}
+                      height={16}
+                      sx={{
+                        bgcolor: getRgbaColor(primaryMain, 0.08),
+                      }}
+                    />
+                  </Box>
+
+                  {/* Price Skeleton */}
+                  <Skeleton
+                    variant="text"
+                    width="40%"
+                    height={isSmallMobile ? 28 : 32}
+                    sx={{
+                      mb: 1,
+                      bgcolor: getRgbaColor(primaryMain, 0.12),
+                    }}
+                  />
+
+                  {/* Buttons Skeleton */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: { xs: 0.75, sm: 1, md: 1 },
+                      flexDirection: { xs: "column", sm: "row" },
+                    }}
+                  >
+                    <Skeleton
+                      variant="rectangular"
+                      width="100%"
+                      height={isSmallMobile ? 32 : 36}
+                      sx={{
+                        bgcolor: getRgbaColor(primaryMain, 0.1),
+                        borderRadius: 2,
+                      }}
+                    />
+                    <Skeleton
+                      variant="rectangular"
+                      width="100%"
+                      height={isSmallMobile ? 32 : 36}
+                      sx={{
+                        bgcolor: getRgbaColor(primaryMain, 0.1),
+                        borderRadius: 2,
+                      }}
+                    />
+                  </Box>
+                </CardContent>
+              </Card>
+            ))}
           </Box>
         )}
 
@@ -582,29 +524,27 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
           </Box>
         )}
 
-
-
         {!loading && !error && products.length > 0 && (
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: {
-                xs: "1fr",
-                sm: "repeat(2, 1fr)",
-                md: "repeat(3, 1fr)",
-                lg: "repeat(3, 1fr)",
-              },
-              gap: { xs: 2, sm: 3, md: 3 },
-            }}
-          >
-            {products.map((product, index) => (
+          <>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "1fr",
+                  sm: "repeat(2, 1fr)",
+                  md: "repeat(3, 1fr)",
+                  lg: "repeat(4, 1fr)",
+                },
+                gap: { xs: 2, sm: 2, md: 3 },
+              }}
+            >
+              {products.map((product, index) => (
               <Box key={product._id}>
                 <motion.div
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   viewport={{ once: true }}
-                  whileHover={{ y: isMobile ? 0 : -10 }}
                 >
                   <Card
                     elevation={0}
@@ -619,6 +559,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       "&:hover": {
                         borderColor: primaryMain,
                         background: getRgbaColor(backgroundPaper, 0.95),
+                        cursor: "pointer",
                       },
                     }}
                     onClick={() => {
@@ -635,7 +576,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                         sx={{
                           objectFit: "cover",
                           width: "100%",
-                          height: { xs: "180px", sm: "200px", md: "220px" },
+                          height: { xs: "180px", sm: "200px", md: "250px" },
                         }}
                       />
 
@@ -681,46 +622,6 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                           />
                         )}
                       </Box>
-
-                      {/* Favorite/Wishlist Button */}
-                      {/* <Button
-                      onClick={() => {
-                        if (wishlistItems.has(product._id)) {
-                          removeFromWishlist(product._id);
-                        } else {
-                          addToWishlist(product._id);
-                        }
-                      }}
-                      disabled={loadingStates[`wishlist-${product._id}`]}
-                      sx={{
-                        position: 'absolute',
-                        top: { xs: 8, sm: 12 },
-                        right: { xs: 8, sm: 12 },
-                        minWidth: 'auto',
-                        width: { xs: 32, sm: 40 },
-                        height: { xs: 32, sm: 40 },
-                        borderRadius: '50%',
-                        background: wishlistItems.has(product._id) 
-                          ? 'rgba(255, 215, 0, 0.9)' 
-                          : 'rgba(255, 255, 255, 0.9)',
-                        backdropFilter: 'blur(10px)',
-                        '&:hover': {
-                          background: wishlistItems.has(product._id) 
-                            ? 'rgba(255, 215, 0, 1)' 
-                            : 'rgba(255, 255, 255, 1)',
-                        },
-                        '&:disabled': {
-                          opacity: 0.6,
-                        },
-                      }}
-                    >
-                      <Favorite sx={{ 
-                        fontSize: { xs: 16, sm: 20 }, 
-                        color: wishlistItems.has(product._id) ? '#000' : '#FFD700',
-                        fill: wishlistItems.has(product._id) ? '#000' : 'none'
-                      }} />
-                    </Button> */}
-
                       {/* Quick View Button - Bottom Right */}
                       <Button
                         sx={{
@@ -758,18 +659,6 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       }}
                     >
                       <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{
-                          textTransform: "uppercase",
-                          fontWeight: 600,
-                          fontSize: { xs: "0.7rem", sm: "0.75rem" },
-                        }}
-                      >
-                        {normalizeCsvInput(product.categories ?? "")}
-                      </Typography>
-
-                      <Typography
                         variant={isSmallMobile ? "subtitle1" : "h6"}
                         component="h3"
                         gutterBottom
@@ -782,6 +671,17 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                         }}
                       >
                         {product.name}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        color="text.secondary"
+                        sx={{
+                          fontWeight: 400,
+                          fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        {product.description?.slice(0, 100) + "..."}
                       </Typography>
 
                       <Box
@@ -817,32 +717,37 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                         </Typography>
                       </Box>
 
+                      <Box sx={{ mb: 1 }}>
+                        <Box>
+                          <Typography
+                            variant={isSmallMobile ? "subtitle1" : "h6"}
+                            sx={{
+                              fontWeight: 700,
+                              color: primaryMain,
+                              fontSize: { xs: "1rem", sm: "1.25rem" },
+                            }}
+                          >
+                            {product.price} {product.currency}
+                          </Typography>
+                        </Box>
+                      </Box>
+
                       <Box
                         sx={{
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "space-between",
                           flexDirection: { xs: "column", sm: "row" },
-                          gap: { xs: 1, sm: 0 },
+                          width: "100%",
+                          gap: { xs: 0.75, sm: 1, md: 1 },
                         }}
                       >
-                        <Typography
-                          variant={isSmallMobile ? "subtitle1" : "h6"}
-                          sx={{
-                            fontWeight: 700,
-                            color: primaryMain,
-                            fontSize: { xs: "1rem", sm: "1.25rem" },
-                          }}
-                        >
-                          {product.price} {product.currency}
-                        </Typography>
-
                         <Button
                           variant="contained"
-                          size={isSmallMobile ? "small" : "small"}
+                          size={isSmallMobile ? "small" : "medium"}
                           startIcon={
                             <ShoppingCart
-                              sx={{ fontSize: { xs: 16, sm: 18 } }}
+                              sx={{ fontSize: { xs: 14, sm: 16 } }}
                             />
                           }
                           onClick={(e) => {
@@ -854,24 +759,42 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                             isInCart(product._id)
                           }
                           sx={{
+                            width: "100%",
                             background: isInCart(product._id)
                               ? successMain
-                              : appGradients.primary(theme),
-                            color: isInCart(product._id)
-                              ? white
-                              : theme.palette.primary.contrastText,
+                              : primaryMain,
+                            color: white,
                             fontWeight: 600,
                             borderRadius: 2,
-                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                            px: { xs: 1.5, sm: 2 },
-                            py: { xs: 0.5, sm: 0.75 },
+                            fontSize: { xs: "0.7rem", sm: "0.7rem" },
+                            px: { xs: 1, sm: 2 },
+                            py: { xs: 0.4, sm: 0.75 },
+                            minHeight: { xs: 32, sm: 36 },
+                            boxShadow: isInCart(product._id)
+                              ? `0 2px 8px ${getRgbaColor(successMain, 0.3)}`
+                              : `0 2px 8px ${getRgbaColor(primaryMain, 0.3)}`,
+                            transition: "all 0.3s ease",
                             "&:hover": {
                               background: isInCart(product._id)
-                                ? successMain
-                                : appGradients.primary(theme),
+                                ? getRgbaColor(successMain, 0.8)
+                                : primaryDark,
+                              transform: "translateY(-2px)",
+                              boxShadow: isInCart(product._id)
+                                ? `0 4px 12px ${getRgbaColor(successMain, 0.4)}`
+                                : `0 4px 12px ${getRgbaColor(primaryMain, 0.4)}`,
+                            },
+                            "&:active": {
+                              transform: "translateY(0)",
+                              boxShadow: isInCart(product._id)
+                                ? `0 1px 4px ${getRgbaColor(successMain, 0.3)}`
+                                : `0 1px 4px ${getRgbaColor(primaryMain, 0.3)}`,
                             },
                             "&:disabled": {
                               opacity: 0.6,
+                              background: isInCart(product._id)
+                                ? successMain
+                                : primaryMain,
+                              color: white,
                             },
                           }}
                         >
@@ -883,13 +806,88 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                             ? "Add"
                             : "Add to Cart"}
                         </Button>
+                        <Button
+                          variant="outlined"
+                          size={isSmallMobile ? "small" : "medium"}
+                          startIcon={
+                            <ShoppingBag
+                              sx={{ fontSize: { xs: 14, sm: 16 } }}
+                            />
+                          }
+                          sx={{
+                            width: "100%",
+                            background: "transparent",
+                            color: primaryMain,
+                            borderColor: primaryMain,
+                            fontWeight: 600,
+                            borderRadius: 2,
+                            fontSize: { xs: "0.7rem", sm: "0.7rem" },
+                            px: { xs: 1, sm: 2 },
+                            py: { xs: 0.4, sm: 0.75 },
+                            minHeight: { xs: 32, sm: 36 },
+                            "&:hover": {
+                              background: primaryDark,
+                              color: white,
+                              borderColor: primaryMain,
+                              transform: "translateY(-2px)",
+                              boxShadow: `0 4px 12px ${getRgbaColor(primaryMain, 0.4)}`,
+                            },
+                            "&:active": {
+                              transform: "translateY(0)",
+                              boxShadow: `0 1px 4px ${getRgbaColor(primaryMain, 0.3)}`,
+                            },
+                            "&:disabled": {
+                              opacity: 0.6,
+                              background: primaryMain,
+                              color: white,
+                              borderColor: primaryMain,
+                            },
+                            transition: "all 0.3s ease",
+                          }}
+                        >
+                          Shop Now
+                        </Button>
                       </Box>
                     </CardContent>
                   </Card>
                 </motion.div>
               </Box>
             ))}
-          </Box>
+            </Box>
+
+            {/* Pagination for products page */}
+            {!isHomePage && totalPages > 1 && (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  mt: { xs: 4, md: 6 },
+                  mb: { xs: 2, md: 4 },
+                }}
+              >
+                <Pagination
+                  count={totalPages}
+                  page={currentPage}
+                  onChange={handlePageChange}
+                  color="primary"
+                  size={isSmallMobile ? "small" : isMobile ? "medium" : "large"}
+                  sx={{
+                    "& .MuiPaginationItem-root": {
+                      fontWeight: 600,
+                      fontSize: { xs: "0.875rem", sm: "1rem" },
+                    },
+                    "& .Mui-selected": {
+                      background: appGradients.primary(theme),
+                      color: white,
+                      "&:hover": {
+                        background: appGradients.primary(theme),
+                      },
+                    },
+                  }}
+                />
+              </Box>
+            )}
+          </>
         )}
 
         {isHomePage && (
@@ -900,27 +898,11 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
             viewport={{ once: true }}
           >
             <Box sx={{ textAlign: "center", mt: { xs: 4, sm: 5, md: 6 } }}>
-              <Button
-                variant="outlined"
-                size={isSmallMobile ? "medium" : "large"}
-                href="/products"
-                sx={{
-                  borderColor: theme.palette.primary.main,
-                  color: theme.palette.primary.main,
-                  fontWeight: 600,
-                  px: { xs: 3, sm: 4 },
-                  py: { xs: 1, sm: 1.5 },
-                  fontSize: { xs: "0.875rem", sm: "1.1rem" },
-                  borderRadius: 3,
-                  "&:hover": {
-                    borderColor: theme.palette.primary.dark,
-                    color: theme.palette.primary.dark,
-                    background: getRgbaColor(theme.palette.primary.main, 0.1),
-                  },
-                }}
+              <OutLineButton
+                onClick={() => router.push("/products")}
               >
                 View All Products
-              </Button>
+              </OutLineButton>
             </Box>
           </motion.div>
         )}
@@ -1053,7 +1035,10 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                             fontWeight: 700,
                             fontSize: "0.75rem",
                             height: 28,
-                            boxShadow: `0 2px 8px ${getRgbaColor(secondaryMain, 0.3)}`,
+                            boxShadow: `0 2px 8px ${getRgbaColor(
+                              secondaryMain,
+                              0.3
+                            )}`,
                             "&:hover": {
                               transform: "scale(1.05)",
                             },
@@ -1071,7 +1056,10 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                             fontWeight: 700,
                             fontSize: "0.75rem",
                             height: 28,
-                            boxShadow: `0 2px 8px ${getRgbaColor(primaryMain, 0.3)}`,
+                            boxShadow: `0 2px 8px ${getRgbaColor(
+                              primaryMain,
+                              0.3
+                            )}`,
                             "&:hover": {
                               transform: "scale(1.05)",
                             },
@@ -1089,7 +1077,10 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                         p: 3,
                         background: getRgbaColor(backgroundPaper, 0.95),
                         backdropFilter: "blur(10px)",
-                        borderTop: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
+                        borderTop: `1px solid ${getRgbaColor(
+                          primaryMain,
+                          0.2
+                        )}`,
                       }}
                     >
                       <Typography
@@ -1139,18 +1130,27 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                               border:
                                 selectedImageIndex === index
                                   ? `3px solid ${primaryMain}`
-                                  : `3px solid ${getRgbaColor(primaryMain, 0.1)}`,
+                                  : `3px solid ${getRgbaColor(
+                                      primaryMain,
+                                      0.1
+                                    )}`,
                               borderRadius: 2,
                               overflow: "hidden",
                               transition: "all 0.3s ease",
                               boxShadow:
                                 selectedImageIndex === index
-                                  ? `0 4px 12px ${getRgbaColor(primaryMain, 0.4)}`
+                                  ? `0 4px 12px ${getRgbaColor(
+                                      primaryMain,
+                                      0.4
+                                    )}`
                                   : `0 2px 8px ${getRgbaColor(black, 0.1)}`,
                               "&:hover": {
                                 borderColor: primaryMain,
                                 transform: "scale(1.05)",
-                                boxShadow: `0 4px 12px ${getRgbaColor(primaryMain, 0.3)}`,
+                                boxShadow: `0 4px 12px ${getRgbaColor(
+                                  primaryMain,
+                                  0.3
+                                )}`,
                               },
                             }}
                           >
@@ -1195,7 +1195,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                   }}
                 >
                   {/* Categories */}
-                  <Typography
+                  {/* <Typography
                     variant="caption"
                     color="text.secondary"
                     sx={{
@@ -1207,7 +1207,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                     }}
                   >
                     {normalizeCsvInput(selectedProduct.categories ?? "")}
-                  </Typography>
+                  </Typography> */}
 
                   {/* Product Name */}
                   <Typography
@@ -1501,58 +1501,6 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                         ? "In Cart"
                         : "Add to Cart"}
                     </Button>
-
-                    <Button
-                      variant="outlined"
-                      size="large"
-                      startIcon={<Favorite />}
-                      onClick={() => {
-                        if (wishlistItems.has(selectedProduct._id)) {
-                          removeFromWishlist(selectedProduct._id);
-                        } else {
-                          addToWishlist(selectedProduct._id);
-                        }
-                      }}
-                      disabled={
-                        loadingStates[`wishlist-${selectedProduct._id}`]
-                      }
-                      sx={{
-                        borderColor: wishlistItems.has(selectedProduct._id)
-                          ? primaryMain
-                          : primaryDark,
-                        color: wishlistItems.has(selectedProduct._id)
-                          ? primaryMain
-                          : primaryDark,
-                        background: wishlistItems.has(selectedProduct._id)
-                          ? getRgbaColor(primaryMain, 0.1)
-                          : getRgbaColor(primaryMain, 0.05),
-                        fontWeight: 700,
-                        borderRadius: 3,
-                        px: 4,
-                        py: 2,
-                        fontSize: "1rem",
-                        textTransform: "none",
-                        borderWidth: 2,
-                        "&:hover": {
-                          borderColor: primaryMain,
-                          color: primaryMain,
-                          background: getRgbaColor(primaryMain, 0.15),
-                          transform: "translateY(-2px)",
-                          boxShadow: `0 6px 16px ${getRgbaColor(primaryMain, 0.2)}`,
-                        },
-                        "&:disabled": {
-                          opacity: 0.6,
-                          transform: "none",
-                        },
-                        transition: "all 0.3s ease",
-                      }}
-                    >
-                      {loadingStates[`wishlist-${selectedProduct._id}`]
-                        ? "Updating..."
-                        : wishlistItems.has(selectedProduct._id)
-                        ? "In Wishlist"
-                        : "Add to Wishlist"}
-                    </Button>
                   </Box>
                 </Box>
               </Box>
@@ -1674,16 +1622,18 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
               </Typography>
 
               {/* Don't show again checkbox */}
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                mb: 2,
-                p: 2,
-                background: getRgbaColor(primaryMain, 0.05),
-                borderRadius: 2,
-                border: `1px solid ${getRgbaColor(primaryMain, 0.2)}`
-              }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  mb: 2,
+                  p: 2,
+                  background: getRgbaColor(primaryMain, 0.05),
+                  borderRadius: 2,
+                  border: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
+                }}
+              >
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -1691,7 +1641,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       onChange={(e) => setDontShowAgain(e.target.checked)}
                       sx={{
                         color: primaryMain,
-                        '&.Mui-checked': {
+                        "&.Mui-checked": {
                           color: primaryMain,
                         },
                       }}
@@ -1702,7 +1652,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       variant="body2"
                       sx={{
                         color: textSecondary,
-                        fontSize: '0.9rem',
+                        fontSize: "0.9rem",
                         fontWeight: 500,
                       }}
                     >
@@ -1743,42 +1693,42 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                 Cancel
               </Button>
 
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={() => {
-                    // If user checked "Don't show again", save the preference
-                    if (dontShowAgain) {
-                      markCartConfirmationAsSeen();
-                    }
-                    confirmAddToCart(pendingCartProduct?._id || "");
-                  }}
-                  disabled={loadingStates[`cart-${pendingCartProduct?._id}`]}
-                  sx={{
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => {
+                  // If user checked "Don't show again", save the preference
+                  if (dontShowAgain) {
+                    markCartConfirmationAsSeen();
+                  }
+                  confirmAddToCart(pendingCartProduct?._id || "");
+                }}
+                disabled={loadingStates[`cart-${pendingCartProduct?._id}`]}
+                sx={{
+                  background: appGradients.primary(theme),
+                  color: theme.palette.primary.contrastText,
+                  fontWeight: 700,
+                  px: 4,
+                  py: 1.5,
+                  fontSize: "1rem",
+                  borderRadius: 3,
+                  boxShadow: `0 4px 12px ${getRgbaColor(primaryMain, 0.3)}`,
+                  "&:hover": {
                     background: appGradients.primary(theme),
-                    color: theme.palette.primary.contrastText,
-                    fontWeight: 700,
-                    px: 4,
-                    py: 1.5,
-                    fontSize: "1rem",
-                    borderRadius: 3,
-                    boxShadow: `0 4px 12px ${getRgbaColor(primaryMain, 0.3)}`,
-                    "&:hover": {
-                      background: appGradients.primary(theme),
-                      transform: "translateY(-2px)",
-                      boxShadow: `0 6px 16px ${getRgbaColor(primaryMain, 0.4)}`,
-                    },
-                    "&:disabled": {
-                      opacity: 0.6,
-                      transform: "none",
-                    },
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  {loadingStates[`cart-${pendingCartProduct?._id}`]
-                    ? "Adding..."
-                    : "Yes, Add to Cart"}
-                </Button>
+                    transform: "translateY(-2px)",
+                    boxShadow: `0 6px 16px ${getRgbaColor(primaryMain, 0.4)}`,
+                  },
+                  "&:disabled": {
+                    opacity: 0.6,
+                    transform: "none",
+                  },
+                  transition: "all 0.3s ease",
+                }}
+              >
+                {loadingStates[`cart-${pendingCartProduct?._id}`]
+                  ? "Adding..."
+                  : "Yes, Add to Cart"}
+              </Button>
             </Box>
           </motion.div>
         </Box>

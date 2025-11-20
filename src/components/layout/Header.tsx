@@ -20,6 +20,7 @@ import {
   useMediaQuery,
   Divider,
   Badge,
+  Container,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -30,6 +31,9 @@ import LogoutConfirmationModal from '@/components/ui/LogoutConfirmationModal';
 import Link from 'next/link';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import QurrotaLogo from '../../lib/QurrotaLogo';
+import PhoneIcon from '@mui/icons-material/Phone';
+import EmailIcon from '@mui/icons-material/Email';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 const Header: React.FC = () => {
   const theme = useTheme();
@@ -298,232 +302,336 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <AppBar
-        position="fixed"
-        sx={{
-          background: theme.palette.primary.main,
-          boxShadow: 'none',
-          borderBottom: 'none',
-        }}
-        elevation={0}
-      >
-        <Toolbar>
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
+      <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1100 }}>
+        {/* Top Bar - Dark Section */}
+
+
+        {/* Main Header - Purple Section */}
+        <AppBar
+          position="static"
+          sx={{
+            background: theme.palette.primary.main,
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+            borderBottom: 'none',
+          }}
+          elevation={0}
+        >
+          <Container maxWidth="xl">
+            <Toolbar sx={{ px: { xs: 0, sm: 2 } }}>
+              {/* Logo */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Link href="/" style={{ textDecoration: 'none' }}>
+                  <Box
+                    sx={{
+                      flexGrow: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Box sx={{ width: 160, height: 50, display: 'flex', alignItems: 'center' }}>
+                      <QurrotaLogo />
+                    </Box>
+                  </Box>
+                </Link>
+              </motion.div>
+
+              {isMobile ? (
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  edge="start"
+                  onClick={handleDrawerToggle}
+                  sx={{ ml: 'auto', color: theme.palette.primary.contrastText }}
+                >
+                  <MenuIcon />
+                </IconButton>
+              ) : (
+                <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto', gap: 1 }}>
+                  {/* Menu Items */}
+                  {menuItems.map((item, index) => {
+                    const isActive = isActivePage(item.href);
+                    return (
+                      <motion.div
+                        key={item.text}
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                      >
+                        <Button
+                          color="inherit"
+                          component={Link}
+                          href={item.href}
+                          sx={{
+                            color: theme.palette.primary.contrastText,
+                            fontWeight: isActive ? 600 : 400,
+                            textTransform: 'capitalize',
+                            fontSize: '1rem',
+                            px: 2,
+                            py: 1,
+                            position: 'relative',
+                            '&:hover': {
+                              background: 'rgba(255, 255, 255, 0.1)',
+                            },
+                            '&::after': {
+                              content: '""',
+                              position: 'absolute',
+                              bottom: 0,
+                              left: '50%',
+                              transform: 'translateX(-50%)',
+                              width: isActive ? '60%' : '0%',
+                              height: '3px',
+                              background: theme.palette.secondary.main,
+                              borderRadius: '2px 2px 0 0',
+                              transition: 'width 0.3s ease',
+                            },
+                            '&:hover::after': {
+                              width: '60%',
+                            },
+                          }}
+                        >
+                          {item.text.charAt(0) + item.text.slice(1).toLowerCase()}
+                        </Button>
+                      </motion.div>
+                    );
+                  })}
+
+                  {/* Dashboard */}
+                  {isAuthenticated && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: menuItems.length * 0.1 }}
+                    >
+                      <Button
+                        color="inherit"
+                        component={Link}
+                        href={getDashboardPathForRole()}
+                        sx={{
+                          color: theme.palette.primary.contrastText,
+                          fontWeight: isActivePage('/dashboard') ? 600 : 500,
+                          textTransform: 'capitalize',
+                          fontSize: '1rem',
+                          px: 2,
+                          py: 1,
+                          position: 'relative',
+                          '&:hover': {
+                            background: 'rgba(255, 255, 255, 0.1)',
+                          },
+                          '&::after': {
+                            content: '""',
+                            position: 'absolute',
+                            bottom: 0,
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            width: isActivePage('/dashboard') ? '60%' : '0%',
+                            height: '3px',
+                            background: theme.palette.secondary.main,
+                            borderRadius: '2px 2px 0 0',
+                            transition: 'width 0.3s ease',
+                          },
+                          '&:hover::after': {
+                            width: '60%',
+                          },
+                        }}
+                      >
+                        Dashboard
+                      </Button>
+                    </motion.div>
+                  )}
+
+                  {/* Cart */}
+                  {isAuthenticated && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: menuItems.length * 0.1 }}
+                    >
+                      <IconButton
+                        component={Link}
+                        href={'/dashboard/user/cart'}
+                        sx={{
+                          color: theme.palette.primary.contrastText,
+                          position: 'relative',
+                          '&:hover': {
+                            background: 'rgba(255, 255, 255, 0.1)',
+                          },
+                          '&::after': {
+                            content: '""',
+                            position: 'absolute',
+                            bottom: 0,
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            width: isActivePage('/dashboard/user/cart') ? '60%' : '0%',
+                            height: '3px',
+                            background: theme.palette.secondary.main,
+                            borderRadius: '2px 2px 0 0',
+                            transition: 'width 0.3s ease',
+                          },
+                          '&:hover::after': {
+                            width: '60%',
+                          },
+                        }}
+                      >
+                        <Badge
+                          badgeContent={getTotalCartItems()}
+                          color="error"
+                          sx={{
+                            '& .MuiBadge-badge': {
+                              fontSize: '0.75rem',
+                              minWidth: '18px',
+                              height: '18px',
+                              borderRadius: '9px',
+                              background: '#FFD700',
+                              color: '#000',
+                              fontWeight: 600,
+                            },
+                          }}
+                        >
+                          <ShoppingCartIcon sx={{ fontSize: '1.5rem' }} />
+                        </Badge>
+                      </IconButton>
+                    </motion.div>
+                  )}
+
+                  {/* Login/Signup or Profile */}
+                  {isAuthenticated ? (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <IconButton
+                        onClick={handleProfileMenuOpen}
+                        sx={{
+                          color: theme.palette.primary.contrastText,
+                          ml: 1,
+                        }}
+                      >
+                        <Avatar
+                          src={user?.image}
+                          sx={{
+                            width: 36,
+                            height: 36,
+                            bgcolor: theme.palette.secondary.main,
+                          }}
+                        >
+                          {getInitials(user?.name)}
+                        </Avatar>
+                      </IconButton>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <Button
+                        component={Link}
+                        href="/login"
+                        sx={{
+                          color: theme.palette.primary.contrastText,
+                          fontWeight: isActivePage('/login') ? 600 : 500,
+                          textTransform: 'capitalize',
+                          fontSize: '1rem',
+                          px: 2,
+                          py: 1,
+                          ml: 1,
+                          position: 'relative',
+                          '&:hover': {
+                            background: 'rgba(255, 255, 255, 0.1)',
+                          },
+                          '&::after': {
+                            content: '""',
+                            position: 'absolute',
+                            bottom: 0,
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            width: isActivePage('/login') ? '60%' : '0%',
+                            height: '3px',
+                            background: theme.palette.secondary.main,
+                            borderRadius: '2px 2px 0 0',
+                            transition: 'width 0.3s ease',
+                          },
+                          '&:hover::after': {
+                            width: '60%',
+                          },
+                        }}
+                      >
+                        Login/Signup
+                      </Button>
+                    </motion.div>
+                  )}
+                </Box>
+              )}
+            </Toolbar>
+          </Container>
+        </AppBar>
+        {!isMobile && (
+          <Box
+            sx={{
+              background: '#363535',
+              py: 1,
+            }}
           >
-            <Link href="/" style={{ textDecoration: 'none' }}>
+            <Container maxWidth="xl" sx={{px: {xs: 2, sm: 3, md: 7}}}>
               <Box
                 sx={{
-                  flexGrow: 1,
                   display: 'flex',
-                  flexDirection: 'column',
                   alignItems: 'center',
-                  cursor: 'pointer',
-                  // gap: 1,
+                  justifyContent: 'end',
+                  gap: 3,
                 }}
-             >
-                <Box sx={{ width: 160, height: 50, pb: '5px' }}>
-                  <QurrotaLogo/>
-                </Box>
+              >
+                {/* Categories Dropdown */}
+                <Button
+                  endIcon={<KeyboardArrowDownIcon />}
+                  sx={{
+                    color: '#fff',
+                    textTransform: 'none',
+                    fontSize: '0.95rem',
+                    fontWeight: 500,
+                    '&:hover': {
+                      background: 'rgba(255, 255, 255, 0.1)',
+                    },
+                  }}
+                >
+                  Categories
+                </Button>
+
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <PhoneIcon sx={{ fontSize: 18, color: '#fff' }} />
+                    <Typography
+                      sx={{
+                        color: '#fff',
+                        fontSize: '0.9rem',
+                        fontWeight: 400,
+                      }}
+                    >
+                      +880 01789846204
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <EmailIcon sx={{ fontSize: 18, color: '#fff' }} />
+                    <Typography
+                      sx={{
+                        color: '#fff',
+                        fontSize: '0.9rem',
+                        fontWeight: 400,
+                      }}
+                    >
+                      info@qurrota.com
+                    </Typography>
+                  </Box>
               </Box>
-            </Link>
-          </motion.div>
-
-          {isMobile ? (
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ ml: 'auto', color: theme.palette.primary.contrastText }}
-            >
-              <MenuIcon />
-            </IconButton>
-          ) : (
-            <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto', gap: 2 }}>
-              {menuItems.map((item, index) => {
-                const isActive = isActivePage(item.href);
-                return (
-                  <motion.div
-                    key={item.text}
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                  >
-                    <Button
-                      color="inherit"
-                      component={Link}
-                      href={item.href}
-                      sx={{
-                        color: isActive ? theme.palette.secondary.main : theme.palette.primary.contrastText,
-                        fontWeight: isActive ? 700 : 500,
-                        textTransform: 'none',
-                        fontSize: '1rem',
-                        position: 'relative',
-                        '&:hover': {
-                          color: theme.palette.secondary.main,
-                          background: 'rgba(255, 255, 255, 0.1)',
-                        },
-                        '&::after': isActive ? {
-                          content: '""',
-                          position: 'absolute',
-                          bottom: '-8px',
-                          left: '50%',
-                          transform: 'translateX(-50%)',
-                          width: '20px',
-                          height: '3px',
-                          background: theme.palette.secondary.main,
-                          borderRadius: '2px',
-                        } : {},
-                      }}
-                    >
-                      {item.text}
-                    </Button>
-                  </motion.div>
-                );
-              })}
-
-              {isAuthenticated && (
-                <motion.div
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: menuItems.length * 0.1 }}
-                >
-                  <Button
-                    color="inherit"
-                    component={Link}
-                    href={getDashboardPathForRole()}
-                    sx={{
-                      color: isActivePage('/dashboard') ? theme.palette.secondary.main : theme.palette.primary.contrastText,
-                      fontWeight: isActivePage('/dashboard') ? 700 : 500,
-                      textTransform: 'none',
-                      fontSize: '1rem',
-                      position: 'relative',
-                      '&:hover': {
-                        color: theme.palette.secondary.main,
-                        background: 'rgba(255, 255, 255, 0.1)',
-                      },
-                      '&::after': isActivePage('/dashboard') ? {
-                        content: '""',
-                        position: 'absolute',
-                        bottom: '-8px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        width: '20px',
-                        height: '3px',
-                        background: theme.palette.secondary.main,
-                        borderRadius: '2px',
-                      } : {},
-                    }}
-                  >
-                    DASHBOARD
-                  </Button>
-                </motion.div>
-              )}
-
-              {isAuthenticated && (
-                <motion.div
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: menuItems.length * 0.1 }}
-                >
-                  <Button
-                    color="inherit"
-                    component={Link}
-                    href={'/dashboard/user/cart'}
-                    sx={{
-                      color: isActivePage('/dashboard/user/cart') ? theme.palette.secondary.main : theme.palette.primary.contrastText,
-                      fontWeight: isActivePage('/dashboard/user/cart') ? 700 : 500,
-                      textTransform: 'none',
-                      fontSize: '1rem',
-                      position: 'relative',
-                      minWidth: 'auto',
-                      px: 2,
-                      '&:hover': {
-                        color: theme.palette.secondary.main,
-                        background: 'rgba(255, 255, 255, 0.1)',
-                      },
-                      '&::after': isActivePage('/dashboard/user/cart') ? {
-                        content: '""',
-                        position: 'absolute',
-                        bottom: '-8px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        width: '20px',
-                        height: '3px',
-                        background: theme.palette.secondary.main,
-                        borderRadius: '2px',
-                      } : {},
-                    }}
-                  >
-                    <Badge 
-                      badgeContent={getTotalCartItems()} 
-                      color="error"
-                      sx={{
-                        '& .MuiBadge-badge': {
-                          fontSize: '0.75rem',
-                          minWidth: '18px',
-                          height: '18px',
-                          borderRadius: '9px',
-                          background: '#FFD700',
-                          color: '#000',
-                          fontWeight: 600,
-                        }
-                      }}
-                    >
-                      <ShoppingCartIcon sx={{ fontSize: '1.5rem' }} />
-                    </Badge>
-                  </Button>
-                </motion.div>
-              )}
-
-              {isAuthenticated ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <IconButton
-                    onClick={handleProfileMenuOpen}
-                    sx={{ color: theme.palette.primary.contrastText }}
-                  >
-                    <Avatar src={user?.image} sx={{ width: 32, height: 32, bgcolor: theme.palette.secondary.main }}>
-                      {getInitials(user?.name)}
-                    </Avatar>
-                  </IconButton>
-                </motion.div>
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Button
-                    variant="outlined"
-                    component={Link}
-                    href="/login"
-                    sx={{
-                      background: theme.palette.primary.main,
-                      color: theme.palette.primary.contrastText,
-                      fontWeight: 600,
-                      textTransform: 'none',
-                      fontSize: '1rem',
-                      borderRadius: '8px',
-                      '&:hover': {
-                        background: theme.palette.primary.dark,
-                      },
-                    }}
-                  >
-                    LOGIN
-                  </Button>
-                </motion.div>
-              )}
-            </Box>
-          )}
-        </Toolbar>
-      </AppBar>
+            </Container>
+          </Box>
+        )}
+      </Box>
 
       <Drawer
         variant="temporary"

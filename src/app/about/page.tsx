@@ -31,6 +31,7 @@ import Footer from "@/components/layout/Footer";
 import AnimatedBackground from "@/components/ui/AnimatedBackground";
 import { getRgbaColor } from "@/theme/colors";
 import { orange } from "@mui/material/colors";
+import StorySection from "@/components/sections/StorySection";
 export default function AboutPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -112,20 +113,12 @@ export default function AboutPage() {
     { number: "4.9★", label: "Customer Rating", icon: <Star /> },
   ];
 
-
-
   return (
     <Box sx={{ minHeight: "100vh", position: "relative" }}>
-      {/* Animated Background */}
-      {/* <AnimatedBackground /> */}
-
-      {/* Header */}
       <Header />
 
-      {/* Main Content */}
       <Box sx={{ pt: { xs: 6, md: 8 } }}>
         <Container maxWidth="lg" sx={{ py: { xs: 3, md: 6 } }}>
-          {/* Hero Section */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -135,7 +128,10 @@ export default function AboutPage() {
               <Link
                 href="/"
                 color="inherit"
-                sx={{ textDecoration: "none", "&:hover": { color: primaryMain } }}
+                sx={{
+                  textDecoration: "none",
+                  "&:hover": { color: primaryMain },
+                }}
               >
                 Home
               </Link>
@@ -184,183 +180,19 @@ export default function AboutPage() {
         </Container>
         <Box
           sx={{
-            background: theme.palette.background.default,
-            backdropFilter: 'blur(10px)',
+            backdropFilter: "blur(10px)",
           }}
         >
           <Container maxWidth="lg" sx={{ pb: 10, pt: 6 }}>
             {/* Story Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+            <Box
+              sx={{
+                marginTop:4,
+                marginBottom: 12,
+              }}
             >
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr" },
-                  gap: { xs: 4, md: 6 },
-                  mb: { xs: 6, md: 10 },
-                  alignItems: "center",
-                }}
-              >
-                <Box sx={{ position: "relative" }}>
-                  <motion.div
-                    initial={{ opacity: 0, x: -50 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.8 }}
-                    viewport={{ once: true }}
-                  >
-                    <Typography
-                      variant={isMobile ? "h4" : "h3"}
-                      gutterBottom
-                      sx={{
-                        fontWeight: 700,
-                        color: textPrimary,
-                        mb: 3,
-                        position: "relative",
-                        "&::after": {
-                          content: '""',
-                          position: "absolute",
-                          bottom: -10,
-                          left: 0,
-                          width: 60,
-                          height: 4,
-                          background: primaryMain,
-                          borderRadius: 2,
-                        },
-                      }}
-                    >
-                      Our Story
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      color="text.secondary"
-                      sx={{
-                        lineHeight: 1.8,
-                        mb: 3,
-                        fontSize: "1.1rem",
-                        fontWeight: 400,
-                      }}
-                    >
-                      Qurrota Kids was born from a simple yet powerful belief:{" "}
-                      <strong>every child deserves the best</strong>. Founded by
-                      parents who intimately understood the challenges of
-                      finding quality, safe, and beautiful products for their
-                      little ones, we set out to create a destination where
-                      families could shop with complete confidence.
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      color="text.secondary"
-                      sx={{
-                        lineHeight: 1.8,
-                        mb: 4,
-                        fontSize: "1.1rem",
-                        fontWeight: 400,
-                      }}
-                    >
-                      Today, we&apos;re proud to serve{" "}
-                      <strong>thousands of families</strong> across the country,
-                      offering a carefully curated selection of premium products
-                      that combine safety, quality, and style. Our mission is to
-                      make parenting a little easier and a lot more joyful.
-                    </Typography>
-
-                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                      <Chip
-                        icon={<Spa />}
-                        label="Eco-Friendly"
-                        sx={{
-                          background: successMain,
-                          color: white,
-                          fontWeight: 600,
-                        }}
-                      />
-                      <Chip
-                        icon={<Support />}
-                        label="24/7 Support"
-                        sx={{
-                          background: infoMain,
-                          color: white,
-                          fontWeight: 600,
-                        }}
-                      />
-                      <Chip
-                        icon={<EmojiEvents />}
-                        label="Award Winning"
-                        sx={{
-                          background: orange[600],
-                          color: white,
-                          fontWeight: 600,
-                        }}
-                      />
-                    </Box>
-                  </motion.div>
-                </Box>
-
-                <motion.div
-                  initial={{ opacity: 0, x: 50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8 }}
-                  viewport={{ once: true }}
-                >
-                  <Box
-                    sx={{
-                      height: { xs: 300, md: 400 },
-                      background: getRgbaColor(theme.palette.primary.main, 0.7),
-                      borderRadius: 4,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      border: `2px solid ${theme.palette.primary.main}`,
-                      position: "relative",
-                      overflow: "hidden",
-                      "&::before": {
-                        content: '""',
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background: getRgbaColor(theme.palette.primary.main, 0.7),
-                      },
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        textAlign: "center",
-                        p: 4,
-                        position: "relative",
-                        zIndex: 1,
-                      }}
-                    >
-                      <Typography
-                        variant="h4"
-                        sx={{
-                          fontWeight: 700,
-                          color: 'white',
-                          mb: 2,
-                          fontStyle: "italic",
-                        }}
-                      >
-                        &quot;Every child deserves the best start in life&quot;
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          color: 'white',
-                          fontStyle: "italic",
-                          fontSize: "1.1rem",
-                        }}
-                      >
-                      Our Promise to Every Family.
-                      </Typography>
-                    </Box>
-                  </Box>
-                </motion.div>
-              </Box>
-            </motion.div>
+              <StorySection />
+            </Box>
 
             {/* Values Section */}
             <motion.div
@@ -753,7 +585,7 @@ export default function AboutPage() {
                     left: 0,
                     right: 0,
                     bottom: 0,
-                      background: theme.palette.background.default,
+                    background: theme.palette.background.default,
                   },
                 }}
               >

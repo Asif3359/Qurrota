@@ -1,185 +1,269 @@
 "use client";
 
-import React, { Suspense } from "react";
-import { Box, Typography } from "@mui/material";
-import { motion } from "framer-motion";
-import dynamic from "next/dynamic";
-import theme from "@/theme";
-import { getRgbaColor } from "../../theme/colors";
-
-// Dynamically import VideoSlider to prevent SSR issues
-const VideoSlider = dynamic(() => import("@/components/ui/VideoSlider"), {
-  ssr: false,
-  loading: () => (
-    <Box
-      sx={{
-        width: "100%",
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: getRgbaColor(theme.palette.primary.main, 0.76),
-      }}
-    >
-      <Typography variant="h6" color="text.secondary">
-        Loading video slider...
-      </Typography>
-    </Box>
-  ),
-});
+import React, { useState, useEffect } from "react";
+import { Box, IconButton, useTheme, useMediaQuery, Typography, Container } from "@mui/material";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+import Image from "next/image";
 
 const HeroSection: React.FC = () => {
-  // Sample advertisement videos - replace with your actual video URLs
-  const advertisementVideos = [
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Hero images from your public/images folder
+  const heroImages = [
     {
       id: 1,
-      src: "/videos/ad1.mp4", // Use relative path for production
+      src: "/images/img1.jpg",
+      alt: "Welcome to Qurrota - Premium products for kids and mothers",
       title: "Welcome to Qurrota Kids",
-      description:
-        "Discover premium products for kids and new mothers. Quality, safety, and joy in every item we offer.",
-      poster: "/videos/1.png", // Optional poster image
-      actions: [
-        {
-          text: "Shop Now",
-          href: "/products",
-          variant: "contained" as const,
-        },
-        {
-          text: "Learn More",
-          href: "/about",
-          variant: "outlined" as const,
-        },
-      ],
+      description: "Discover premium products for kids and new mothers. Quality, safety, and joy in every item we offer.",
     },
     {
       id: 2,
-      src: "/videos/ad2.mp4", // Use relative path for production
+      src: "/images/img2.jpg",
+      alt: "Safe & Healthy Products for your family",
       title: "Safe & Healthy Products",
-      description:
-        "100% safe materials for your little ones and new mothers with the best quality products for your baby and new mother",
-      poster: "/videos/2.png", // Optional poster image
-      actions: [
-        {
-          text: "Shop Now",
-          href: "/products",
-          variant: "contained" as const,
-        },
-        {
-          text: "Learn More",
-          href: "/about",
-          variant: "outlined" as const,
-        },
-      ],
+      description: "100% safe materials for your little ones and new mothers with the best quality products for your baby and new mother.",
     },
     {
       id: 3,
-      src: "/videos/ad3.mp4", // Use relative path for production
+      src: "/images/img3.jpg",
+      alt: "Fast Delivery Service nationwide",
       title: "Fast Delivery Service",
-      description:
-        "Quick and reliable shipping nationwide with the best quality products for your baby and new mother with the best quality products for your baby and new mother",
-      poster: "/videos/2.png", // Optional poster image
-      actions: [
-        {
-          text: "Shop Now",
-          href: "/products",
-          variant: "contained" as const,
-        },
-      ],
+      description: "Quick and reliable shipping nationwide with the best quality products for your baby and new mother.",
     },
   ];
+
+  // Auto-slide functionality - 10 seconds delay
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => 
+        prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 10000); // Change slide every 10 seconds
+
+    return () => clearInterval(interval);
+  }, [heroImages.length]);
+
+  const goToPrevious = () => {
+    setCurrentIndex((prevIndex) => 
+      prevIndex === 0 ? heroImages.length - 1 : prevIndex - 1
+    );
+  };
+
+  const goToNext = () => {
+    setCurrentIndex((prevIndex) => 
+      prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentIndex(index);
+  };
 
   return (
     <Box
       sx={{
-        minHeight: "50vh",
+        minHeight: { xs: "40vh", sm: "50vh", md: "60vh" },
         position: "relative",
         overflow: "hidden",
-        background: getRgbaColor(theme.palette.primary.main, 0.76),
+        width: "100%",
       }}
     >
-      {/* Full Screen Video Slider */}
-      <Box sx={{ width: "100%", height: "50vh" }}>
-        <Suspense
-          fallback={
+      {/* Image Slider */}
+      <Box
+        sx={{
+          position: "relative",
+          width: "100%",
+          height: { xs: "40vh", sm: "50vh", md: "60vh" },
+          overflow: "hidden",
+        }}
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -100 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            <Image
+              src={heroImages[currentIndex].src}
+              alt={heroImages[currentIndex].alt}
+              fill
+              priority
+              style={{
+                objectFit: "cover",
+                objectPosition: "center",
+              }}
+              sizes="100vw"
+            />
+            
+            {/* Overlay Gradient */}
             <Box
               sx={{
-                width: "100%",
-                height: "50vh",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: getRgbaColor(theme.palette.background.paper, 0.52),
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: "linear-gradient(to right, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0.1) 100%)",
+                zIndex: 1,
+              }}
+            />
+
+            {/* Text Content */}
+            <Container
+              maxWidth="xl"
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: 0,
+                right: 0,
+                transform: "translateY(-50%)",
+                zIndex: 2,
               }}
             >
-              <Typography variant="h6" color="text.secondary">
-                Loading video slider...
-              </Typography>
-            </Box>
-          }
-        >
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-          >
-            <VideoSlider
-              videos={advertisementVideos}
-              autoPlay={true}
-              interval={12000} // Increased from 6000ms to 12000ms (12 seconds)
-              showControls={true}
-            />
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <Box
+                  sx={{
+                    maxWidth: { xs: "100%", sm: "80%", md: "60%", lg: "50%" },
+                    px: { xs: 2, sm: 3, md: 4 },
+                  }}
+                >
+                  <Typography
+                    variant="h2"
+                    sx={{
+                      color: "#fff",
+                      fontWeight: 700,
+                      fontSize: { xs: "1.75rem", sm: "2.5rem", md: "3rem", lg: "3.5rem" },
+                      mb: 2,
+                      textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {heroImages[currentIndex].title}
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      color: "#fff",
+                      fontSize: { xs: "0.95rem", sm: "1.1rem", md: "1.25rem" },
+                      lineHeight: 1.6,
+                      textShadow: "1px 1px 3px rgba(0, 0, 0, 0.5)",
+                      maxWidth: { xs: "100%", sm: "90%", md: "85%" },
+                    }}
+                  >
+                    {heroImages[currentIndex].description}
+                  </Typography>
+                </Box>
+              </motion.div>
+            </Container>
           </motion.div>
-        </Suspense>
-      </Box>
+        </AnimatePresence>
 
-      {/* Floating decorative elements */}
-      <Box sx={{ display: { xs: "none", sm: "block" } }}>
-        <motion.div
-          style={{
-            position: "absolute",
-            top: "20%",
-            right: "10%",
-            width: 100,
-            height: 100,
-            borderRadius: "50%",
-            background: getRgbaColor(theme.palette.secondary.main, 0.1),
-            border: `2px solid ${getRgbaColor(theme.palette.secondary.main, 0.3)}`,
-          }}
-          animate={{
-            y: [0, -20, 0],
-            scale: [1, 1.1, 1],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      </Box>
+        {/* Navigation Arrows */}
+        {!isMobile && (
+          <>
+            <IconButton
+              onClick={goToPrevious}
+              sx={{
+                position: "absolute",
+                left: { xs: 10, sm: 20 },
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "rgba(255, 255, 255, 0.9)",
+                backdropFilter: "blur(10px)",
+                width: { xs: 40, sm: 50 },
+                height: { xs: 40, sm: 50 },
+                zIndex: 10,
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  background: "rgba(255, 255, 255, 1)",
+                  transform: "translateY(-50%) scale(1.1)",
+                },
+              }}
+            >
+              <ChevronLeft sx={{ fontSize: { xs: 24, sm: 32 } }} />
+            </IconButton>
 
-      <Box sx={{ display: { xs: "none", sm: "block" } }}>
-        <motion.div
-          style={{
+            <IconButton
+              onClick={goToNext}
+              sx={{
+                position: "absolute",
+                right: { xs: 10, sm: 20 },
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "rgba(255, 255, 255, 0.9)",
+                backdropFilter: "blur(10px)",
+                width: { xs: 40, sm: 50 },
+                height: { xs: 40, sm: 50 },
+                zIndex: 10,
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  background: "rgba(255, 255, 255, 1)",
+                  transform: "translateY(-50%) scale(1.1)",
+                },
+              }}
+            >
+              <ChevronRight sx={{ fontSize: { xs: 24, sm: 32 } }} />
+            </IconButton>
+          </>
+        )}
+
+        {/* Dot Indicators */}
+        <Box
+          sx={{
             position: "absolute",
-            bottom: "30%",
-            left: "5%",
-            width: 60,
-            height: 60,
-            borderRadius: "50%",
-            background: getRgbaColor(theme.palette.secondary.main, 0.1),
-            border: `2px solid ${getRgbaColor(theme.palette.primary.main, 0.3)}`,
+            bottom: { xs: 15, sm: 25 },
+            left: "50%",
+            transform: "translateX(-50%)",
+            display: "flex",
+            gap: { xs: 1, sm: 1.5 },
+            zIndex: 10,
           }}
-          animate={{
-            y: [0, 15, 0],
-            scale: [1, 0.9, 1],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1,
-          }}
-        />
+        >
+          {heroImages.map((_, index) => (
+            <Box
+              key={index}
+              onClick={() => goToSlide(index)}
+              sx={{
+                width: { xs: 10, sm: 12 },
+                height: { xs: 10, sm: 12 },
+                borderRadius: "50%",
+                background:
+                  index === currentIndex
+                    ? theme.palette.primary.main
+                    : "rgba(255, 255, 255, 0.5)",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+                border: `2px solid ${
+                  index === currentIndex
+                    ? theme.palette.primary.main
+                    : "rgba(255, 255, 255, 0.8)"
+                }`,
+                "&:hover": {
+                  background:
+                    index === currentIndex
+                      ? theme.palette.primary.main
+                      : "rgba(255, 255, 255, 0.8)",
+                  transform: "scale(1.2)",
+                },
+              }}
+            />
+          ))}
+        </Box>
       </Box>
     </Box>
   );

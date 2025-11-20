@@ -31,11 +31,12 @@ export const additionalColors = {
   green: '#4CAF50',
   red: '#FF6B6B',
   gray: {
-    light: '#f8f9ff',
+    light: '#F9F9F9',
     medium: '#363636',
     dark: '#333333',
     veryLight: '#fff5f5',
   },
+  // white: '#FFFFFF',
   white: '#FFFFFF',
   black: '#000000',
   transparent: 'transparent',

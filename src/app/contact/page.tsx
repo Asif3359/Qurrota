@@ -27,6 +27,8 @@ import Footer from "@/components/layout/Footer";
 import AnimatedBackground from "@/components/ui/AnimatedBackground";
 import { getRgbaColor } from "@/theme/colors";
 import SendMessage from "@/components/utils/SendMessage";
+import JoinUsSection from "@/components/sections/JoinUsSection";
+import GetInTouch from "@/components/sections/GetInTouch";
 
 export default function ContactPage() {
   const theme = useTheme();
@@ -184,9 +186,8 @@ export default function ContactPage() {
       {/* Main Content */}
       <Box
         sx={{
-          pt: { xs: 6, md: 8 },
+          pt: { xs: 3, md: 4 },
           pb: 10,
-          background: theme.palette.background.default,
           backdropFilter: "blur(10px)",
         }}
       >
@@ -197,162 +198,8 @@ export default function ContactPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr" },
-                gap: { xs: 4, md: 6 },
-                mb: { xs: 6, md: 10 },
-                alignItems: "start",
-              }}
-            >
-              {/* Contact Form */}
-              <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
-                viewport={{ once: true }}
-              >
-                <Box
-                  sx={{
-                    width: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 4,
-                  }}
-                >
-                  <Typography
-                    variant={isMobile ? "h4" : "h3"}
-                    gutterBottom
-                    sx={{
-                      fontWeight: 700,
-                      color: textPrimary,
-                      mb: 3,
-                    }}
-                  >
-                    Send Us a Message
-                  </Typography>
-
-                  <SendMessage />
-                </Box>
-              </motion.div>
-
-              {/* Contact Information */}
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
-                viewport={{ once: true }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 4,
-                    height: "100%",
-                  }}
-                >
-                  <Typography
-                    variant={isMobile ? "h4" : "h3"}
-                    gutterBottom
-                    sx={{
-                      fontWeight: 700,
-                      color: textPrimary,
-                      mb: 3,
-                    }}
-                  >
-                    Contact Information
-                  </Typography>
-
-                  <Box
-                    sx={{ display: "flex", flexDirection: "column", gap: 3 }}
-                  >
-                    {contactInfo.map((info, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: index * 0.1 }}
-                        viewport={{ once: true }}
-                        whileHover={{ y: -5 }}
-                      >
-                        <Card
-                          elevation={0}
-                          sx={{
-                            background: getRgbaColor(backgroundPaper, 0.95),
-                            backdropFilter: "blur(20px)",
-                            border: `2px solid ${getRgbaColor(info.color, 0.2)}`,
-                            borderRadius: 4,
-                            transition: "all 0.4s ease",
-                            position: "relative",
-                            overflow: "hidden",
-                            "&::before": {
-                              content: '""',
-                              position: "absolute",
-                              top: 0,
-                              left: 0,
-                              right: 0,
-                              height: 4,
-                              background: info.color,
-                              transform: "scaleX(0)",
-                              transition: "transform 0.4s ease",
-                            },
-                            "&:hover": {
-                              borderColor: info.color,
-                              transform: "translateY(-5px)",
-                              boxShadow: `0 15px 30px ${getRgbaColor(info.color, 0.2)}`,
-                            },
-                          }}
-                        >
-                          <CardContent sx={{ p: 3 }}>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                alignItems: "flex-start",
-                                gap: 3,
-                              }}
-                            >
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  p: 2,
-                                  borderRadius: "50%",
-                                  background: getRgbaColor(info.color, 0.15),
-                                }}
-                              >
-                                {info.icon}
-                              </Box>
-                              <Box sx={{ flex: 1 }}>
-                                <Typography
-                                  variant="h6"
-                                  component="h3"
-                                  gutterBottom
-                                  sx={{ fontWeight: 700, color: textPrimary, mb: 1 }}
-                                >
-                                  {info.title}
-                                </Typography>
-                                <Typography
-                                  variant="body1"
-                                  sx={{ fontWeight: 600, color: textSecondary, mb: 1 }}
-                                >
-                                  {info.info}
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                  sx={{ lineHeight: 1.6 }}
-                                >
-                                  {info.description}
-                                </Typography>
-                              </Box>
-                            </Box>
-                          </CardContent>
-                        </Card>
-                      </motion.div>
-                    ))}
-                  </Box>
-                </Box>
-              </motion.div>
+            <Box sx={{ mb: 8 }}>
+              <GetInTouch />
             </Box>
           </motion.div>
 
@@ -557,112 +404,12 @@ export default function ContactPage() {
               </Box>
             </Box>
           </motion.div>
-
-          {/* CTA Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-          >
-            <Box
-              sx={{
-                mt: { xs: 6, md: 10 },
-                p: { xs: 4, md: 6 },
-                background: getRgbaColor(primaryMain, 0.1),
-                backdropFilter: "blur(20px)",
-                borderRadius: 4,
-                textAlign: "center",
-                position: "relative",
-                overflow: "hidden",
-              }}
-            >
-              <Box sx={{ position: "relative", zIndex: 1 }}>
-                <Typography
-                  variant={isMobile ? "h4" : "h3"}
-                  gutterBottom
-                  sx={{
-                    fontWeight: 700,
-                    color: textPrimary,
-                    mb: 3,
-                  }}
-                >
-                  Ready to Get Started?
-                </Typography>
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  sx={{
-                    maxWidth: 600,
-                    mx: "auto",
-                    fontSize: "1.1rem",
-                    lineHeight: 1.6,
-                    mb: 4,
-                  }}
-                >
-                  Join thousands of families who trust Qurrota Kids. Start
-                  shopping today!
-                </Typography>
-                <Box
-                  sx={{
-                    display: "flex",
-                    gap: 2,
-                    justifyContent: "center",
-                    flexWrap: "wrap",
-                  }}
-                >
-                  <Link
-                    href="/products"
-                    sx={{
-                      textDecoration: "none",
-                      px: 4,
-                      py: 2,
-                      background: theme.palette.primary.main,
-                      color: theme.palette.primary.contrastText,
-                      borderRadius: 3,
-                      fontWeight: 700,
-                      fontSize: "1.1rem",
-                      transition: "all 0.3s ease",
-                      "&:hover": {
-                        transform: "translateY(-2px)",
-                        background: theme.palette.primary.dark,
-                        boxShadow: `0 10px 20px ${getRgbaColor(
-                          theme.palette.primary.main,
-                          0.3
-                        )}`,
-                      },
-                    }}
-                  >
-                    Shop Now
-                  </Link>
-                  <Link
-                    href="/about"
-                    sx={{
-                      textDecoration: "none",
-                      px: 4,
-                      py: 2,
-                      background: getRgbaColor(primaryDark, 0.1),
-                      color: primaryDark,
-                      borderRadius: 3,
-                      fontWeight: 700,
-                      fontSize: "1.1rem",
-                      transition: "all 0.3s ease",
-                      "&:hover": {
-                        background: primaryDark,
-                        color: theme.palette.primary.contrastText,
-                        transform: "translateY(-2px)",
-                        boxShadow: `0 10px 20px ${getRgbaColor(primaryDark, 0.3)}`,
-                      },
-                    }}
-                  >
-                    Learn More
-                  </Link>
-                </Box>
-              </Box>
-            </Box>
-          </motion.div>
         </Container>
       </Box>
-
+      {/* Join Us Section */}
+      <Container maxWidth="lg">
+        <JoinUsSection />
+      </Container>
       {/* Footer */}
       <Footer />
     </Box>

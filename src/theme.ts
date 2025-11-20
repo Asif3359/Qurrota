@@ -42,7 +42,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: 'var(--font-geist-sans), Arial, sans-serif',
+    fontFamily: 'var(--font-poppins), Arial, sans-serif',
   },
   // Add CSS custom properties for flexible theming
   components: {

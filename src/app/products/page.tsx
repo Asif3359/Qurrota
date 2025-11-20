@@ -10,7 +10,7 @@ export default function ProductsPage() {
   const primaryMain = theme.palette.primary.main;
 
   return (
-    <Box>
+    <Box sx={{ minHeight: '100vh', position: 'relative' }}>
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}

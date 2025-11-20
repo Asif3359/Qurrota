@@ -1,12 +1,12 @@
 'use client';
 
-import { Card, CardContent, Alert, Box, TextField, Button, useTheme } from '@mui/material'
-import { Send } from '@mui/icons-material'
+import { Alert, Box, TextField, Button, useTheme, useMediaQuery } from '@mui/material'
 import { useState, useEffect } from 'react';
-import { getRgbaColor, appGradients } from '@/theme/colors';
+import { getRgbaColor } from '@/theme/colors';
 
 const SendMessage = () => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,9 +18,7 @@ const SendMessage = () => {
 
   const primaryMain = theme.palette.primary.main;
   const primaryDark = theme.palette.primary.dark;
-  const backgroundPaper = theme.palette.background.paper;
   const textPrimary = theme.palette.text.primary;
-  const black = theme.palette.common.black;
 
   useEffect(() => {
     setMounted(true);
@@ -49,181 +47,193 @@ const SendMessage = () => {
   if (!mounted) return null;
 
   return (
-    <Card
-    elevation={0}
-    sx={{
-      background: getRgbaColor(backgroundPaper, 0.95),
-      backdropFilter: "blur(20px)",
-      borderRadius: 4,
-      position: "relative",
-      overflow: "hidden",
-      height: "100%",
-      "&::before": {
-        content: '""',
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: getRgbaColor(primaryMain, 0.05),
-      },
-    }}
-  >
-    <CardContent
+    <Box
       sx={{
-        p: { xs: 3, md: 4 },
-        position: "relative",
-        zIndex: 1,
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        gap: 3,
       }}
     >
       {submitted && (
-        <Alert severity="success" sx={{ mb: 3 }}>
-          Thank you for your message! We&apos;ll get back to you
-          soon.
+        <Alert severity="success" sx={{ mb: 2 }}>
+          Thank you for your message! We&apos;ll get back to you soon.
         </Alert>
       )}
 
       <Box component="form" onSubmit={handleSubmit}>
+        {/* Name and Email Row */}
         <Box
           sx={{
             display: "grid",
             gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
             gap: 3,
             mb: 3,
-            py: 2,
           }}
         >
           <TextField
             fullWidth
-            label="Your Name"
             name="name"
+            placeholder="Your name"
             value={formData.name}
             onChange={handleChange}
             required
+            variant="standard"
             inputProps={{
               suppressHydrationWarning: true,
             }}
             sx={{
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: getRgbaColor(black, 0.66),
-                },
-                "&:hover fieldset": {
-                  borderColor: primaryMain,
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: primaryMain,
-                },
+              "& .MuiInput-underline:before": {
+                borderBottomColor: getRgbaColor(theme.palette.divider, 0.3),
+              },
+              "& .MuiInput-underline:hover:before": {
+                borderBottomColor: primaryMain,
+              },
+              "& .MuiInput-underline:after": {
+                borderBottomColor: primaryMain,
+              },
+              "& input": {
+                fontSize: "0.95rem",
+                color: textPrimary,
+              },
+              "& input::placeholder": {
+                color: theme.palette.text.secondary,
+                opacity: 0.7,
               },
             }}
           />
           <TextField
             fullWidth
-            label="Email Address"
             name="email"
             type="email"
+            placeholder="Your email"
             value={formData.email}
             onChange={handleChange}
             required
+            variant="standard"
             inputProps={{
               suppressHydrationWarning: true,
             }}
             sx={{
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: getRgbaColor(black, 0.66),
-                },
-                "&:hover fieldset": {
-                  borderColor: primaryMain,
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: primaryMain,
-                },
+              "& .MuiInput-underline:before": {
+                borderBottomColor: getRgbaColor(theme.palette.divider, 0.3),
+              },
+              "& .MuiInput-underline:hover:before": {
+                borderBottomColor: primaryMain,
+              },
+              "& .MuiInput-underline:after": {
+                borderBottomColor: primaryMain,
+              },
+              "& input": {
+                fontSize: "0.95rem",
+                color: textPrimary,
+              },
+              "& input::placeholder": {
+                color: theme.palette.text.secondary,
+                opacity: 0.7,
               },
             }}
           />
         </Box>
 
+        {/* Subject */}
         <TextField
           fullWidth
-          label="Subject"
           name="subject"
+          placeholder="Your Subject"
           value={formData.subject}
           onChange={handleChange}
           required
+          variant="standard"
           inputProps={{
             suppressHydrationWarning: true,
           }}
           sx={{
             mb: 3,
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: getRgbaColor(black, 0.66),
-              },
-              "&:hover fieldset": {
-                borderColor: "#9C27B0",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "#9C27B0",
-              },
+            "& .MuiInput-underline:before": {
+              borderBottomColor: getRgbaColor(theme.palette.divider, 0.3),
+            },
+            "& .MuiInput-underline:hover:before": {
+              borderBottomColor: primaryMain,
+            },
+            "& .MuiInput-underline:after": {
+              borderBottomColor: primaryMain,
+            },
+            "& input": {
+              fontSize: "0.95rem",
+              color: textPrimary,
+            },
+            "& input::placeholder": {
+              color: theme.palette.text.secondary,
+              opacity: 0.7,
             },
           }}
         />
 
+        {/* Message */}
         <TextField
           fullWidth
-          label="Message"
           name="message"
-          multiline
-          rows={5}
+          placeholder="Message"
           value={formData.message}
           onChange={handleChange}
+          multiline
+          rows={6}
           required
+          variant="standard"
           inputProps={{
             suppressHydrationWarning: true,
           }}
           sx={{
             mb: 4,
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: getRgbaColor(black, 0.66),
-              },
-              "&:hover fieldset": {
-                borderColor: "#9C27B0",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "#9C27B0",
-              },
+            "& .MuiInput-underline:before": {
+              borderBottomColor: getRgbaColor(theme.palette.divider, 0.3),
+            },
+            "& .MuiInput-underline:hover:before": {
+              borderBottomColor: primaryMain,
+            },
+            "& .MuiInput-underline:after": {
+              borderBottomColor: primaryMain,
+            },
+            "& textarea": {
+              fontSize: "0.95rem",
+              color: textPrimary,
+            },
+            "& textarea::placeholder": {
+              color: theme.palette.text.secondary,
+              opacity: 0.7,
             },
           }}
         />
 
+        {/* Submit Button */}
         <Button
           type="submit"
-          variant="contained"
-          size="large"
-          startIcon={<Send />}
+          variant="outlined"
           sx={{
-            background: appGradients.primary(theme),
-            color: theme.palette.primary.contrastText,
-            fontWeight: 700,
-            px: 4,
-            py: 1.5,
-            fontSize: "1.1rem",
-            borderRadius: 3,
-            transition: "all 0.3s ease",
+            px: isMobile ? 2 : 3,
+            py: isMobile ? 1 : 1.5,
+            width: isMobile ? "100%" : "auto",
+            background: "transparent",
+            color: theme.palette.primary.main,
+            border: `2px solid ${theme.palette.primary.main}`,
+            borderRadius: "8px",
+            fontWeight: 500,
+            fontSize: isMobile ? "0.8rem" : "0.95rem",
+            textTransform: "none",
+            transition: "all 0.2s ease",
             "&:hover": {
-              background: appGradients.primary(theme),
-              transform: "translateY(-2px)",
-              boxShadow: `0 10px 20px ${getRgbaColor(primaryMain, 0.3)}`,
+              background: theme.palette.primary.main,
+              color: theme.palette.primary.contrastText,
+              borderColor: theme.palette.primary.main,
+              transform: "translateY(-1px)",
             },
           }}
         >
           Send Message
         </Button>
       </Box>
-    </CardContent>
-  </Card>
+    </Box>
   )
 }
 
