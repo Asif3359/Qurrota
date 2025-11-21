@@ -215,7 +215,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
     setSelectedImageIndex(index);
   };
 
-  // Cart function using context
+  // Cart function using context - supports both authenticated and anonymous users
   const addToCart = async (productId: string) => {
     const product = products.find((p) => p._id === productId);
     if (!product) return;
@@ -1501,6 +1501,33 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                         : isInCart(selectedProduct._id)
                         ? "In Cart"
                         : "Add to Cart"}
+                    </Button>
+                    <Button 
+                     variant="outlined"
+                     size="large"
+                     startIcon={<Favorite />}
+                     sx={{
+                      borderColor: primaryMain,
+                      color: primaryMain,
+                      background: getRgbaColor(primaryMain, 0.05),
+                      fontWeight: 700,
+                      borderRadius: 3,
+                      px: 4,
+                      py: 2,
+                      fontSize: "1rem",
+                      textTransform: "none",
+                      "&:hover": {
+                        background: getRgbaColor(primaryMain, 0.1),
+                        transform: "translateY(-2px)",
+                      },
+                      "&:disabled": {
+                        opacity: 0.6,
+                        transform: "none",
+                      },
+                      transition: "all 0.3s ease",
+                      width: { xs: "100%", sm: "auto" },
+                    }}>
+                      Add to Wishlist
                     </Button>
                   </Box>
                 </Box>

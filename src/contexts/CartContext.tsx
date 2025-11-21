@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
+import { getSessionId, setSessionId, getOrCreateSessionId } from '@/utils/session';
 
 export interface CartItem {
   _id: string;
@@ -246,21 +247,36 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   }, [fetchProductDetails]);
 
   const fetchCart = React.useCallback(async (): Promise<void> => {
-    if (!token) return;
+    // Support both authenticated and anonymous users
+    const sessionId = getSessionId();
+    if (!token && !sessionId) {
+      // No authentication and no session - initialize session for anonymous user
+      getOrCreateSessionId();
+      return;
+    }
 
     try {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${apiBase}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      // Build headers based on authentication status
+      const headers: HeadersInit = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      } else if (sessionId) {
+        headers['X-Session-Id'] = sessionId;
+      }
+
+      const response = await fetch(`${apiBase}`, { headers });
 
       if (response.ok) {
-        const apiResponse: ApiCartResponse = await response.json();
+        const apiResponse: ApiCartResponse & { sessionId?: string } = await response.json();
         console.log('Raw cart data from API:', apiResponse);
+        
+        // Store sessionId if returned (for anonymous users)
+        if (apiResponse.sessionId) {
+          setSessionId(apiResponse.sessionId);
+        }
         
         // Extract the actual cart data from the API response
         const cartData = apiResponse.data;
@@ -307,38 +323,62 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [token, transformCartData]);
+  }, [token, transformCartData, apiBase]);
 
 
   const addToCart = async (productId: string, quantity: number = 1, notes: string = ''): Promise<void> => {
-    if (!token) {
-      throw new Error('Please login to add items to cart');
-    }
-
-    const userId = getUserId();
-    if (!userId) {
-      throw new Error('User information is missing. Please login again.');
-    }
-
+    // Support both authenticated and anonymous users
+    const sessionId = token ? null : getOrCreateSessionId();
+    
     try {
       setLoading(true);
       setError(null);
 
+      // Build headers based on authentication status
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      } else if (sessionId) {
+        headers['X-Session-Id'] = sessionId;
+      }
+
+      // Build request body
+      const body: Record<string, unknown> = {
+        productId,
+        quantity,
+        notes
+      };
+      
+      // Include sessionId in body for anonymous users (as per API docs)
+      if (!token && sessionId) {
+        body.sessionId = sessionId;
+      }
+      
+      // Include userId for authenticated users
+      if (token) {
+        const userId = getUserId();
+        if (userId) {
+          body.userId = userId;
+        }
+      }
+
       const response = await fetch(`${apiBase}/add`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          productId,
-          quantity,
-          notes,
-          userId
-        })
+        headers,
+        body: JSON.stringify(body)
       });
 
       if (response.ok) {
+        const apiResponse: { sessionId?: string } = await response.json();
+        
+        // Store sessionId if returned (for anonymous users)
+        if (apiResponse.sessionId) {
+          setSessionId(apiResponse.sessionId);
+        }
+        
         await fetchCart(); // Refresh cart data
       } else {
         const errorData = await response.json();
@@ -354,8 +394,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   };
 
   const updateCartItem = async (itemId: string, quantity: number): Promise<void> => {
-    if (!token) {
-      throw new Error('No authentication token available');
+    const sessionId = getSessionId();
+    if (!token && !sessionId) {
+      throw new Error('No authentication or session available');
     }
 
     try {
@@ -365,18 +406,33 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       console.log('Updating cart item:', { itemId, quantity });
       console.log('API endpoint:', `${apiBase}/items/${itemId}`);
 
+      // Build headers based on authentication status
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      } else if (sessionId) {
+        headers['X-Session-Id'] = sessionId;
+      }
+
       const response = await fetch(`${apiBase}/items/${itemId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers,
         body: JSON.stringify({ quantity })
       });
 
       console.log('Update item response status:', response.status);
 
       if (response.ok) {
+        const apiResponse: { sessionId?: string } = await response.json();
+        
+        // Store sessionId if returned (for anonymous users)
+        if (apiResponse.sessionId) {
+          setSessionId(apiResponse.sessionId);
+        }
+        
         console.log('Item updated successfully, refreshing cart...');
         await fetchCart(); // Refresh cart data
       } else {
@@ -395,8 +451,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   };
 
   const removeFromCart = async (itemId: string): Promise<void> => {
-    if (!token) {
-      throw new Error('No authentication token available');
+    const sessionId = getSessionId();
+    if (!token && !sessionId) {
+      throw new Error('No authentication or session available');
     }
 
     try {
@@ -405,19 +462,33 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
       console.log('Removing cart item:', itemId);
       console.log('API endpoint:', `${apiBase}/items/${itemId}`);
-      console.log('Token available:', !!token);
+
+      // Build headers based on authentication status
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      } else if (sessionId) {
+        headers['X-Session-Id'] = sessionId;
+      }
 
       const response = await fetch(`${apiBase}/items/${itemId}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+        headers
       });
 
       console.log('Remove item response status:', response.status);
 
       if (response.ok) {
+        const apiResponse: { sessionId?: string } = await response.json();
+        
+        // Store sessionId if returned (for anonymous users)
+        if (apiResponse.sessionId) {
+          setSessionId(apiResponse.sessionId);
+        }
+        
         console.log('Item removed successfully, refreshing cart...');
         await fetchCart(); // Refresh cart data
       } else {
@@ -427,15 +498,17 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         // Try alternative endpoint format if the first one fails
         if (response.status === 404) {
           console.log('Trying alternative endpoint format...');
+          const altHeaders = { ...headers };
           const altResponse = await fetch(`${apiBase}/remove/${itemId}`, {
             method: 'DELETE',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
+            headers: altHeaders
           });
           
           if (altResponse.ok) {
+            const altApiResponse: { sessionId?: string } = await altResponse.json();
+            if (altApiResponse.sessionId) {
+              setSessionId(altApiResponse.sessionId);
+            }
             console.log('Item removed successfully with alternative endpoint');
             await fetchCart();
             return;
@@ -455,20 +528,35 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   };
 
   const clearCart = async (): Promise<void> => {
-    if (!token) return;
+    const sessionId = getSessionId();
+    if (!token && !sessionId) return;
 
     try {
       setLoading(true);
       setError(null);
 
+      // Build headers based on authentication status
+      const headers: HeadersInit = {};
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      } else if (sessionId) {
+        headers['X-Session-Id'] = sessionId;
+      }
+
       const response = await fetch(`${apiBase}/clear`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers
       });
 
       if (response.ok) {
+        const apiResponse: { sessionId?: string } = await response.json();
+        
+        // Store sessionId if returned (for anonymous users)
+        if (apiResponse.sessionId) {
+          setSessionId(apiResponse.sessionId);
+        }
+        
         setCartItems([]);
         setCartSummary(null);
       } else {
@@ -492,16 +580,27 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     return cartItems.some(item => item.productId === productId);
   };
 
-  // Fetch cart when user logs in
+  // Fetch cart for both authenticated and anonymous users
   useEffect(() => {
-    console.log('CartContext: useEffect triggered', { token: token ? 'present' : 'missing', user: user?.id });
+    const sessionId = getSessionId();
+    console.log('CartContext: useEffect triggered', { 
+      token: token ? 'present' : 'missing', 
+      user: user?.id,
+      sessionId: sessionId ? 'present' : 'missing'
+    });
+    
     if (token && user) {
-      console.log('CartContext: Fetching cart for user:', user.id);
+      console.log('CartContext: Fetching cart for authenticated user:', user.id);
+      fetchCart();
+    } else if (sessionId) {
+      console.log('CartContext: Fetching cart for anonymous user with sessionId');
       fetchCart();
     } else {
-      console.log('CartContext: Clearing cart - no token or user');
-      setCartItems([]);
-      setCartSummary(null);
+      console.log('CartContext: No auth or session - initializing session');
+      // Initialize session for anonymous user
+      getOrCreateSessionId();
+      // Fetch cart after initializing session
+      fetchCart();
     }
   }, [token, user, fetchCart]);
 

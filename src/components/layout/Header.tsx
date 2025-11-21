@@ -180,51 +180,54 @@ const Header: React.FC = () => {
             </ListItemButton>
           </ListItem>
         )}
-        {isAuthenticated && (
-          <ListItem disablePadding>
-            <ListItemButton
-              onClick={() => { router.push('/dashboard/user/cart'); setMobileOpen(false); }}
-              sx={{
-                background: isActivePage('/dashboard/user/cart') ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                borderLeft: isActivePage('/dashboard/user/cart') ? `4px solid ${theme.palette.secondary.main}` : '4px solid transparent',
-                '&:hover': { background: 'rgba(255, 255, 255, 0.05)' },
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
-                <Badge 
-                  badgeContent={getTotalCartItems()} 
-                  color="error"
-                  sx={{
-                    '& .MuiBadge-badge': {
-                      fontSize: '0.75rem',
-                      minWidth: '18px',
-                      height: '18px',
-                      borderRadius: '9px',
-                      background: '#FFD700',
-                      color: '#000',
-                      fontWeight: 600,
-                    }
-                  }}
-                >
-                  <ShoppingCartIcon sx={{ 
-                    fontSize: '1.5rem',
-                    color: isActivePage('/dashboard/user/cart') ? theme.palette.secondary.main : theme.palette.primary.contrastText,
-                  }} />
-                </Badge>
-                <ListItemText 
-                  primary={'CART'}
-                  sx={{
-                    '& .MuiListItemText-primary': {
-                      color: isActivePage('/dashboard/user/cart') ? theme.palette.secondary.main : theme.palette.primary.contrastText,
-                      fontWeight: isActivePage('/dashboard/user/cart') ? 700 : 400,
-                      fontSize: '1.1rem',
-                    },
-                  }}
-                />
-              </Box>
-            </ListItemButton>
-          </ListItem>
-        )}
+        {/* Cart - Available to everyone */}
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={() => { 
+              const cartPath = isAuthenticated ? '/dashboard/user/cart' : '/cart';
+              router.push(cartPath); 
+              setMobileOpen(false); 
+            }}
+            sx={{
+              background: (isActivePage('/cart') || isActivePage('/dashboard/user/cart')) ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+              borderLeft: (isActivePage('/cart') || isActivePage('/dashboard/user/cart')) ? `4px solid ${theme.palette.secondary.main}` : '4px solid transparent',
+              '&:hover': { background: 'rgba(255, 255, 255, 0.05)' },
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
+              <Badge 
+                badgeContent={getTotalCartItems()} 
+                color="error"
+                sx={{
+                  '& .MuiBadge-badge': {
+                    fontSize: '0.75rem',
+                    minWidth: '18px',
+                    height: '18px',
+                    borderRadius: '9px',
+                    background: '#FFD700',
+                    color: '#000',
+                    fontWeight: 600,
+                  }
+                }}
+              >
+                <ShoppingCartIcon sx={{ 
+                  fontSize: '1.5rem',
+                  color: (isActivePage('/cart') || isActivePage('/dashboard/user/cart')) ? theme.palette.secondary.main : theme.palette.primary.contrastText,
+                }} />
+              </Badge>
+              <ListItemText 
+                primary={'CART'}
+                sx={{
+                  '& .MuiListItemText-primary': {
+                    color: (isActivePage('/cart') || isActivePage('/dashboard/user/cart')) ? theme.palette.secondary.main : theme.palette.primary.contrastText,
+                    fontWeight: (isActivePage('/cart') || isActivePage('/dashboard/user/cart')) ? 700 : 400,
+                    fontSize: '1.1rem',
+                  },
+                }}
+              />
+            </Box>
+          </ListItemButton>
+        </ListItem>
         {!isAuthenticated && (
           authMenuItems.map((item) => (
             <ListItem key={item.text} disablePadding>
@@ -444,59 +447,57 @@ const Header: React.FC = () => {
                     </motion.div>
                   )}
 
-                  {/* Cart */}
-                  {isAuthenticated && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: menuItems.length * 0.1 }}
+                  {/* Cart - Available to everyone */}
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: menuItems.length * 0.1 }}
+                  >
+                    <IconButton
+                      component={Link}
+                      href={isAuthenticated ? '/dashboard/user/cart' : '/cart'}
+                      sx={{
+                        color: theme.palette.primary.contrastText,
+                        position: 'relative',
+                        '&:hover': {
+                          background: 'rgba(255, 255, 255, 0.1)',
+                        },
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          bottom: 0,
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          width: (isActivePage('/cart') || isActivePage('/dashboard/user/cart')) ? '60%' : '0%',
+                          height: '3px',
+                          background: theme.palette.secondary.main,
+                          borderRadius: '2px 2px 0 0',
+                          transition: 'width 0.3s ease',
+                        },
+                        '&:hover::after': {
+                          width: '60%',
+                        },
+                      }}
                     >
-                      <IconButton
-                        component={Link}
-                        href={'/dashboard/user/cart'}
+                      <Badge
+                        badgeContent={getTotalCartItems()}
+                        color="error"
                         sx={{
-                          color: theme.palette.primary.contrastText,
-                          position: 'relative',
-                          '&:hover': {
-                            background: 'rgba(255, 255, 255, 0.1)',
-                          },
-                          '&::after': {
-                            content: '""',
-                            position: 'absolute',
-                            bottom: 0,
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            width: isActivePage('/dashboard/user/cart') ? '60%' : '0%',
-                            height: '3px',
-                            background: theme.palette.secondary.main,
-                            borderRadius: '2px 2px 0 0',
-                            transition: 'width 0.3s ease',
-                          },
-                          '&:hover::after': {
-                            width: '60%',
+                          '& .MuiBadge-badge': {
+                            fontSize: '0.75rem',
+                            minWidth: '18px',
+                            height: '18px',
+                            borderRadius: '9px',
+                            background: '#FFD700',
+                            color: '#000',
+                            fontWeight: 600,
                           },
                         }}
                       >
-                        <Badge
-                          badgeContent={getTotalCartItems()}
-                          color="error"
-                          sx={{
-                            '& .MuiBadge-badge': {
-                              fontSize: '0.75rem',
-                              minWidth: '18px',
-                              height: '18px',
-                              borderRadius: '9px',
-                              background: '#FFD700',
-                              color: '#000',
-                              fontWeight: 600,
-                            },
-                          }}
-                        >
-                          <ShoppingCartIcon sx={{ fontSize: '1.5rem' }} />
-                        </Badge>
-                      </IconButton>
-                    </motion.div>
-                  )}
+                        <ShoppingCartIcon sx={{ fontSize: '1.5rem' }} />
+                      </Badge>
+                    </IconButton>
+                  </motion.div>
 
                   {/* Login/Signup or Profile */}
                   {isAuthenticated ? (
