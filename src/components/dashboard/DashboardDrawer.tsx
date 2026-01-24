@@ -19,12 +19,12 @@ import {
   Dashboard,
   Person,
   ShoppingCart,
-  Favorite,
   Support,
   Logout,
-  AdminPanelSettings,
   Inventory2,
   History,
+  Campaign,
+  CampaignOutlined,
 } from "@mui/icons-material";
 import { useAuth } from "@/contexts/AuthContext";
 import { appGradients } from "@/theme/colors";
@@ -89,7 +89,13 @@ const DashboardDrawer: React.FC<DashboardDrawerProps> = React.memo(
                 icon: <History />,
                 path: `${roleBasePath}/orders`,
                 active: currentPath === `${roleBasePath}/orders`,
-              }
+              },
+              {
+                label: "Banner",
+                icon: <CampaignOutlined />,
+                path: `${roleBasePath}/banner`,
+                active: currentPath === `${roleBasePath}/banner`,
+              },
             ]
           : []
       ),
