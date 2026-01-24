@@ -531,26 +531,31 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
               sx={{
                 display: "grid",
                 gridTemplateColumns: {
-                  xs: "1fr",
-                  sm: "repeat(2, 1fr)",
+                  xs: "repeat(2, minmax(0, 1fr))",
+                  sm: "repeat(2, minmax(0, 1fr))",
                   md: "repeat(3, 1fr)",
                   lg: "repeat(4, 1fr)",
                 },
-                gap: { xs: 2, sm: 2, md: 3 },
+                gap: { xs: 1.5, sm: 2, md: 3 },
               }}
             >
               {products.map((product, index) => (
-              <Box key={product._id}>
+              <Box key={product._id} sx={{ display: "flex", width: "100%" }}>
                 <motion.div
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   viewport={{ once: true }}
+                  style={{ width: "100%", height: "100%", display: "flex", flex: 1 }}
                 >
                   <Card
                     elevation={0}
                     sx={{
                       height: "100%",
+                      width: "100%",
+                      flex: 1,
+                      display: "flex",
+                      flexDirection: "column",
                       background: getRgbaColor(backgroundPaper, 0.9),
                       backdropFilter: "blur(10px)",
                       border: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
@@ -567,7 +572,14 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       router.push(`/products/${product._id}`);
                     }}
                   >
-                    <Box sx={{ position: "relative" }}>
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "100%",
+                        aspectRatio: { xs: "1 / 1", sm: "4 / 3", md: "4 / 3" },
+                        overflow: "hidden",
+                      }}
+                    >
                       <CardMedia
                         component="img"
                         image={
@@ -577,7 +589,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                         sx={{
                           objectFit: "cover",
                           width: "100%",
-                          height: { xs: "180px", sm: "200px", md: "250px" },
+                          height: "100%",
                         }}
                       />
 
@@ -655,8 +667,11 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
 
                     <CardContent
                       sx={{
-                        p: { xs: 2, sm: 2.5, md: 3 },
+                        p: { xs: 1.5, sm: 2.5, md: 3 },
                         "&:last-child": { pb: { xs: 2, sm: 2.5, md: 3 } },
+                        display: "flex",
+                        flexDirection: "column",
+                        flexGrow: 1,
                       }}
                     >
                       <Typography
@@ -669,6 +684,10 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                           mt: 1,
                           fontSize: { xs: "0.875rem", sm: "1.25rem" },
                           lineHeight: { xs: 1.3, sm: 1.4 },
+                          display: "-webkit-box",
+                          WebkitBoxOrient: "vertical",
+                          WebkitLineClamp: { xs: 1, sm: 1, md: 2 },
+                          overflow: "hidden",
                         }}
                       >
                         {product.name}
@@ -680,13 +699,21 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                           fontWeight: 400,
                           fontSize: { xs: "0.7rem", sm: "0.75rem" },
                           lineHeight: 1.5,
+                          display: { xs: "none", sm: "none", md: "-webkit-box" },
+                          WebkitBoxOrient: "vertical",
+                          WebkitLineClamp: 3,
+                          overflow: "hidden",
                         }}
                       >
                         {product.description?.slice(0, 100) + "..."}
                       </Typography>
 
                       <Box
-                        sx={{ display: "flex", alignItems: "center", mb: 2 }}
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          mb: { xs: 1.25, sm: 2 },
+                        }}
                       >
                         <Box
                           sx={{ display: "flex", alignItems: "center", mr: 1 }}
@@ -738,9 +765,13 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "space-between",
-                          flexDirection: { xs: "column", sm: "row" },
+                          flexDirection: {
+                            xs: isSmallMobile ? "column" : "row",
+                            sm: "row",
+                          },
                           width: "100%",
                           gap: { xs: 0.75, sm: 1, md: 1 },
+                          mt: "auto",
                         }}
                       >
                         <Button
