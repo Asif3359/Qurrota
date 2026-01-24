@@ -949,7 +949,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          p: 2,
+          p: { xs: 1, sm: 2 },
           backdropFilter: "blur(8px)",
           backgroundColor: "rgba(0, 0, 0, 0.5)",
         }}
@@ -957,13 +957,14 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
         <Box
           sx={{
             position: "relative",
-            width: { xs: "98%", sm: "95%", md: "90%", lg: "85%" },
+            width: { xs: "100%", sm: "95%", md: "90%", lg: "85%" },
             maxWidth: 1000,
-            maxHeight: { xs: "98vh", sm: "95vh", md: "90vh" },
+            maxHeight: { xs: "90dvh", sm: "90vh", md: "90vh" },
             bgcolor: "background.paper",
             borderRadius: { xs: 2, sm: 3 },
             boxShadow: `0 25px 50px -12px ${getRgbaColor(black, 0.25)}`,
-            overflow: "auto",
+            overflowY: "auto",
+            overflowX: "hidden",
             outline: "none",
             border: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
             display: "flex",
@@ -1008,9 +1009,9 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                 sx={{
                   flex: { xs: "none", md: "0 0 50%" },
                   position: "relative",
-                  height: { xs: 300, sm: 350, md: "auto" },
-                  minHeight: { xs: 300, sm: 350, md: 500 },
-                  maxHeight: { xs: 350, sm: 400, md: "70vh" },
+                  height: { xs: "auto", sm: "auto", md: "auto" },
+                  minHeight: { xs: "auto", sm: "auto", md: 500 },
+                  maxHeight: { xs: "none", sm: "none", md: "70vh" },
                   background: appGradients.background(),
                   display: "flex",
                   flexDirection: "column",
@@ -1023,6 +1024,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                     flex: 1,
                     position: "relative",
                     overflow: "hidden",
+                    aspectRatio: { xs: "1 / 1", sm: "4 / 3", md: "auto" },
                   }}
                 >
                   <CardMedia
@@ -1034,7 +1036,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                     alt={selectedProduct.name}
                     sx={{
                       width: "100%",
-                      height: "100%",
+                      height: { xs: "100%", sm: "100%", md: "100%" },
                       objectFit: "cover",
                       transition: "transform 0.3s ease",
                       "&:hover": {
@@ -1106,7 +1108,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                   selectedProduct.images.length > 1 && (
                     <Box
                       sx={{
-                        p: 3,
+                        p: { xs: 1.5, sm: 2, md: 3 },
                         background: getRgbaColor(backgroundPaper, 0.95),
                         backdropFilter: "blur(10px)",
                         borderTop: `1px solid ${getRgbaColor(
@@ -1131,7 +1133,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       <Box
                         sx={{
                           display: "flex",
-                          gap: 1.5,
+                          gap: { xs: 1, sm: 1.5 },
                           overflowX: "auto",
                           pb: 1,
                           "&::-webkit-scrollbar": {
@@ -1156,8 +1158,8 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                             onClick={() => handleImageSelect(index)}
                             sx={{
                               flex: "0 0 auto",
-                              width: 90,
-                              height: 90,
+                              width: { xs: 64, sm: 80, md: 90 },
+                              height: { xs: 64, sm: 80, md: 90 },
                               cursor: "pointer",
                               border:
                                 selectedImageIndex === index
@@ -1212,18 +1214,19 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                   display: "flex",
                   flexDirection: "column",
                   background: appGradients.background(),
-                  overflow: "auto",
-                  maxHeight: { xs: "50vh", sm: "60vh", md: "80vh" },
-                  minHeight: { xs: 300, sm: 400, md: 500 },
+                  // Avoid nested scrolling on mobile: let outer modal scroll.
+                  overflow: { xs: "visible", sm: "visible", md: "auto" },
+                  maxHeight: { xs: "none", sm: "none", md: "80vh" },
+                  minHeight: { xs: "auto", sm: "auto", md: 500 },
                 }}
               >
                 <Box
                   sx={{
-                    p: { xs: 3, md: 4 },
+                    p: { xs: 2, sm: 3, md: 4 },
                     flex: 1,
                     display: "flex",
                     flexDirection: "column",
-                    overflow: "auto",
+                    overflow: { xs: "visible", sm: "visible", md: "auto" },
                   }}
                 >
                   {/* Categories */}
@@ -1249,8 +1252,8 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       fontWeight: 800,
                       color: textPrimary,
                       mt: 1,
-                      mb: 2,
-                      fontSize: { xs: "1.8rem", md: "2.2rem" },
+                      mb: { xs: 1.5, sm: 2 },
+                      fontSize: { xs: "1.35rem", sm: "1.6rem", md: "2.2rem" },
                       lineHeight: 1.2,
                     }}
                   >
@@ -1262,8 +1265,8 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                     sx={{
                       display: "flex",
                       alignItems: "center",
-                      mb: 3,
-                      p: 2,
+                      mb: { xs: 2, sm: 3 },
+                      p: { xs: 1.5, sm: 2 },
                       background: getRgbaColor(primaryMain, 0.1),
                       borderRadius: 2,
                       border: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
@@ -1304,8 +1307,8 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                     sx={{
                       fontWeight: 800,
                       color: primaryMain,
-                      mb: 3,
-                      fontSize: { xs: "1.8rem", md: "2.2rem" },
+                      mb: { xs: 2, sm: 3 },
+                      fontSize: { xs: "1.35rem", sm: "1.6rem", md: "2.2rem" },
                       textShadow: `0 2px 4px ${getRgbaColor(primaryMain, 0.3)}`,
                     }}
                   >
@@ -1480,15 +1483,17 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       flexDirection: { xs: "column", sm: "row" },
                       mt: "auto",
                       pt: 2,
-                      position: "sticky",
-                      bottom: 0,
+                      // Sticky inside a single-scroll container can behave oddly on mobile;
+                      // keep sticky on md+ where the details pane can scroll.
+                      position: { xs: "static", sm: "static", md: "sticky" },
+                      bottom: { md: 0 },
                       background: appGradients.background(),
                       zIndex: 1,
                     }}
                   >
                     <Button
                       variant="contained"
-                      size="large"
+                      size={isSmallMobile ? "medium" : "large"}
                       startIcon={<ShoppingCart />}
                       onClick={() => addToCart(selectedProduct._id)}
                       disabled={
@@ -1504,9 +1509,9 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                           : theme.palette.primary.contrastText,
                         fontWeight: 700,
                         borderRadius: 3,
-                        px: 4,
-                        py: 2,
-                        fontSize: "1rem",
+                        px: { xs: 2.5, sm: 4 },
+                        py: { xs: 1.25, sm: 2 },
+                        fontSize: { xs: "0.95rem", sm: "1rem" },
                         textTransform: "none",
                         boxShadow: isInCart(selectedProduct._id)
                           ? `0 4px 12px ${getRgbaColor(successMain, 0.3)}`
@@ -1535,7 +1540,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                     </Button>
                     <Button 
                      variant="outlined"
-                     size="large"
+                     size={isSmallMobile ? "medium" : "large"}
                      startIcon={<Favorite />}
                      sx={{
                       borderColor: primaryMain,
@@ -1543,9 +1548,9 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       background: getRgbaColor(primaryMain, 0.05),
                       fontWeight: 700,
                       borderRadius: 3,
-                      px: 4,
-                      py: 2,
-                      fontSize: "1rem",
+                      px: { xs: 2.5, sm: 4 },
+                      py: { xs: 1.25, sm: 2 },
+                      fontSize: { xs: "0.95rem", sm: "1rem" },
                       textTransform: "none",
                       "&:hover": {
                         background: getRgbaColor(primaryMain, 0.1),
