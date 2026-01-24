@@ -37,7 +37,7 @@ const StorySection = () => {
     },
     {
       icon: LocalShipping,
-      title: "Free Shipping Over $50",
+      title: "Free Shipping Over 1500 BDT",
     },
     {
       icon: CheckCircle,
@@ -121,6 +121,7 @@ const StorySection = () => {
                     sx={{
                       background: additionalColors.white,
                       borderRadius: 2,
+                      height: "150px",
                       p: 3,
                       textAlign: "center",
                       border: `1px solid ${getRgbaColor(theme.palette.primary.main, 0.2)}`,
