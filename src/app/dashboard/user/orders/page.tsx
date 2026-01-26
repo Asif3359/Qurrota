@@ -134,13 +134,8 @@ const OrdersPage: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log('Orders data:', data.data.orders);
-      console.log('First order total:', data.data.orders[0]?.total);
-      console.log('First order subtotal:', data.data.orders[0]?.subtotal);
-      console.log('First order items:', data.data.orders[0]?.items);
       if (data.data.orders[0]?.items) {
         const firstOrderTotal = data.data.orders[0].items.reduce((sum: number, item: OrderItem) => sum + (item.price * item.quantity), 0);
-        console.log('Calculated first order total from items:', firstOrderTotal);
       }
       setOrders(data.data.orders);
       setTotalPages(data.data.pagination.pages);
@@ -165,7 +160,6 @@ const OrdersPage: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Order summary data:', data.data);
         setSummary(data.data);
       }
     } catch (err) {

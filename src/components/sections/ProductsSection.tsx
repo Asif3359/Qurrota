@@ -25,6 +25,8 @@ import {
   InputLabel,
   Skeleton,
   SelectChangeEvent,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import { motion } from "framer-motion";
 import {
@@ -35,6 +37,8 @@ import {
   Visibility,
   ArrowRight,
   ShoppingBag,
+  Search,
+  Clear,
 } from "@mui/icons-material";
 import { getRgbaColor, appGradients } from "@/theme/colors";
 import { normalizeCsvInput } from "../utils/displayCsv";
@@ -100,21 +104,11 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
   const white = theme.palette.common.white;
   const black = theme.palette.common.black;
 
-  // Debug user data on component mount
-  React.useEffect(() => {
-    console.log("ProductsSection: User data debug:", {
-      user: user,
-      user_id: user?.id,
-      token: token ? "present" : "missing",
-      isAuthenticated: !!user,
-      userKeys: user ? Object.keys(user) : "no user",
-    });
-  }, [user, token]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [products, setProducts] = React.useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(
-    null
+    null,
   );
   const [modalOpen, setModalOpen] = React.useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = React.useState(0);
@@ -128,9 +122,13 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalProducts, setTotalProducts] = React.useState(0);
   const [sortBy, setSortBy] = React.useState<string>("newest");
+  const [searchQuery, setSearchQuery] = React.useState<string>("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] =
+    React.useState<string>("");
   const productsPerPage = 12;
 
   const apiBase = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products/published`;
+  const searchApiBase = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products/search`;
 
   // Check if user has seen cart confirmation modal before
   const hasSeenCartConfirmation = () => {
@@ -147,57 +145,91 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
     }
   };
 
-  const getProducts = React.useCallback(async (page: number = 1, limit: number = 12, sort: string = "newest"): Promise<void> => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      // Build URL with pagination and sort params
-      // Home page: always page 1, limit 12, but respects sort
-      // Products page: uses all params
-      const actualPage = isHomePage ? 1 : page;
-      const actualLimit = isHomePage ? 12 : limit;
-      
-      const url = `${apiBase}?page=${actualPage}&limit=${actualLimit}&sort=${sort}`;
-      
-      console.log('🔗 Fetching URL:', url);
-      
-      const response = await fetch(url, { 
-        cache: "no-cache",
-        next: { revalidate: 0 }
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error('❌ Response error:', errorData);
-        throw new Error(`Failed to load products: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      setProducts(data.data ?? []);
-      setTotalProducts(data.total ?? 0);
-      
-      console.log('📦 Products loaded:', {
-        page: actualPage,
-        limit: actualLimit,
-        sort,
-        received: data.data?.length,
-        total: data.total
-      });
-    } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : "Something went wrong";
-      setError(message);
-      console.error('❌ Error fetching products:', e);
-    } finally {
-      setLoading(false);
-    }
-  }, [apiBase, isHomePage]);
+  const getProducts = React.useCallback(
+    async (
+      page: number = 1,
+      limit: number = 12,
+      sort: string = "newest",
+      query: string = "",
+    ): Promise<void> => {
+      try {
+        setLoading(true);
+        setError(null);
 
-  // Fetch products on mount and when page or sort changes
+        // Build URL with pagination and sort params
+        // Home page: always page 1, limit 12, but respects sort
+        // Products page: uses all params
+        const actualPage = isHomePage ? 1 : page;
+        const actualLimit = isHomePage ? 12 : limit;
+
+        // Use search endpoint if there's a query, otherwise use published endpoint
+        let url: string;
+        if (query && query.trim()) {
+          // Use search endpoint with query
+          // Use the selected sort option (relevance is default for search)
+          url = `${searchApiBase}?q=${encodeURIComponent(query.trim())}&page=${actualPage}&limit=${actualLimit}&sort=${sort}`;
+        } else {
+          // Use regular published endpoint
+          url = `${apiBase}?page=${actualPage}&limit=${actualLimit}&sort=${sort}`;
+        }
+
+        const response = await fetch(url, {
+          cache: "no-cache",
+          next: { revalidate: 0 },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to load products: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        setProducts(data.data ?? []);
+        setTotalProducts(data.total ?? 0);
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : "Something went wrong";
+        setError(message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [apiBase, searchApiBase, isHomePage],
+  );
+
+  // Debounce search query
   React.useEffect(() => {
-    getProducts(currentPage, productsPerPage, sortBy);
-  }, [getProducts, currentPage, sortBy]);
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500); // 500ms debounce delay
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Track previous search query to detect when search is first entered
+  const prevSearchQueryRef = React.useRef<string>("");
+
+  // Reset to page 1 and default sort to relevance when search query changes
+  React.useEffect(() => {
+    if (debouncedSearchQuery !== searchQuery) return; // Wait for debounce
+    setCurrentPage(1);
+
+    // Default to relevance when starting a search (transitioning from no query to having a query)
+    const hadQuery =
+      prevSearchQueryRef.current && prevSearchQueryRef.current.trim();
+    const hasQuery = debouncedSearchQuery && debouncedSearchQuery.trim();
+
+    if (!hadQuery && hasQuery && sortBy === "newest") {
+      // User just started searching, default to relevance for better search results
+      setSortBy("relevance");
+    }
+
+    prevSearchQueryRef.current = debouncedSearchQuery;
+  }, [debouncedSearchQuery, searchQuery, sortBy]);
+
+  // Fetch products on mount and when page, sort, or search query changes
+  React.useEffect(() => {
+    getProducts(currentPage, productsPerPage, sortBy, debouncedSearchQuery);
+  }, [getProducts, currentPage, sortBy, debouncedSearchQuery]);
 
   const handleQuickView = (product: Product) => {
     setSelectedProduct(product);
@@ -264,7 +296,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
             fontSize: "14px",
             fontWeight: "500",
           },
-        }
+        },
       );
     } finally {
       setLoadingStates((prev) => ({ ...prev, [`cart-${productId}`]: false }));
@@ -285,10 +317,25 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
   const totalPages = Math.ceil(totalProducts / productsPerPage);
 
   // Handle page change
-  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number,
+  ) => {
     setCurrentPage(value);
     // Scroll to top of products section smoothly
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Handle search input change
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
+  // Handle clear search
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setDebouncedSearchQuery("");
+    setCurrentPage(1);
   };
 
   // Handle sort change
@@ -311,16 +358,81 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-        <Box sx={{ mb: 6, textAlign: "center" }}>
-          <SectionHeaders
-            title={isHomePage ? "Trending Products" : "All Products"}
-            description="Discover our carefully curated collection of premium products for kids and new mothers"
-          />
-          
-            {/* Sort Controls - Show on both home and products page */}
+          <Box sx={{ mb: 6, textAlign: "center" }}>
+            <SectionHeaders
+              title={isHomePage ? "Trending Products" : "All Products"}
+              description="Discover our carefully curated collection of premium products for kids and new mothers"
+            />
+
+            {/* Search Field - Show on both pages */}
             <Box
               sx={{
                 mt: 4,
+                mb: 3,
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <TextField
+                fullWidth
+                placeholder="Search products by name, brand, or description..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+                size="medium"
+                sx={{
+                  maxWidth: { xs: "100%", sm: 600, md: 700 },
+                  "& .MuiOutlinedInput-root": {
+                    background: theme.palette.background.paper,
+                    borderRadius: 2,
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                    "& fieldset": {
+                      borderColor: getRgbaColor(primaryMain, 0.3),
+                    },
+                    "&:hover fieldset": {
+                      borderColor: primaryMain,
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: primaryMain,
+                      borderWidth: 2,
+                    },
+                  },
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search
+                        sx={{
+                          color: textSecondary,
+                          fontSize: { xs: 20, sm: 24 },
+                        }}
+                      />
+                    </InputAdornment>
+                  ),
+                  endAdornment: searchQuery && (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleClearSearch}
+                        size="small"
+                        sx={{
+                          color: textSecondary,
+                          "&:hover": {
+                            color: errorMain,
+                            background: getRgbaColor(errorMain, 0.1),
+                          },
+                        }}
+                      >
+                        <Clear sx={{ fontSize: { xs: 18, sm: 20 } }} />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Box>
+
+            {/* Sort Controls - Show on both home and products page */}
+            <Box
+              sx={{
+                mt: 3,
                 display: "flex",
                 justifyContent: isHomePage ? "flex-end" : "space-between",
                 alignItems: "center",
@@ -338,7 +450,19 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                     fontSize: { xs: "0.875rem", sm: "1rem" },
                   }}
                 >
-                  Showing {((currentPage - 1) * productsPerPage) + 1} - {Math.min(currentPage * productsPerPage, totalProducts)} of {totalProducts} products
+                  {debouncedSearchQuery ? (
+                    <>
+                      Found {totalProducts}{" "}
+                      {totalProducts === 1 ? "product" : "products"} for &quot;
+                      {debouncedSearchQuery}&quot;
+                    </>
+                  ) : (
+                    <>
+                      Showing {(currentPage - 1) * productsPerPage + 1} -{" "}
+                      {Math.min(currentPage * productsPerPage, totalProducts)}{" "}
+                      of {totalProducts} products
+                    </>
+                  )}
                 </Typography>
               )}
 
@@ -369,11 +493,44 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                     },
                   }}
                 >
-                  <MenuItem value="newest">Newest First</MenuItem>
-                  <MenuItem value="price-low">Price: Low to High</MenuItem>
-                  <MenuItem value="price-high">Price: High to Low</MenuItem>
-                  <MenuItem value="name-asc">Name: A to Z</MenuItem>
-                  <MenuItem value="name-desc">Name: Z to A</MenuItem>
+                  {debouncedSearchQuery
+                    ? [
+                        <MenuItem key="relevance" value="relevance">
+                          Most Relevant
+                        </MenuItem>,
+                        <MenuItem key="newest" value="newest">
+                          Newest First
+                        </MenuItem>,
+                        <MenuItem key="price-low" value="price-low">
+                          Price: Low to High
+                        </MenuItem>,
+                        <MenuItem key="price-high" value="price-high">
+                          Price: High to Low
+                        </MenuItem>,
+                        <MenuItem key="name-asc" value="name-asc">
+                          Name: A to Z
+                        </MenuItem>,
+                        <MenuItem key="name-desc" value="name-desc">
+                          Name: Z to A
+                        </MenuItem>,
+                      ]
+                    : [
+                        <MenuItem key="newest" value="newest">
+                          Newest First
+                        </MenuItem>,
+                        <MenuItem key="price-low" value="price-low">
+                          Price: Low to High
+                        </MenuItem>,
+                        <MenuItem key="price-high" value="price-high">
+                          Price: High to Low
+                        </MenuItem>,
+                        <MenuItem key="name-asc" value="name-asc">
+                          Name: A to Z
+                        </MenuItem>,
+                        <MenuItem key="name-desc" value="name-desc">
+                          Name: Z to A
+                        </MenuItem>,
+                      ]}
                 </Select>
               </FormControl>
             </Box>
@@ -525,6 +682,127 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
           </Box>
         )}
 
+        {/* Empty State - No Products Found */}
+        {!loading && !error && products.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Box
+              sx={{
+                textAlign: "center",
+                py: { xs: 6, sm: 8, md: 10 },
+                px: { xs: 2, sm: 3 },
+              }}
+            >
+              <Box
+                sx={{
+                  width: { xs: 120, sm: 150, md: 180 },
+                  height: { xs: 120, sm: 150, md: 180 },
+                  mx: "auto",
+                  mb: 3,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: getRgbaColor(primaryMain, 0.1),
+                  borderRadius: "50%",
+                }}
+              >
+                <Search
+                  sx={{
+                    fontSize: { xs: 60, sm: 80, md: 100 },
+                    color: primaryMain,
+                    opacity: 0.6,
+                  }}
+                />
+              </Box>
+              <Typography
+                variant="h4"
+                component="h2"
+                sx={{
+                  fontWeight: 700,
+                  color: textPrimary,
+                  mb: 2,
+                  fontSize: { xs: "1.5rem", sm: "2rem", md: "2.5rem" },
+                }}
+              >
+                {debouncedSearchQuery
+                  ? `No products found for "${debouncedSearchQuery}"`
+                  : "No products available"}
+              </Typography>
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{
+                  mb: 4,
+                  maxWidth: 600,
+                  mx: "auto",
+                  fontSize: { xs: "0.875rem", sm: "1rem" },
+                  lineHeight: 1.6,
+                }}
+              >
+                {debouncedSearchQuery
+                  ? "Try adjusting your search terms or browse all products to find what you're looking for."
+                  : "Check back later for new products or browse our other categories."}
+              </Typography>
+              {debouncedSearchQuery && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 2,
+                    justifyContent: "center",
+                    flexDirection: { xs: "column", sm: "row" },
+                    alignItems: "center",
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    onClick={handleClearSearch}
+                    startIcon={<Search />}
+                    sx={{
+                      borderColor: primaryMain,
+                      color: primaryMain,
+                      fontWeight: 600,
+                      px: 3,
+                      py: 1.5,
+                      borderRadius: 2,
+                      fontSize: { xs: "0.875rem", sm: "1rem" },
+                      "&:hover": {
+                        borderColor: primaryDark,
+                        background: getRgbaColor(primaryMain, 0.05),
+                      },
+                    }}
+                  >
+                    Clear Search
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => router.push("/products")}
+                    startIcon={<ShoppingBag />}
+                    sx={{
+                      background: appGradients.primary(theme),
+                      color: theme.palette.primary.contrastText,
+                      fontWeight: 600,
+                      px: 3,
+                      py: 1.5,
+                      borderRadius: 2,
+                      fontSize: { xs: "0.875rem", sm: "1rem" },
+                      "&:hover": {
+                        background: appGradients.primary(theme),
+                        transform: "translateY(-2px)",
+                        boxShadow: `0 4px 12px ${getRgbaColor(primaryMain, 0.4)}`,
+                      },
+                    }}
+                  >
+                    Browse All Products
+                  </Button>
+                </Box>
+              )}
+            </Box>
+          </motion.div>
+        )}
+
         {!loading && !error && products.length > 0 && (
           <>
             <Box
@@ -540,351 +818,370 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
               }}
             >
               {products.map((product, index) => (
-              <Box key={product._id} sx={{ display: "flex", width: "100%" }}>
-                <motion.div
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  style={{ width: "100%", height: "100%", display: "flex", flex: 1 }}
-                >
-                  <Card
-                    elevation={0}
-                    sx={{
-                      height: "100%",
+                <Box key={product._id} sx={{ display: "flex", width: "100%" }}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    style={{
                       width: "100%",
-                      flex: 1,
+                      height: "100%",
                       display: "flex",
-                      flexDirection: "column",
-                      background: getRgbaColor(backgroundPaper, 0.9),
-                      backdropFilter: "blur(10px)",
-                      border: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
-                      borderRadius: { xs: 2, sm: 3 },
-                      overflow: "hidden",
-                      transition: "all 0.3s ease",
-                      "&:hover": {
-                        borderColor: primaryMain,
-                        background: getRgbaColor(backgroundPaper, 0.95),
-                        cursor: "pointer",
-                      },
-                    }}
-                    onClick={() => {
-                      router.push(`/products/${product._id}`);
+                      flex: 1,
                     }}
                   >
-                    <Box
+                    <Card
+                      elevation={0}
                       sx={{
-                        position: "relative",
+                        height: "100%",
                         width: "100%",
-                        aspectRatio: { xs: "1 / 1", sm: "4 / 3", md: "4 / 3" },
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        background: getRgbaColor(backgroundPaper, 0.9),
+                        backdropFilter: "blur(10px)",
+                        border: `1px solid ${getRgbaColor(primaryMain, 0.2)}`,
+                        borderRadius: { xs: 2, sm: 3 },
                         overflow: "hidden",
+                        transition: "all 0.3s ease",
+                        "&:hover": {
+                          borderColor: primaryMain,
+                          background: getRgbaColor(backgroundPaper, 0.95),
+                          cursor: "pointer",
+                        },
+                      }}
+                      onClick={() => {
+                        router.push(`/products/${product._id}`);
                       }}
                     >
-                      <CardMedia
-                        component="img"
-                        image={
-                          product.images?.[0]?.url || "/placeholder-image.jpg"
-                        }
-                        alt={product.name}
-                        sx={{
-                          objectFit: "cover",
-                          width: "100%",
-                          height: "100%",
-                        }}
-                      />
-
-                      {/* Badges */}
                       <Box
                         sx={{
-                          position: "absolute",
-                          top: { xs: 8, sm: 12 },
-                          left: { xs: 8, sm: 12 },
-                          display: "flex",
-                          gap: { xs: 0.5, sm: 1 },
-                          flexDirection: { xs: "column", sm: "row" },
+                          position: "relative",
+                          width: "100%",
+                          aspectRatio: {
+                            xs: "1 / 1",
+                            sm: "4 / 3",
+                            md: "4 / 3",
+                          },
+                          overflow: "hidden",
                         }}
                       >
-                        {/* Show "New" badge for recently created products (within last 30 days) */}
-                        {product.createdAt &&
-                          new Date(product.createdAt) >
-                            new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) && (
+                        <CardMedia
+                          component="img"
+                          image={
+                            product.images?.[0]?.url || "/placeholder-image.svg"
+                          }
+                          alt={product.name}
+                          sx={{
+                            objectFit: "cover",
+                            width: "100%",
+                            height: "100%",
+                          }}
+                        />
+
+                        {/* Badges */}
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: { xs: 8, sm: 12 },
+                            left: { xs: 8, sm: 12 },
+                            display: "flex",
+                            gap: { xs: 0.5, sm: 1 },
+                            flexDirection: { xs: "column", sm: "row" },
+                          }}
+                        >
+                          {/* Show "New" badge for recently created products (within last 30 days) */}
+                          {product.createdAt &&
+                            new Date(product.createdAt) >
+                              new Date(
+                                Date.now() - 30 * 24 * 60 * 60 * 1000,
+                              ) && (
+                              <Chip
+                                label="New"
+                                size={isSmallMobile ? "small" : "small"}
+                                sx={{
+                                  background: secondaryMain,
+                                  color: black,
+                                  fontWeight: 600,
+                                  fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                                  height: { xs: 20, sm: 24 },
+                                }}
+                              />
+                            )}
+                          {/* Show "Popular" badge for products with high rating count */}
+                          {product.ratingCount && product.ratingCount >= 5 && (
                             <Chip
-                              label="New"
+                              label="Popular"
                               size={isSmallMobile ? "small" : "small"}
                               sx={{
-                                background: secondaryMain,
-                                color: black,
+                                background: primaryMain,
+                                color: white,
                                 fontWeight: 600,
                                 fontSize: { xs: "0.7rem", sm: "0.75rem" },
                                 height: { xs: 20, sm: 24 },
                               }}
                             />
                           )}
-                        {/* Show "Popular" badge for products with high rating count */}
-                        {product.ratingCount && product.ratingCount >= 5 && (
-                          <Chip
-                            label="Popular"
-                            size={isSmallMobile ? "small" : "small"}
-                            sx={{
-                              background: primaryMain,
-                              color: white,
-                              fontWeight: 600,
-                              fontSize: { xs: "0.7rem", sm: "0.75rem" },
-                              height: { xs: 20, sm: 24 },
-                            }}
-                          />
-                        )}
-                      </Box>
-                      {/* Quick View Button - Bottom Right */}
-                      <Button
-                        sx={{
-                          position: "absolute",
-                          bottom: { xs: 8, sm: 12 },
-                          right: { xs: 8, sm: 12 },
-                          minWidth: "auto",
-                          width: { xs: 32, sm: 40 },
-                          height: { xs: 32, sm: 40 },
-                          borderRadius: "50%",
-                          background: getRgbaColor(primaryMain, 0.9),
-                          backdropFilter: "blur(10px)",
-                          "&:hover": {
-                            background: primaryMain,
-                          },
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleQuickView(product);
-                        }}
-                      >
-                        <Visibility
-                          sx={{
-                            fontSize: { xs: 16, sm: 20 },
-                            color: "#fff",
-                          }}
-                        />
-                      </Button>
-                    </Box>
-
-                    <CardContent
-                      sx={{
-                        p: { xs: 1.5, sm: 2.5, md: 3 },
-                        "&:last-child": { pb: { xs: 2, sm: 2.5, md: 3 } },
-                        display: "flex",
-                        flexDirection: "column",
-                        flexGrow: 1,
-                      }}
-                    >
-                      <Typography
-                        variant={isSmallMobile ? "subtitle1" : "h6"}
-                        component="h3"
-                        gutterBottom
-                        sx={{
-                          fontWeight: 600,
-                          color: textPrimary,
-                          mt: 1,
-                          fontSize: { xs: "0.875rem", sm: "1.25rem" },
-                          lineHeight: { xs: 1.3, sm: 1.4 },
-                          display: "-webkit-box",
-                          WebkitBoxOrient: "vertical",
-                          WebkitLineClamp: { xs: 1, sm: 1, md: 2 },
-                          overflow: "hidden",
-                        }}
-                      >
-                        {product.name}
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        color="text.secondary"
-                        sx={{
-                          fontWeight: 400,
-                          fontSize: { xs: "0.7rem", sm: "0.75rem" },
-                          lineHeight: 1.5,
-                          display: { xs: "none", sm: "none", md: "-webkit-box" },
-                          WebkitBoxOrient: "vertical",
-                          WebkitLineClamp: 3,
-                          overflow: "hidden",
-                        }}
-                      >
-                        {product.description?.slice(0, 100) + "..."}
-                      </Typography>
-
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          mb: { xs: 1.25, sm: 2 },
-                        }}
-                      >
-                        <Box
-                          sx={{ display: "flex", alignItems: "center", mr: 1 }}
-                        >
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              sx={{
-                                fontSize: { xs: 14, sm: 16 },
-                                color:
-                                  i <
-                                  Math.floor(
-                                    product.ratingAverage ||
-                                      product.ratingCount ||
-                                      0
-                                  )
-                                    ? "#FFD700"
-                                    : "#ddd",
-                              }}
-                            />
-                          ))}
                         </Box>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
-                        >
-                          ({product.ratingCount || 0})
-                        </Typography>
-                      </Box>
-
-                      <Box sx={{ mb: 1 }}>
-                        <Box>
-                          <Typography
-                            variant={isSmallMobile ? "subtitle1" : "h6"}
-                            sx={{
-                              fontWeight: 700,
-                              color: primaryMain,
-                              fontSize: { xs: "1rem", sm: "1.25rem" },
-                            }}
-                          >
-                            {product.price} {product.currency}
-                          </Typography>
-                        </Box>
-                      </Box>
-
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          flexDirection: {
-                            xs: isSmallMobile ? "column" : "row",
-                            sm: "row",
-                          },
-                          width: "100%",
-                          gap: { xs: 0.75, sm: 1, md: 1 },
-                          mt: "auto",
-                        }}
-                      >
+                        {/* Quick View Button - Bottom Right */}
                         <Button
-                          variant="contained"
-                          size={isSmallMobile ? "small" : "medium"}
-                          startIcon={
-                            <ShoppingCart
-                              sx={{ fontSize: { xs: 14, sm: 16 } }}
-                            />
-                          }
+                          sx={{
+                            position: "absolute",
+                            bottom: { xs: 8, sm: 12 },
+                            right: { xs: 8, sm: 12 },
+                            minWidth: "auto",
+                            width: { xs: 32, sm: 40 },
+                            height: { xs: 32, sm: 40 },
+                            borderRadius: "50%",
+                            background: getRgbaColor(primaryMain, 0.9),
+                            backdropFilter: "blur(10px)",
+                            "&:hover": {
+                              background: primaryMain,
+                            },
+                          }}
                           onClick={(e) => {
                             e.stopPropagation();
-                            addToCart(product._id);
+                            handleQuickView(product);
                           }}
-                          disabled={
-                            loadingStates[`cart-${product._id}`] ||
-                            isInCart(product._id)
-                          }
+                        >
+                          <Visibility
+                            sx={{
+                              fontSize: { xs: 16, sm: 20 },
+                              color: "#fff",
+                            }}
+                          />
+                        </Button>
+                      </Box>
+
+                      <CardContent
+                        sx={{
+                          p: { xs: 1.5, sm: 2.5, md: 3 },
+                          "&:last-child": { pb: { xs: 2, sm: 2.5, md: 3 } },
+                          display: "flex",
+                          flexDirection: "column",
+                          flexGrow: 1,
+                        }}
+                      >
+                        <Typography
+                          variant={isSmallMobile ? "subtitle1" : "h6"}
+                          component="h3"
+                          gutterBottom
                           sx={{
-                            width: "100%",
-                            background: isInCart(product._id)
-                              ? successMain
-                              : primaryMain,
-                            color: white,
                             fontWeight: 600,
-                            borderRadius: 2,
-                            fontSize: { xs: "0.7rem", sm: "0.7rem" },
-                            px: { xs: 1, sm: 2 },
-                            py: { xs: 0.4, sm: 0.75 },
-                            minHeight: { xs: 32, sm: 36 },
-                            boxShadow: isInCart(product._id)
-                              ? `0 2px 8px ${getRgbaColor(successMain, 0.3)}`
-                              : `0 2px 8px ${getRgbaColor(primaryMain, 0.3)}`,
-                            transition: "all 0.3s ease",
-                            "&:hover": {
-                              background: isInCart(product._id)
-                                ? getRgbaColor(successMain, 0.8)
-                                : primaryDark,
-                              transform: "translateY(-2px)",
-                              boxShadow: isInCart(product._id)
-                                ? `0 4px 12px ${getRgbaColor(successMain, 0.4)}`
-                                : `0 4px 12px ${getRgbaColor(primaryMain, 0.4)}`,
+                            color: textPrimary,
+                            mt: 1,
+                            fontSize: { xs: "0.875rem", sm: "1.25rem" },
+                            lineHeight: { xs: 1.3, sm: 1.4 },
+                            display: "-webkit-box",
+                            WebkitBoxOrient: "vertical",
+                            WebkitLineClamp: { xs: 1, sm: 1, md: 2 },
+                            overflow: "hidden",
+                          }}
+                        >
+                          {product.name}
+                        </Typography>
+                        <Typography
+                          variant="body1"
+                          color="text.secondary"
+                          sx={{
+                            fontWeight: 400,
+                            fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                            lineHeight: 1.5,
+                            display: {
+                              xs: "none",
+                              sm: "none",
+                              md: "-webkit-box",
                             },
-                            "&:active": {
-                              transform: "translateY(0)",
-                              boxShadow: isInCart(product._id)
-                                ? `0 1px 4px ${getRgbaColor(successMain, 0.3)}`
-                                : `0 1px 4px ${getRgbaColor(primaryMain, 0.3)}`,
+                            WebkitBoxOrient: "vertical",
+                            WebkitLineClamp: 3,
+                            overflow: "hidden",
+                          }}
+                        >
+                          {product.description?.slice(0, 100) + "..."}
+                        </Typography>
+
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            mb: { xs: 1.25, sm: 2 },
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              mr: 1,
+                            }}
+                          >
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                sx={{
+                                  fontSize: { xs: 14, sm: 16 },
+                                  color:
+                                    i <
+                                    Math.floor(
+                                      product.ratingAverage ||
+                                        product.ratingCount ||
+                                        0,
+                                    )
+                                      ? "#FFD700"
+                                      : "#ddd",
+                                }}
+                              />
+                            ))}
+                          </Box>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                          >
+                            ({product.ratingCount || 0})
+                          </Typography>
+                        </Box>
+
+                        <Box sx={{ mb: 1 }}>
+                          <Box>
+                            <Typography
+                              variant={isSmallMobile ? "subtitle1" : "h6"}
+                              sx={{
+                                fontWeight: 700,
+                                color: primaryMain,
+                                fontSize: { xs: "1rem", sm: "1.25rem" },
+                              }}
+                            >
+                              {product.price} {product.currency}
+                            </Typography>
+                          </Box>
+                        </Box>
+
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            flexDirection: {
+                              xs: isSmallMobile ? "column" : "row",
+                              sm: "row",
                             },
-                            "&:disabled": {
-                              opacity: 0.6,
+                            width: "100%",
+                            gap: { xs: 0.75, sm: 1, md: 1 },
+                            mt: "auto",
+                          }}
+                        >
+                          <Button
+                            variant="contained"
+                            size={isSmallMobile ? "small" : "medium"}
+                            startIcon={
+                              <ShoppingCart
+                                sx={{ fontSize: { xs: 14, sm: 16 } }}
+                              />
+                            }
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              addToCart(product._id);
+                            }}
+                            disabled={
+                              loadingStates[`cart-${product._id}`] ||
+                              isInCart(product._id)
+                            }
+                            sx={{
+                              width: "100%",
                               background: isInCart(product._id)
                                 ? successMain
                                 : primaryMain,
                               color: white,
-                            },
-                          }}
-                        >
-                          {loadingStates[`cart-${product._id}`]
-                            ? "Adding..."
-                            : isInCart(product._id)
-                            ? "In Cart"
-                            : isSmallMobile
-                            ? "Add"
-                            : "Add to Cart"}
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          size={isSmallMobile ? "small" : "medium"}
-                          startIcon={
-                            <ShoppingBag
-                              sx={{ fontSize: { xs: 14, sm: 16 } }}
-                            />
-                          }
-                          sx={{
-                            width: "100%",
-                            background: "transparent",
-                            color: primaryMain,
-                            borderColor: primaryMain,
-                            fontWeight: 600,
-                            borderRadius: 2,
-                            fontSize: { xs: "0.7rem", sm: "0.7rem" },
-                            px: { xs: 1, sm: 2 },
-                            py: { xs: 0.4, sm: 0.75 },
-                            minHeight: { xs: 32, sm: 36 },
-                            "&:hover": {
-                              background: primaryDark,
-                              color: white,
+                              fontWeight: 600,
+                              borderRadius: 2,
+                              fontSize: { xs: "0.7rem", sm: "0.7rem" },
+                              px: { xs: 1, sm: 2 },
+                              py: { xs: 0.4, sm: 0.75 },
+                              minHeight: { xs: 32, sm: 36 },
+                              boxShadow: isInCart(product._id)
+                                ? `0 2px 8px ${getRgbaColor(successMain, 0.3)}`
+                                : `0 2px 8px ${getRgbaColor(primaryMain, 0.3)}`,
+                              transition: "all 0.3s ease",
+                              "&:hover": {
+                                background: isInCart(product._id)
+                                  ? getRgbaColor(successMain, 0.8)
+                                  : primaryDark,
+                                transform: "translateY(-2px)",
+                                boxShadow: isInCart(product._id)
+                                  ? `0 4px 12px ${getRgbaColor(successMain, 0.4)}`
+                                  : `0 4px 12px ${getRgbaColor(primaryMain, 0.4)}`,
+                              },
+                              "&:active": {
+                                transform: "translateY(0)",
+                                boxShadow: isInCart(product._id)
+                                  ? `0 1px 4px ${getRgbaColor(successMain, 0.3)}`
+                                  : `0 1px 4px ${getRgbaColor(primaryMain, 0.3)}`,
+                              },
+                              "&:disabled": {
+                                opacity: 0.6,
+                                background: isInCart(product._id)
+                                  ? successMain
+                                  : primaryMain,
+                                color: white,
+                              },
+                            }}
+                          >
+                            {loadingStates[`cart-${product._id}`]
+                              ? "Adding..."
+                              : isInCart(product._id)
+                                ? "In Cart"
+                                : isSmallMobile
+                                  ? "Add"
+                                  : "Add to Cart"}
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            size={isSmallMobile ? "small" : "medium"}
+                            startIcon={
+                              <ShoppingBag
+                                sx={{ fontSize: { xs: 14, sm: 16 } }}
+                              />
+                            }
+                            sx={{
+                              width: "100%",
+                              background: "transparent",
+                              color: primaryMain,
                               borderColor: primaryMain,
-                              transform: "translateY(-2px)",
-                              boxShadow: `0 4px 12px ${getRgbaColor(primaryMain, 0.4)}`,
-                            },
-                            "&:active": {
-                              transform: "translateY(0)",
-                              boxShadow: `0 1px 4px ${getRgbaColor(primaryMain, 0.3)}`,
-                            },
-                            "&:disabled": {
-                              opacity: 0.6,
-                              background: primaryMain,
-                              color: white,
-                              borderColor: primaryMain,
-                            },
-                            transition: "all 0.3s ease",
-                          }}
-                        >
-                          Shop Now
-                        </Button>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </Box>
-            ))}
+                              fontWeight: 600,
+                              borderRadius: 2,
+                              fontSize: { xs: "0.7rem", sm: "0.7rem" },
+                              px: { xs: 1, sm: 2 },
+                              py: { xs: 0.4, sm: 0.75 },
+                              minHeight: { xs: 32, sm: 36 },
+                              "&:hover": {
+                                background: primaryDark,
+                                color: white,
+                                borderColor: primaryMain,
+                                transform: "translateY(-2px)",
+                                boxShadow: `0 4px 12px ${getRgbaColor(primaryMain, 0.4)}`,
+                              },
+                              "&:active": {
+                                transform: "translateY(0)",
+                                boxShadow: `0 1px 4px ${getRgbaColor(primaryMain, 0.3)}`,
+                              },
+                              "&:disabled": {
+                                opacity: 0.6,
+                                background: primaryMain,
+                                color: white,
+                                borderColor: primaryMain,
+                              },
+                              transition: "all 0.3s ease",
+                            }}
+                          >
+                            Shop Now
+                          </Button>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                </Box>
+              ))}
             </Box>
 
             {/* Pagination for products page */}
@@ -930,9 +1227,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
             viewport={{ once: true }}
           >
             <Box sx={{ textAlign: "center", mt: { xs: 4, sm: 5, md: 6 } }}>
-              <OutLineButton
-                onClick={() => router.push("/products")}
-              >
+              <OutLineButton onClick={() => router.push("/products")}>
                 View All Products
               </OutLineButton>
             </Box>
@@ -1031,7 +1326,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                     component="img"
                     image={
                       selectedProduct.images?.[selectedImageIndex]?.url ||
-                      "/placeholder-image.jpg"
+                      "/placeholder-image.svg"
                     }
                     alt={selectedProduct.name}
                     sx={{
@@ -1071,7 +1366,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                             height: 28,
                             boxShadow: `0 2px 8px ${getRgbaColor(
                               secondaryMain,
-                              0.3
+                              0.3,
                             )}`,
                             "&:hover": {
                               transform: "scale(1.05)",
@@ -1092,7 +1387,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                             height: 28,
                             boxShadow: `0 2px 8px ${getRgbaColor(
                               primaryMain,
-                              0.3
+                              0.3,
                             )}`,
                             "&:hover": {
                               transform: "scale(1.05)",
@@ -1113,7 +1408,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                         backdropFilter: "blur(10px)",
                         borderTop: `1px solid ${getRgbaColor(
                           primaryMain,
-                          0.2
+                          0.2,
                         )}`,
                       }}
                     >
@@ -1166,7 +1461,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                                   ? `3px solid ${primaryMain}`
                                   : `3px solid ${getRgbaColor(
                                       primaryMain,
-                                      0.1
+                                      0.1,
                                     )}`,
                               borderRadius: 2,
                               overflow: "hidden",
@@ -1175,7 +1470,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                                 selectedImageIndex === index
                                   ? `0 4px 12px ${getRgbaColor(
                                       primaryMain,
-                                      0.4
+                                      0.4,
                                     )}`
                                   : `0 2px 8px ${getRgbaColor(black, 0.1)}`,
                               "&:hover": {
@@ -1183,7 +1478,7 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                                 transform: "scale(1.05)",
                                 boxShadow: `0 4px 12px ${getRgbaColor(
                                   primaryMain,
-                                  0.3
+                                  0.3,
                                 )}`,
                               },
                             }}
@@ -1535,34 +1830,35 @@ const ProductsSection: React.FC<{ isHomePage?: boolean }> = ({
                       {loadingStates[`cart-${selectedProduct._id}`]
                         ? "Adding..."
                         : isInCart(selectedProduct._id)
-                        ? "In Cart"
-                        : "Add to Cart"}
+                          ? "In Cart"
+                          : "Add to Cart"}
                     </Button>
-                    <Button 
-                     variant="outlined"
-                     size={isSmallMobile ? "medium" : "large"}
-                     startIcon={<Favorite />}
-                     sx={{
-                      borderColor: primaryMain,
-                      color: primaryMain,
-                      background: getRgbaColor(primaryMain, 0.05),
-                      fontWeight: 700,
-                      borderRadius: 3,
-                      px: { xs: 2.5, sm: 4 },
-                      py: { xs: 1.25, sm: 2 },
-                      fontSize: { xs: "0.95rem", sm: "1rem" },
-                      textTransform: "none",
-                      "&:hover": {
-                        background: getRgbaColor(primaryMain, 0.1),
-                        transform: "translateY(-2px)",
-                      },
-                      "&:disabled": {
-                        opacity: 0.6,
-                        transform: "none",
-                      },
-                      transition: "all 0.3s ease",
-                      width: { xs: "100%", sm: "auto" },
-                    }}>
+                    <Button
+                      variant="outlined"
+                      size={isSmallMobile ? "medium" : "large"}
+                      startIcon={<Favorite />}
+                      sx={{
+                        borderColor: primaryMain,
+                        color: primaryMain,
+                        background: getRgbaColor(primaryMain, 0.05),
+                        fontWeight: 700,
+                        borderRadius: 3,
+                        px: { xs: 2.5, sm: 4 },
+                        py: { xs: 1.25, sm: 2 },
+                        fontSize: { xs: "0.95rem", sm: "1rem" },
+                        textTransform: "none",
+                        "&:hover": {
+                          background: getRgbaColor(primaryMain, 0.1),
+                          transform: "translateY(-2px)",
+                        },
+                        "&:disabled": {
+                          opacity: 0.6,
+                          transform: "none",
+                        },
+                        transition: "all 0.3s ease",
+                        width: { xs: "100%", sm: "auto" },
+                      }}
+                    >
                       Add to Wishlist
                     </Button>
                   </Box>

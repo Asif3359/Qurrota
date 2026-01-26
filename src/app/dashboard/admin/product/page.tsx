@@ -423,13 +423,11 @@ export default function ProductPage() {
         countryOfOrigin: product.countryOfOrigin as string,
       });
 
-      console.log('product', product);
       setEditing(product);
       mapProductToForm(product);
       setEditOpen(true);
     } catch {
       // Fallback to the row data if detail fetch fails
-      console.log('p', p);
       setEditing(p);
       mapProductToForm(p);
       setEditOpen(true);

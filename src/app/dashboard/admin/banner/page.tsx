@@ -434,7 +434,7 @@ export default function BannerPage() {
                     <CardMedia
                       component="img"
                       height="200"
-                      image={banner.image?.url || '/placeholder-image.jpg'}
+                      image={banner.image?.url || '/placeholder-image.svg'}
                       alt={banner.image?.alt || banner.title || 'Banner'}
                       sx={{ objectFit: 'cover' }}
                     />

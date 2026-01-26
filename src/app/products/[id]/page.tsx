@@ -385,7 +385,7 @@ export default function ProductDetailPage() {
                 component="img"
                 image={
                   product.images?.[selectedImageIndex]?.url ||
-                  "/placeholder-image.jpg"
+                  "/placeholder-image.svg"
                 }
                 alt={product.name ?? "Product Image"}
                 sx={{

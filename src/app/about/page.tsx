@@ -187,7 +187,7 @@ export default function AboutPage() {
             {/* Story Section */}
             <Box
               sx={{
-                marginTop:4,
+                marginTop: 4,
                 marginBottom: 12,
               }}
             >
@@ -619,22 +619,22 @@ export default function AboutPage() {
                   <Box
                     sx={{
                       display: "flex",
-                      gap: 2,
+                      gap: { xs: 1, sm: 2 },
                       justifyContent: "center",
-                      flexWrap: "wrap",
+                      flexDirection: { xs: "column", sm: "row" },
                     }}
                   >
                     <Link
                       href="/products"
                       sx={{
                         textDecoration: "none",
-                        px: 4,
-                        py: 2,
+                        px: { xs: 2, sm: 4 },
+                        py: { xs: 1, sm: 2 },
                         background: theme.palette.primary.main,
                         color: theme.palette.primary.contrastText,
                         borderRadius: 3,
                         fontWeight: 700,
-                        fontSize: "1.1rem",
+                        fontSize: { xs: "0.9rem", sm: "1.1rem" },
                         transition: "all 0.3s ease",
                         "&:hover": {
                           transform: "translateY(-2px)",
@@ -649,13 +649,13 @@ export default function AboutPage() {
                       href="/contact"
                       sx={{
                         textDecoration: "none",
-                        px: 4,
-                        py: 2,
+                        px: { xs: 2, sm: 4 },
+                        py: { xs: 1, sm: 2 },
                         border: `2px solid ${theme.palette.primary.dark}`,
                         color: theme.palette.primary.dark,
                         borderRadius: 3,
                         fontWeight: 700,
-                        fontSize: "1.1rem",
+                        fontSize: { xs: "0.9rem", sm: "1.1rem" },
                         transition: "all 0.3s ease",
                         "&:hover": {
                           background: theme.palette.primary.dark,

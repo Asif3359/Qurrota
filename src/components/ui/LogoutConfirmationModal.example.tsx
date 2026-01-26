@@ -3,9 +3,9 @@
  * This file demonstrates different ways to use the reusable modal
  */
 
-import React, { useState } from 'react';
-import { Button, Box } from '@mui/material';
-import LogoutConfirmationModal from './LogoutConfirmationModal';
+import React, { useState } from "react";
+import { Button, Box } from "@mui/material";
+import LogoutConfirmationModal from "./LogoutConfirmationModal";
 
 // Example 1: Basic usage with default props
 export const BasicLogoutExample: React.FC = () => {
@@ -15,27 +15,24 @@ export const BasicLogoutExample: React.FC = () => {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     // Simulate logout process
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    console.log('User logged out');
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     setModalOpen(false);
     setIsLoggingOut(false);
   };
 
   return (
     <Box>
-      <Button onClick={() => setModalOpen(true)}>
-        Logout (Basic)
-      </Button>
-      
+      <Button onClick={() => setModalOpen(true)}>Logout (Basic)</Button>
+
       <LogoutConfirmationModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={handleLogout}
         isLoggingOut={isLoggingOut}
         user={{
-          name: 'John Doe',
-          email: 'john@example.com',
-          avatar: 'https://example.com/avatar.jpg'
+          name: "John Doe",
+          email: "john@example.com",
+          avatar: "https://example.com/avatar.jpg",
         }}
       />
     </Box>
@@ -50,18 +47,15 @@ export const CustomLogoutExample: React.FC = () => {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     // Simulate logout process
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log('Custom logout completed');
+    await new Promise((resolve) => setTimeout(resolve, 1500));
     setModalOpen(false);
     setIsLoggingOut(false);
   };
 
   return (
     <Box>
-      <Button onClick={() => setModalOpen(true)}>
-        Custom Logout
-      </Button>
-      
+      <Button onClick={() => setModalOpen(true)}>Custom Logout</Button>
+
       <LogoutConfirmationModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -86,18 +80,15 @@ export const MinimalLogoutExample: React.FC = () => {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     // Simulate logout process
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log('Minimal logout completed');
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setModalOpen(false);
     setIsLoggingOut(false);
   };
 
   return (
     <Box>
-      <Button onClick={() => setModalOpen(true)}>
-        Minimal Logout
-      </Button>
-      
+      <Button onClick={() => setModalOpen(true)}>Minimal Logout</Button>
+
       <LogoutConfirmationModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}

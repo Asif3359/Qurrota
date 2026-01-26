@@ -30,26 +30,9 @@ const UserProfileSummary: React.FC<UserProfileSummaryProps> = React.memo(
       try {
         const token = getAuthToken();
 
-        // Debug logging
-        console.log("🔍 Debug Info:");
-        console.log("Token exists:", !!token);
-        console.log("Token length:", token?.length);
-        console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
-        console.log(
-          "Full URL:",
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile`
-        );
-        console.log("Token sources checked:");
-        console.log("- localStorage token:", !!localStorage.getItem("token"));
-        console.log("- cookie token:", !!Cookies.get("authToken"));
-        console.log(
-          "- sessionStorage token:",
-          !!sessionStorage.getItem("authToken")
-        );
-
         if (!token) {
           throw new Error(
-            "No authentication token found. Please log in again."
+            "No authentication token found. Please log in again.",
           );
         }
 
@@ -60,28 +43,21 @@ const UserProfileSummary: React.FC<UserProfileSummaryProps> = React.memo(
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
-          }
-        );
-
-        console.log("📡 Response Status:", response.status);
-        console.log(
-          "📡 Response Headers:",
-          Object.fromEntries(response.headers.entries())
+          },
         );
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error("❌ Error Response:", errorText);
 
           if (response.status === 403) {
             throw new Error(
-              "Access forbidden. Please check your authentication token."
+              "Access forbidden. Please check your authentication token.",
             );
           } else if (response.status === 401) {
             throw new Error("Unauthorized. Please log in again.");
           } else {
             throw new Error(
-              `Failed to fetch profile: ${response.status} ${response.statusText}`
+              `Failed to fetch profile: ${response.status} ${response.statusText}`,
             );
           }
         }
@@ -91,7 +67,6 @@ const UserProfileSummary: React.FC<UserProfileSummaryProps> = React.memo(
       } catch (error) {
         console.error("❌ Error fetching profile:", error);
       } finally {
-        console.log(userData);
       }
     };
 
@@ -276,7 +251,7 @@ const UserProfileSummary: React.FC<UserProfileSummaryProps> = React.memo(
         </DashboardCard>
       </Box>
     );
-  }
+  },
 );
 
 UserProfileSummary.displayName = "UserProfileSummary";

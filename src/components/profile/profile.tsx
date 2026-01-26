@@ -134,7 +134,7 @@ const Profile: React.FC = () => {
 
   // Helper function to format date for HTML date input (YYYY-MM-DD format)
   const formatDateForInput = (
-    dateString: string | null | undefined
+    dateString: string | null | undefined,
   ): string => {
     if (!dateString) return "";
 
@@ -152,7 +152,7 @@ const Profile: React.FC = () => {
 
   // Helper function to normalize user data and prevent controlled/uncontrolled input warnings
   const normalizeUserData = (
-    userData: Partial<ProfileData> | null | undefined
+    userData: Partial<ProfileData> | null | undefined,
   ): ProfileData => {
     return {
       name: userData?.name || "",
@@ -175,23 +175,6 @@ const Profile: React.FC = () => {
       setLoading(true);
       const token = getAuthToken();
 
-      // Debug logging
-      console.log("🔍 Debug Info:");
-      console.log("Token exists:", !!token);
-      console.log("Token length:", token?.length);
-      console.log("API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
-      console.log(
-        "Full URL:",
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile`
-      );
-      console.log("Token sources checked:");
-      console.log("- localStorage token:", !!localStorage.getItem("token"));
-      console.log("- cookie token:", !!Cookies.get("authToken"));
-      console.log(
-        "- sessionStorage token:",
-        !!sessionStorage.getItem("authToken")
-      );
-
       if (!token) {
         throw new Error("No authentication token found. Please log in again.");
       }
@@ -203,39 +186,26 @@ const Profile: React.FC = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
-      );
-
-      console.log("📡 Response Status:", response.status);
-      console.log(
-        "📡 Response Headers:",
-        Object.fromEntries(response.headers.entries())
+        },
       );
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("❌ Error Response:", errorText);
 
         if (response.status === 403) {
           throw new Error(
-            "Access forbidden. Please check your authentication token."
+            "Access forbidden. Please check your authentication token.",
           );
         } else if (response.status === 401) {
           throw new Error("Unauthorized. Please log in again.");
         } else {
           throw new Error(
-            `Failed to fetch profile: ${response.status} ${response.statusText}`
+            `Failed to fetch profile: ${response.status} ${response.statusText}`,
           );
         }
       }
 
       const data = await response.json();
-      console.log("✅ Profile Data:", data);
-      console.log("📅 Raw dateOfBirth from API:", data.user?.dateOfBirth);
-      console.log(
-        "📅 Formatted dateOfBirth:",
-        formatDateForInput(data.user?.dateOfBirth)
-      );
 
       // Normalize user data to prevent controlled/uncontrolled input warnings
       const normalizedData = normalizeUserData(data.user);
@@ -243,7 +213,7 @@ const Profile: React.FC = () => {
     } catch (error) {
       console.error("❌ Error fetching profile:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to load profile data"
+        error instanceof Error ? error.message : "Failed to load profile data",
       );
     } finally {
       setLoading(false);
@@ -270,7 +240,7 @@ const Profile: React.FC = () => {
             dateOfBirth: profileData.dateOfBirth,
             bio: profileData.bio,
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -288,7 +258,7 @@ const Profile: React.FC = () => {
     } catch (error) {
       console.error("Error updating profile:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to update profile"
+        error instanceof Error ? error.message : "Failed to update profile",
       );
     } finally {
       setSaving(false);
@@ -321,7 +291,7 @@ const Profile: React.FC = () => {
             currentPassword: passwordData.currentPassword,
             newPassword: passwordData.newPassword,
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -338,7 +308,7 @@ const Profile: React.FC = () => {
     } catch (error) {
       console.error("Error updating password:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to update password"
+        error instanceof Error ? error.message : "Failed to update password",
       );
     } finally {
       setSaving(false);
@@ -362,7 +332,7 @@ const Profile: React.FC = () => {
             Authorization: `Bearer ${token}`,
           },
           body: formData,
-        }
+        },
       );
 
       if (!response.ok) {
@@ -380,7 +350,7 @@ const Profile: React.FC = () => {
     } catch (error) {
       console.error("Error uploading image:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to upload image"
+        error instanceof Error ? error.message : "Failed to upload image",
       );
     } finally {
       setImageUploading(false);
@@ -404,7 +374,7 @@ const Profile: React.FC = () => {
           body: JSON.stringify({
             password: deletePassword,
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -417,7 +387,7 @@ const Profile: React.FC = () => {
     } catch (error) {
       console.error("Error deleting account:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to delete account"
+        error instanceof Error ? error.message : "Failed to delete account",
       );
     } finally {
       setDeleting(false);
@@ -536,7 +506,7 @@ const Profile: React.FC = () => {
             <Box>
               <Box
                 sx={{
-                  padding: {xs: 2, sm: 5, md: 5},
+                  padding: { xs: 2, sm: 5, md: 5 },
                   display: "flex",
                   alignItems: { xs: "flex-start", sm: "center" },
                   flexDirection: { xs: "column", sm: "row" },
@@ -611,7 +581,14 @@ const Profile: React.FC = () => {
                       <CheckCircle sx={{ color: theme.palette.success.main }} />
                     )}
                   </Box>
-                  <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", px: { xs: 1, sm: 1 } }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 1,
+                      flexWrap: "wrap",
+                      px: { xs: 1, sm: 1 },
+                    }}
+                  >
                     <Chip
                       label={profileData.role || "user"}
                       size="small"
@@ -645,7 +622,9 @@ const Profile: React.FC = () => {
               </Box>
 
               {/* Tabs */}
-              <Box sx={{ borderBottom: 1, borderColor: "divider" , width: "100%" }}>
+              <Box
+                sx={{ borderBottom: 1, borderColor: "divider", width: "100%" }}
+              >
                 <Tabs
                   value={tabValue}
                   onChange={handleTabChange}

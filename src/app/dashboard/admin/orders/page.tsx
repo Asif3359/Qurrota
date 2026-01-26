@@ -152,10 +152,6 @@ const AdminOrdersPage: React.FC = () => {
         ...(paymentStatus && { paymentStatus })
       });
 
-      console.log('Fetching orders with params:', params.toString());
-      console.log('API_BASE:', API_BASE);
-      console.log('Token available:', !!token);
-
       let response = await fetch(`${API_BASE}/api/orders/admin/all?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -163,18 +159,14 @@ const AdminOrdersPage: React.FC = () => {
         },
       });
 
-      console.log('Admin endpoint response status:', response.status);
-
       // If admin endpoint fails, try user orders endpoint
       if (!response.ok) {
-        console.log('Admin endpoint failed, trying user orders endpoint...');
         response = await fetch(`${API_BASE}/api/orders?${params}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });
-        console.log('User endpoint response status:', response.status);
       }
 
       if (!response.ok) {
@@ -184,19 +176,6 @@ const AdminOrdersPage: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log('Orders API response:', data);
-      console.log('Orders data:', data.data?.orders);
-      console.log('Orders count:', data.data?.orders?.length || 0);
-      
-      if (data.data?.orders?.length > 0) {
-        console.log('First order total:', data.data.orders[0]?.total);
-        console.log('First order subtotal:', data.data.orders[0]?.subtotal);
-        console.log('First order items:', data.data.orders[0]?.items);
-        if (data.data.orders[0]?.items) {
-          const firstOrderTotal = data.data.orders[0].items.reduce((sum: number, item: OrderItem) => sum + (item.price * item.quantity), 0);
-          console.log('Calculated first order total from items:', firstOrderTotal);
-        }
-      }
       
       const ordersData = data.data?.orders || [];
       setOrders(ordersData);
@@ -205,7 +184,6 @@ const AdminOrdersPage: React.FC = () => {
       
       // Calculate summary immediately after setting orders
       if (ordersData.length > 0) {
-        console.log('Calculating summary immediately after orders fetch...');
         const totalRevenue = ordersData.reduce((sum: number, order: Order) => {
           const orderTotal = order.total || order.subtotal || order.items.reduce((itemSum: number, item: OrderItem) => itemSum + (item.price * item.quantity), 0);
           return sum + (orderTotal || 0);
@@ -214,14 +192,6 @@ const AdminOrdersPage: React.FC = () => {
         const pendingOrders = ordersData.filter((order: Order) => order.status === 'pending').length;
         const deliveredOrders = ordersData.filter((order: Order) => order.status === 'delivered').length;
         const cancelledOrders = ordersData.filter((order: Order) => order.status === 'cancelled').length;
-
-        console.log('Immediate summary calculation:', {
-          totalOrders: ordersData.length,
-          totalRevenue,
-          pendingOrders,
-          deliveredOrders,
-          cancelledOrders
-        });
 
         setSummary({
           totalOrders: ordersData.length,
@@ -244,25 +214,15 @@ const AdminOrdersPage: React.FC = () => {
 
     try {
       // Calculate summary from current orders data
-      console.log('Calculating summary from orders:', orders.length);
       
       const totalRevenue = orders.reduce((sum, order) => {
         const orderTotal = order.total || order.subtotal || order.items.reduce((itemSum, item) => itemSum + (item.price * item.quantity), 0);
-        console.log(`Order ${order.orderNumber}: total=${order.total}, subtotal=${order.subtotal}, calculated=${order.items.reduce((itemSum, item) => itemSum + (item.price * item.quantity), 0)}`);
         return sum + (orderTotal || 0);
       }, 0);
       
       const pendingOrders = orders.filter(order => order.status === 'pending').length;
       const deliveredOrders = orders.filter(order => order.status === 'delivered').length;
       const cancelledOrders = orders.filter(order => order.status === 'cancelled').length;
-
-      console.log('Calculated summary:', {
-        totalOrders: orders.length,
-        totalRevenue,
-        pendingOrders,
-        deliveredOrders,
-        cancelledOrders
-      });
 
       setSummary({
         totalOrders: orders.length,
@@ -616,7 +576,6 @@ const AdminOrdersPage: React.FC = () => {
           <Button
             variant="outlined"
             onClick={async () => {
-              console.log('Manual test - fetching orders...');
               try {
                 const response = await fetch(`${API_BASE}/api/orders?page=1&limit=100`, {
                   headers: {
@@ -624,10 +583,8 @@ const AdminOrdersPage: React.FC = () => {
                     'Content-Type': 'application/json',
                   },
                 });
-                console.log('Manual test response:', response.status);
                 if (response.ok) {
                   const data = await response.json();
-                  console.log('Manual test data:', data);
                   setOrders(data.data?.orders || []);
                 }
               } catch (err) {
@@ -642,28 +599,15 @@ const AdminOrdersPage: React.FC = () => {
           <Button
             variant="outlined"
             onClick={() => {
-              console.log('Manual summary calculation...');
-              console.log('Current orders:', orders);
-              console.log('Orders length:', orders.length);
-              
               if (orders.length > 0) {
                 const totalRevenue = orders.reduce((sum, order) => {
                   const orderTotal = order.total || order.subtotal || order.items.reduce((itemSum, item) => itemSum + (item.price * item.quantity), 0);
-                  console.log(`Order ${order.orderNumber}: total=${order.total}, subtotal=${order.subtotal}, calculated=${order.items.reduce((itemSum, item) => itemSum + (item.price * item.quantity), 0)}`);
                   return sum + (orderTotal || 0);
                 }, 0);
                 
                 const pendingOrders = orders.filter(order => order.status === 'pending').length;
                 const deliveredOrders = orders.filter(order => order.status === 'delivered').length;
                 const cancelledOrders = orders.filter(order => order.status === 'cancelled').length;
-
-                console.log('Manual calculation result:', {
-                  totalOrders: orders.length,
-                  totalRevenue,
-                  pendingOrders,
-                  deliveredOrders,
-                  cancelledOrders
-                });
 
                 setSummary({
                   totalOrders: orders.length,
@@ -673,7 +617,6 @@ const AdminOrdersPage: React.FC = () => {
                   cancelledOrders
                 });
               } else {
-                console.log('No orders to calculate summary from');
               }
             }}
             disabled={loading}
